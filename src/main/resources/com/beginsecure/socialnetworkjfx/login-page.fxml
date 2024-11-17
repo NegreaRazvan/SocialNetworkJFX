@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="544.0" prefWidth="810.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mouseTransparent="true" prefHeight="544.0" prefWidth="810.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LogInController">
    <children>
       <Line endX="-100.0" endY="302.6666564941406" layoutX="820.0" layoutY="84.0" startX="-100.0" stroke="#313131" />
       <Line endX="135.5" endY="-0.5000076293945312" layoutX="584.0" layoutY="84.0" startX="-100.0" stroke="#313131" />
@@ -22,5 +22,11 @@
       </PasswordField>
       <Button layoutX="577.0" layoutY="235.0" mnemonicParsing="false" text="Button" />
       <TextField layoutX="519.0" layoutY="138.0" prefHeight="25.0" prefWidth="164.0" />
+      <TextArea editable="false" layoutX="493.0" layoutY="409.0" mouseTransparent="true" prefHeight="25.0" prefWidth="135.0" style="-fx-border-color: black; -fx-background-size: -12 -12;" text="Don't have an account?">
+         <font>
+            <Font size="11.0" />
+         </font>
+      </TextArea>
+      <Hyperlink layoutX="629.0" layoutY="410.0" text="Sign up" />
    </children>
 </AnchorPane>

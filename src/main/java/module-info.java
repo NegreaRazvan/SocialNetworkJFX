@@ -11,6 +11,7 @@ module com.beginsecure.socialnetworkjfx {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.sql;
+    requires java.desktop;
 
     opens com.beginsecure.socialnetworkjfx to javafx.fxml;
     exports com.beginsecure.socialnetworkjfx;
