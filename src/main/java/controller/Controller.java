@@ -22,14 +22,8 @@ public abstract class Controller {
 
     protected Stage initNewView(FXMLLoader fxmlLoader, String title) {
         try {
-            Pane root = fxmlLoader.load();
-            Scene signInScene = new Scene(root);
-            Stage stage = new Stage();
-
+            stage.getScene().setRoot(fxmlLoader.load());
             stage.setTitle(title);
-            stage.setScene(signInScene);
-            root.requestFocus();
-
             return stage;
         }
         catch(IOException e){
@@ -38,7 +32,7 @@ public abstract class Controller {
         }
     }
 
-    protected Controller initController(FXMLLoader fxmlLoader, Stage stage) {
+    protected Controller initController(FXMLLoader fxmlLoader) {
         Controller controller = fxmlLoader.getController();
         controller.setService(service);
         controller.setStage(stage);

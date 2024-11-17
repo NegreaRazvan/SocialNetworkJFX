@@ -24,7 +24,7 @@ public class HelloApplication extends Application {
         String url = "jdbc:postgresql://localhost:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
-        String queryLoad="SELECT id, first_name, last_name, password FROM public.\"User\"";
+        String queryLoad="SELECT id, first_name, last_name, password, username, admin FROM public.\"User\"";
         String queryLoadF="SELECT id, user_id, friend_id FROM public.\"Friendship\"";
 
         Repository repository = new UserRepositoryDB(url,user,password, queryLoad);

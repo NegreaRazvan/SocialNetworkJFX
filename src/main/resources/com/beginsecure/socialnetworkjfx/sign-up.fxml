@@ -5,6 +5,20 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SignInController">
    <children>
-      <TextField layoutX="226.0" layoutY="71.0" />
+      <VBox alignment="TOP_CENTER" layoutX="206.0" layoutY="31.0" prefHeight="228.0" prefWidth="139.0">
+         <children>
+            <TextField promptText="Username" />
+            <TextField promptText="First name" />
+            <TextField promptText="Last name" />
+            <PasswordField promptText="Password" />
+            <Button mnemonicParsing="false" text="Sign up" />
+         </children>
+      </VBox>
+      <HBox layoutX="182.0" layoutY="259.0" prefHeight="50.0" prefWidth="207.0">
+         <children>
+            <Label text="Already have an account?" />
+            <Hyperlink prefHeight="13.0" prefWidth="41.0" text="Log in" />
+         </children>
+      </HBox>
    </children>
 </AnchorPane>

@@ -2,6 +2,8 @@ package map.repository.file;
 
 import map.domain.User;
 
+import java.util.Optional;
+
 public class UserRepository extends AbstractFileRepository<Long, User>{
     public UserRepository(String fileName) {
         super(fileName);
@@ -15,7 +17,11 @@ public class UserRepository extends AbstractFileRepository<Long, User>{
     @Override
     public User lineToEntity(String line) {
         String[] splited = line.split(";");
-        User u = new User(splited[1], splited[2],splited[3]);
+        Boolean isAdmin;
+        if("true".equals(splited[5]))
+            isAdmin = true;
+        else isAdmin = false;
+        User u = new User(splited[1], splited[2],splited[3],splited[4],isAdmin);
         u.setId(Long.parseLong(splited[0]));
         return u;
     }
@@ -27,6 +33,6 @@ public class UserRepository extends AbstractFileRepository<Long, User>{
      */
     @Override
     public String entityToLine(User entity) {
-        return entity.getId() + ";" + entity.getFirstName() + ";" + entity.getLastName();
+        return entity.getId() + ";" + entity.getFirstName() + ";" + entity.getLastName() + ";" + entity.getPassword() + ";" + entity.getUsername() + ";" + entity.getIsAdmin();
     }
 }

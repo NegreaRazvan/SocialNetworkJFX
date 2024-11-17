@@ -19,18 +19,22 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
         String firstName = rs.getString("first_name");
         String lastName = rs.getString("last_name");
         String password = rs.getString("password");
-        User user=new User(firstName, lastName, password);
+        Boolean isAdmin = rs.getBoolean("admin");
+        String username= rs.getString("username");
+        User user=new User(firstName, lastName, password, username, isAdmin);
         user.setId(id);
         return user;
     }
 
     @Override
     public PreparedStatement entityToSaveStatement(Connection con, User entity) throws SQLException {
-        String query = "INSERT INTO public.\"User\" (first_name, last_name, password) VALUES (?, ?, ?)";
+        String query = "INSERT INTO public.\"User\" (first_name, last_name, password, username, admin) VALUES (?, ?, ?,?,?)";
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
             ps.setString(3, entity.getPassword());
+            ps.setString(4, entity.getUsername());
+            ps.setBoolean(5, entity.getIsAdmin());
         }
         return ps;
     }
@@ -46,7 +50,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
 
     @Override
     public ResultSet entityToFindStatement(Connection con, Long id) throws SQLException {
-        String query = "SELECT id, first_name, last_name, password FROM public.\"User\" WHERE id = ?";
+        String query = "SELECT id, first_name, last_name, password, username, admin FROM public.\"User\" WHERE id = ?";
         ResultSet rs;
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setLong(1, id);
@@ -57,12 +61,14 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
 
     @Override
     public PreparedStatement entityToUpdateStatement(Connection con, User entity) throws SQLException {
-        String query = "UPDATE public.\"User\" SET first_name = ?, last_name = ?, password = ? WHERE id = ?";
+        String query = "UPDATE public.\"User\" SET first_name = ?, last_name = ?, password = ?, username = ?, admin = ? WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
             ps.setString(3, entity.getPassword());
-            ps.setLong(4, entity.getId());
+            ps.setString(4, entity.getUsername());
+            ps.setBoolean(5, entity.getIsAdmin());
+            ps.setLong(6, entity.getId());
         }
         return ps;
     }

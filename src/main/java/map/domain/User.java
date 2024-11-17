@@ -6,11 +6,15 @@ public class User extends Entity<Long>{
     private String firstName;
     private String lastName;
     private String password;
+    private String username;
+    private Boolean isAdmin;
 
-    public User(String firstName, String lastName,String password) {
+    public User(String firstName, String lastName,String password, String username, Boolean isAdmin) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
+        this.username = username;
+        this.isAdmin = isAdmin;
     }
 
     /**
@@ -51,6 +55,13 @@ public class User extends Entity<Long>{
     public void setPassword(String password) {
         this.password = password;
     }
+
+    public String getUsername() {
+        return username;
+    }
+    public void setUsername(String username) { this.username = username; }
+    public Boolean getIsAdmin() { return isAdmin; }
+    public void setIsAdmin(Boolean isAdmin) { this.isAdmin = isAdmin; }
 
     @Override
     public String toString() {

@@ -63,11 +63,12 @@ public class Service implements ServiceInterface{
     }
 
     @Override
-    public Optional<User> saveUser(String firstName, String lastName, String password) throws ValidationException {
+    public Optional<User> saveUser(String firstName, String lastName, String password, String username) throws ValidationException {
         Optional.ofNullable(firstName).orElseThrow(() -> new IllegalArgumentException("firstName must be not null"));
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
-        User entity = new User(firstName, lastName,password);
+        Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
+        User entity = new User(firstName, lastName,password, username, false);
         entity.setId(maxIdUser);
 
         userValidator.validate(entity);
@@ -106,11 +107,12 @@ public class Service implements ServiceInterface{
     }
 
     @Override
-    public User updateUser(Long id, String firstName, String lastName, String password) throws ValidationException {
+    public User updateUser(Long id, String firstName, String lastName, String password, String username, Boolean isAdmin) throws ValidationException {
         Optional.ofNullable(firstName).orElseThrow(() -> new IllegalArgumentException("firstName must be not null"));
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
-        User entity = new User(firstName, lastName, password);
+        Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
+        User entity = new User(firstName, lastName, password,username, isAdmin);
         entity.setId(id);
         userValidator.validate(entity);
         if (userRepository.findOne(entity.getId()).isPresent()) {

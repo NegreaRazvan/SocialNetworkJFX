@@ -14,6 +14,7 @@ public class LogInController extends Controller {
     private TextField password;
 
 
+
     @FXML
     private void handleLogInButton(ActionEvent event) {
         String username=this.username.getText();
@@ -24,11 +25,8 @@ public class LogInController extends Controller {
     @FXML
     private void handleSignUpHyperLink(ActionEvent event) {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("sign-up.fxml"));
-        Stage SignUpStage = initNewView(fxmlLoader, "Sign up");
-        initController(fxmlLoader, SignUpStage);
-        stage.close();
-        SignUpStage.show();
-
+        initNewView(fxmlLoader, "Sign Up");
+        initController(fxmlLoader);
     }
 
 
