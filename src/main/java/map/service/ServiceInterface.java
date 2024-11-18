@@ -17,6 +17,8 @@ public interface ServiceInterface{
      */
     Optional<User> findOneUser(Long id);
 
+    Optional<User> findOneUser(String username);
+
     /**
      *
      * @return all entities

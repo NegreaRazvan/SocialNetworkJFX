@@ -7,6 +7,7 @@ import map.domain.validators.ValidationException;
 import map.domain.validators.Validator;
 import map.repository.Repository;
 import map.repository.db.AbstractDBRepository;
+import map.repository.db.UserRepositoryDB;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -55,6 +56,11 @@ public class Service implements ServiceInterface{
         if (id == null)
             throw new IllegalArgumentException("id must be not null");
         return userRepository.findOne(id);
+    }
+
+    public Optional<User> findOneUser(String username) {
+        Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
+        return ((UserRepositoryDB)userRepository).findOne(username);
     }
 
     @Override

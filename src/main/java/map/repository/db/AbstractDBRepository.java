@@ -9,9 +9,9 @@ import java.util.Optional;
 import java.util.Set;
 
 public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements Repository<ID, E> {
-    private String url;
-    private String user;
-    private String password;
+    protected String url;
+    protected String user;
+    protected String password;
     private String queryLoad;
 
     public AbstractDBRepository(String url, String user, String password, String queryLoad) {
@@ -26,6 +26,7 @@ public abstract class AbstractDBRepository<ID, E extends Entity<ID>> implements 
     public abstract PreparedStatement entityToSaveStatement(Connection con,E entity) throws SQLException;
     public abstract PreparedStatement entityToDeleteStatement(Connection con,ID id) throws SQLException;
     public abstract ResultSet entityToFindStatement(Connection con,ID id) throws SQLException;
+
     public abstract PreparedStatement entityToUpdateStatement(Connection con,E entity) throws SQLException;
 
     @Override

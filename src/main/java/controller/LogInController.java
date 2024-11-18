@@ -1,5 +1,6 @@
 package controller;
 
+import com.beginsecure.socialnetworkjfx.ApplicationManager;
 import com.beginsecure.socialnetworkjfx.HelloApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,8 +14,6 @@ public class LogInController extends Controller {
     @FXML
     private TextField password;
 
-
-
     @FXML
     private void handleLogInButton(ActionEvent event) {
         String username=this.username.getText();
@@ -24,9 +23,7 @@ public class LogInController extends Controller {
 
     @FXML
     private void handleSignUpHyperLink(ActionEvent event) {
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("sign-up.fxml"));
-        initNewView(fxmlLoader, "Sign Up");
-        initController(fxmlLoader);
+        manager.switchToSignUpPage();
     }
 
 

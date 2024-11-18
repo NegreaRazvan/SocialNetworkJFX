@@ -52,6 +52,7 @@ public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
         return rs;
     }
 
+
     @Override
     public PreparedStatement entityToUpdateStatement(Connection con, Friend entity) throws SQLException {
         String query = "UPDATE public.\"Friendship\" SET user_id = ?, friend_id = ? WHERE id = ?";

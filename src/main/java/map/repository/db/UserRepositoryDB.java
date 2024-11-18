@@ -2,10 +2,8 @@ package map.repository.db;
 
 import map.domain.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.Optional;
 
 public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
 
@@ -57,6 +55,32 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
             rs = ps.executeQuery();
         }
         return rs;
+    }
+
+    public ResultSet entityToFindStatement(Connection con,  String username) throws SQLException {
+        String query = "SELECT id, first_name, last_name, password, username, admin FROM public.\"User\" WHERE username = ?";
+        ResultSet rs;
+        PreparedStatement ps = con.prepareStatement(query);{
+            ps.setString(1, username);
+            rs = ps.executeQuery();
+        }
+        return rs;
+    }
+
+
+    public Optional<User> findOne(String username){
+        try (Connection conn = DriverManager.getConnection(url, user, password);) {
+            ResultSet rs = entityToFindStatement(conn, username);
+            User entity = null;
+            if(rs.next()) {
+                entity = queryToEntity(rs);
+            }
+            return Optional.ofNullable(entity);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
     }
 
     @Override
