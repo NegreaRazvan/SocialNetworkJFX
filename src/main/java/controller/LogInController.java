@@ -5,8 +5,11 @@ import com.beginsecure.socialnetworkjfx.HelloApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import map.domain.validators.ValidationException;
+import messageAlert.MessageAlert;
 
 public class LogInController extends Controller {
     @FXML
@@ -19,11 +22,22 @@ public class LogInController extends Controller {
         String username=this.username.getText();
         String password=this.password.getText();
         System.out.println("username: "+username +" password: "+password);
+
+        if(manager.isUserInDatabase(username, password))
+            MessageAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success", "You have successfully logged in");
+        else{
+            MessageAlert.showErrorMessage(null, "The password or the username was incorrect");
+        }
     }
 
     @FXML
     private void handleSignUpHyperLink(ActionEvent event) {
-        manager.switchToSignUpPage();
+        manager.switchPage("sign-up.fxml","Sign up");
+    }
+
+    @FXML
+    private void handleForgotHyperLink(ActionEvent event) {
+        manager.switchPage("forgot-password.fxml","Forgot password");
     }
 
 
