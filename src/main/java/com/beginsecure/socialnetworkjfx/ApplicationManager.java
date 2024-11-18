@@ -16,13 +16,14 @@ import map.service.Service;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class ApplicationManager {
     private Stage primaryStage;
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://localhost:3580/Users";
+        String url = "jdbc:postgresql://192.168.1.51:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin FROM public.\"User\"";
@@ -44,8 +45,11 @@ public class ApplicationManager {
 
         LogInController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
+        primaryStage.setTitle("Log In");
         primaryStage.show();
     }
+
+
 
     protected Stage initNewView(FXMLLoader fxmlLoader, String title) {
         try {
@@ -68,6 +72,8 @@ public class ApplicationManager {
         return controller;
     }
 
+
+
     public void switchToSignUpPage(){
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("sign-up.fxml"));
         initNewView(fxmlLoader, "Sign Up");
@@ -76,12 +82,19 @@ public class ApplicationManager {
 
     public void switchToLogInPage(){
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login.fxml"));
-        initNewView(fxmlLoader, "Sign Up");
+        initNewView(fxmlLoader, "Log In");
         initController(fxmlLoader);
     }
 
-    public Boolean isUsernameUnique(String username){
-        Optional<User> user=service.findOneUser(username);
-        return user.isPresent();
+    public Boolean isUsernameTaken(String username){
+        return service.findOneUser(username).isPresent();
+    }
+
+    public Boolean isUserInDatabase(String username, String password){
+        return service.findOneUser(username, password).isPresent();
+    }
+
+    public void addValidUser(String username, String password, String firstName, String lastName){
+        service.saveUser(firstName,lastName,password,username);
     }
 }

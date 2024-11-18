@@ -3,6 +3,7 @@ package map.service;
 import map.domain.Friend;
 import map.domain.Graph;
 import map.domain.User;
+import map.domain.validators.UsernameUpperCaseException;
 import map.domain.validators.ValidationException;
 import map.domain.validators.Validator;
 import map.repository.Repository;
@@ -63,6 +64,12 @@ public class Service implements ServiceInterface{
         return ((UserRepositoryDB)userRepository).findOne(username);
     }
 
+    public Optional<User> findOneUser(String username,String password) {
+        Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
+        Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
+        return ((UserRepositoryDB)userRepository).findOne(username,password);
+    }
+
     @Override
     public Iterable<User> findAllUsers() {
         return userRepository.findAll();
@@ -75,9 +82,13 @@ public class Service implements ServiceInterface{
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
         Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
         User entity = new User(firstName, lastName,password, username, false);
-        entity.setId(maxIdUser);
+        try{
+            userValidator.validate(entity);
+        }catch (UsernameUpperCaseException e){
+            entity= new User(firstName, lastName, password, e.getMessage(), false);
 
-        userValidator.validate(entity);
+        }
+        entity.setId(maxIdUser);
         Optional<User> oldEntity = userRepository.findOne(entity.getId());
 
         if (oldEntity.isPresent()) {
@@ -119,8 +130,12 @@ public class Service implements ServiceInterface{
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
         User entity = new User(firstName, lastName, password,username, isAdmin);
+        try{
+            userValidator.validate(entity);
+        }catch (UsernameUpperCaseException e){
+            entity= new User(firstName, lastName, password, e.getMessage(), false);
+        }
         entity.setId(id);
-        userValidator.validate(entity);
         if (userRepository.findOne(entity.getId()).isPresent()) {
             userRepository.update(entity);
             return null;

@@ -67,10 +67,36 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
         return rs;
     }
 
+    public ResultSet entityToFindStatement(Connection con,  String username, String password) throws SQLException {
+        String query = "SELECT id, first_name, last_name, password, username, admin FROM public.\"User\" WHERE username = ? AND password = ?";
+        ResultSet rs;
+        PreparedStatement ps = con.prepareStatement(query);{
+            ps.setString(1, username);
+            ps.setString(2, password);
+            rs = ps.executeQuery();
+        }
+        return rs;
+    }
+
 
     public Optional<User> findOne(String username){
         try (Connection conn = DriverManager.getConnection(url, user, password);) {
             ResultSet rs = entityToFindStatement(conn, username);
+            User entity = null;
+            if(rs.next()) {
+                entity = queryToEntity(rs);
+            }
+            return Optional.ofNullable(entity);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    public Optional<User> findOne(String username, String pass){
+        try (Connection conn = DriverManager.getConnection(url, user, password);) {
+            ResultSet rs = entityToFindStatement(conn, username,pass);
             User entity = null;
             if(rs.next()) {
                 entity = queryToEntity(rs);

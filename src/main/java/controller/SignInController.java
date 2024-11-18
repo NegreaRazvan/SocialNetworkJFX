@@ -4,9 +4,11 @@ import com.beginsecure.socialnetworkjfx.HelloApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import map.domain.User;
+import map.domain.validators.ValidationException;
 import messageAlert.MessageAlert;
 
 public class SignInController extends Controller {
@@ -25,21 +27,24 @@ public class SignInController extends Controller {
         String password = this.password.getText();
         String firstName = this.firstName.getText();
         String lastName = this.lastName.getText();
-        System.out.println("Username: " + username + " Password: " + password + " First Name: " + firstName + " Last Name: " + lastName);
 
-        if(manager.isUsernameUnique(username))
+        if(manager.isUsernameTaken(username))
             MessageAlert.showErrorMessage(null, "Username is already in use");
-        else
-            System.out.println("Username is unique");
+        else{
+            try{
+                manager.addValidUser(username, password, firstName, lastName);
+                this.username.clear();
+                this.password.clear();
+                this.firstName.clear();
+                this.lastName.clear();
+                MessageAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success", "You were successfully registered");
+                manager.switchToLogInPage();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login.fxml"));
-        Controller controller = fxmlLoader.getController();
+            }catch (ValidationException e) {
+                MessageAlert.showErrorMessage(null, e.getMessage());
+            }
+        }
 
-
-        this.username.clear();
-        this.password.clear();
-        this.firstName.clear();
-        this.lastName.clear();
     }
 
     @FXML
