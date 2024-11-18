@@ -32,7 +32,12 @@ public class LogInController extends Controller {
 
     @FXML
     private void handleSignUpHyperLink(ActionEvent event) {
-        manager.switchToSignUpPage();
+        manager.switchPage("sign-up.fxml","Sign up");
+    }
+
+    @FXML
+    private void handleForgotHyperLink(ActionEvent event) {
+        manager.switchPage("forgot-password.fxml","Forgot password");
     }
 
 

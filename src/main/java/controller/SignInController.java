@@ -38,7 +38,7 @@ public class SignInController extends Controller {
                 this.firstName.clear();
                 this.lastName.clear();
                 MessageAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success", "You were successfully registered");
-                manager.switchToLogInPage();
+                manager.switchPage("login.fxml", "Log In");
 
             }catch (ValidationException e) {
                 MessageAlert.showErrorMessage(null, e.getMessage());
@@ -49,6 +49,6 @@ public class SignInController extends Controller {
 
     @FXML
     private void handleLogInHyperlink(ActionEvent event) {
-        manager.switchToLogInPage();
+        manager.switchPage("login.fxml", "Log In");
     }
 }

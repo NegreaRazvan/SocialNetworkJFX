@@ -72,17 +72,9 @@ public class ApplicationManager {
         return controller;
     }
 
-
-
-    public void switchToSignUpPage(){
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("sign-up.fxml"));
-        initNewView(fxmlLoader, "Sign Up");
-        initController(fxmlLoader);
-    }
-
-    public void switchToLogInPage(){
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login.fxml"));
-        initNewView(fxmlLoader, "Log In");
+    public void switchPage(String page, String title){
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
+        initNewView(fxmlLoader, title);
         initController(fxmlLoader);
     }
 
@@ -96,5 +88,13 @@ public class ApplicationManager {
 
     public void addValidUser(String username, String password, String firstName, String lastName){
         service.saveUser(firstName,lastName,password,username);
+    }
+
+    public void updateUser(String username, String password){
+        Optional<User> user = service.findOneUser(username);
+        if(user.isPresent())
+            service.updateUser(user.get().getId(), user.get().getFirstName(),user.get().getLastName(),password,username,false);
+        else
+            service.updateUser(null,null,null,password,username,false);
     }
 }

@@ -12,7 +12,8 @@
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor></Button>
-      <Label layoutX="194.0" layoutY="238.0" prefHeight="0.0" prefWidth="149.0" text="Already hava an account?" />
-      <Hyperlink layoutX="336.0" layoutY="234.0" onAction="#handleSignUpHyperLink" prefHeight="25.0" prefWidth="65.0" text="Hyperlink" />
+      <Label layoutX="197.0" layoutY="253.0" prefHeight="0.0" prefWidth="149.0" text="Already hava an account?" />
+      <Hyperlink layoutX="339.0" layoutY="249.0" onAction="#handleSignUpHyperLink" prefHeight="25.0" prefWidth="65.0" text="Hyperlink" />
+      <Hyperlink layoutX="243.0" layoutY="211.0" text="Forgot Password?" onAction="#handleForgotHyperLink"/>
    </children>
 </AnchorPane>

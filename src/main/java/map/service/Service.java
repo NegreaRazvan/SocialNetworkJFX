@@ -128,7 +128,7 @@ public class Service implements ServiceInterface{
         Optional.ofNullable(firstName).orElseThrow(() -> new IllegalArgumentException("firstName must be not null"));
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
-        Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
+        Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
         User entity = new User(firstName, lastName, password,username, isAdmin);
         try{
             userValidator.validate(entity);
@@ -136,11 +136,15 @@ public class Service implements ServiceInterface{
             entity= new User(firstName, lastName, password, e.getMessage(), false);
         }
         entity.setId(id);
+
+        if(((UserRepositoryDB)userRepository).findOne(username).isEmpty())
+            throw new ValidationException("User not found");
+
         if (userRepository.findOne(entity.getId()).isPresent()) {
             userRepository.update(entity);
             return null;
-        }
-        return entity;
+        }else
+            throw new ValidationException("User not found");
     }
 
     private boolean findFriend(Friend friend) {
