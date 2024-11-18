@@ -2,10 +2,8 @@ package map.repository.db;
 
 import map.domain.User;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.Optional;
 
 public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
 
@@ -19,18 +17,22 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
         String firstName = rs.getString("first_name");
         String lastName = rs.getString("last_name");
         String password = rs.getString("password");
-        User user=new User(firstName, lastName, password);
+        Boolean isAdmin = rs.getBoolean("admin");
+        String username= rs.getString("username");
+        User user=new User(firstName, lastName, password, username, isAdmin);
         user.setId(id);
         return user;
     }
 
     @Override
     public PreparedStatement entityToSaveStatement(Connection con, User entity) throws SQLException {
-        String query = "INSERT INTO public.\"User\" (first_name, last_name, password) VALUES (?, ?, ?)";
+        String query = "INSERT INTO public.\"User\" (first_name, last_name, password, username, admin) VALUES (?, ?, ?,?,?)";
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
             ps.setString(3, entity.getPassword());
+            ps.setString(4, entity.getUsername());
+            ps.setBoolean(5, entity.getIsAdmin());
         }
         return ps;
     }
@@ -46,7 +48,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
 
     @Override
     public ResultSet entityToFindStatement(Connection con, Long id) throws SQLException {
-        String query = "SELECT id, first_name, last_name, password FROM public.\"User\" WHERE id = ?";
+        String query = "SELECT id, first_name, last_name, password, username, admin FROM public.\"User\" WHERE id = ?";
         ResultSet rs;
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setLong(1, id);
@@ -55,14 +57,42 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
         return rs;
     }
 
+    public ResultSet entityToFindStatement(Connection con,  String username) throws SQLException {
+        String query = "SELECT id, first_name, last_name, password, username, admin FROM public.\"User\" WHERE username = ?";
+        ResultSet rs;
+        PreparedStatement ps = con.prepareStatement(query);{
+            ps.setString(1, username);
+            rs = ps.executeQuery();
+        }
+        return rs;
+    }
+
+
+    public Optional<User> findOne(String username){
+        try (Connection conn = DriverManager.getConnection(url, user, password);) {
+            ResultSet rs = entityToFindStatement(conn, username);
+            User entity = null;
+            if(rs.next()) {
+                entity = queryToEntity(rs);
+            }
+            return Optional.ofNullable(entity);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
     @Override
     public PreparedStatement entityToUpdateStatement(Connection con, User entity) throws SQLException {
-        String query = "UPDATE public.\"User\" SET first_name = ?, last_name = ?, password = ? WHERE id = ?";
+        String query = "UPDATE public.\"User\" SET first_name = ?, last_name = ?, password = ?, username = ?, admin = ? WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
             ps.setString(3, entity.getPassword());
-            ps.setLong(4, entity.getId());
+            ps.setString(4, entity.getUsername());
+            ps.setBoolean(5, entity.getIsAdmin());
+            ps.setLong(6, entity.getId());
         }
         return ps;
     }

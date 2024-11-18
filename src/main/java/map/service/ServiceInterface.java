@@ -17,6 +17,8 @@ public interface ServiceInterface{
      */
     Optional<User> findOneUser(Long id);
 
+    Optional<User> findOneUser(String username);
+
     /**
      *
      * @return all entities
@@ -31,7 +33,7 @@ public interface ServiceInterface{
      * @throws ValidationException      if the entity is not valid
      * @throws IllegalArgumentException if the given entity is null.     *
      */
-    Optional<User> saveUser(String firstName, String lastName, String password) throws ValidationException;
+    Optional<User> saveUser(String firstName, String lastName, String password,String username) throws ValidationException;
 
 
     /**
@@ -56,7 +58,7 @@ public interface ServiceInterface{
      * @throws ValidationException
      *             if the entity is not valid.
      */
-    User updateUser(Long id, String firstName,String lastName,String password);
+    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin);
 
     /**
      * @param userId   - the id of the user
