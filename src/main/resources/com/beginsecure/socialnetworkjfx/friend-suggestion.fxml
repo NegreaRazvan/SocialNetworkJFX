@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="51.3333" prefWidth="208.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.beginsecure.socialnetworkjfx.FriendSuggestion">
+<AnchorPane prefHeight="51.3333" prefWidth="208.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.FriendSuggestionController">
    <children>
       <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="51.3333" prefWidth="208.0" style="-fx-background-color: black;" />
       <Label layoutX="14.0" layoutY="11.0" prefHeight="17.0" prefWidth="122.0" text="FirstName LastName" textFill="WHITE" />

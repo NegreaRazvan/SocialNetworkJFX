@@ -104,7 +104,7 @@ public class Service implements ServiceInterface{
         Iterable<Friend> friends = friendRepository.findAll();
         ArrayList<Friend> friend1 = new ArrayList<>();
         friends.forEach(x -> {
-            Friend f=new Friend(x.first(), x.second());
+            Friend f=new Friend(x.first(), x.second(),x.request());
             f.setId(x.getId());
             friend1.add(f);
         });
@@ -160,10 +160,10 @@ public class Service implements ServiceInterface{
     }
 
     @Override
-    public Optional<Friend> saveFriend(Long userId, Long friendId) throws ValidationException {
+    public Optional<Friend> saveFriend(Long userId, Long friendId, Boolean request) throws ValidationException {
         Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new ValidationException("First User not found"));
         Optional.ofNullable(userRepository.findOne(friendId)).orElseThrow(() -> new ValidationException("Second User not found"));
-        Friend entity = new Friend(userId, friendId);
+        Friend entity = new Friend(userId, friendId, request);
         entity.setId(maxIdFriend);
         if(isFriendLinkAlreadyInRepo(entity))
             throw new ValidationException("Friend link already exists");

@@ -2,6 +2,7 @@ package com.beginsecure.socialnetworkjfx;
 
 import controller.Controller;
 import controller.LogInController;
+import controller.MainWindowController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
@@ -16,7 +17,6 @@ import map.service.Service;
 
 import java.io.IOException;
 import java.util.Optional;
-import java.util.function.Predicate;
 
 public class ApplicationManager {
     private Stage primaryStage;
@@ -27,7 +27,7 @@ public class ApplicationManager {
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin FROM public.\"User\"";
-        String queryLoadF="SELECT id, user_id, friend_id FROM public.\"Friendship\"";
+        String queryLoadF="SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\"";
 
         Repository repository = new UserRepositoryDB(url,user,password, queryLoad);
         Repository repositoryF = new FriendRepositoryDB(url,user,password,queryLoadF);
@@ -72,10 +72,24 @@ public class ApplicationManager {
         return controller;
     }
 
+    protected Controller initController(FXMLLoader fxmlLoader,String username) {
+        MainWindowController controller = fxmlLoader.getController();
+        controller.setApplicationManager(this);
+        controller.setUsername(username);
+        controller.initializeMainWindow();
+        return controller;
+    }
+
     public void switchPage(String page, String title){
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
         initNewView(fxmlLoader, title);
         initController(fxmlLoader);
+    }
+
+    public void switchPage(String page, String title, String username){
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
+        initNewView(fxmlLoader, title);
+        initController(fxmlLoader, username);
     }
 
     public Boolean isUsernameTaken(String username){
@@ -96,5 +110,9 @@ public class ApplicationManager {
             service.updateUser(user.get().getId(), user.get().getFirstName(),user.get().getLastName(),password,username,false);
         else
             service.updateUser(null,null,null,password,username,false);
+    }
+
+    public User getUser(String username){
+        return service.findOneUser(username).get();
     }
 }

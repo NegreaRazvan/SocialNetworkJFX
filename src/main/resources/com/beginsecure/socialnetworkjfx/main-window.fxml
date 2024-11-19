@@ -7,7 +7,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="721.0" prefWidth="1036.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.beginsecure.socialnetworkjfx.MainWindow">
+<AnchorPane prefHeight="730.0" prefWidth="1036.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
    <children>
       <Pane layoutX="77.0" prefHeight="754.0" prefWidth="246.0" style="-fx-background-color: black;">
          <children>
@@ -104,7 +104,15 @@
                   </Button>
                </children>
             </VBox>
-            <VBox layoutY="621.0" prefHeight="133.0" prefWidth="246.0" />
+            <VBox layoutY="621.0" prefHeight="133.0" prefWidth="246.0">
+               <children>
+                  <Label fx:id="nameLabel" alignment="CENTER" prefHeight="38.0" prefWidth="180.0" text="LastName First name" textFill="WHITE" />
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label fx:id="usernameLabel" alignment="BASELINE_CENTER" prefHeight="37.0" prefWidth="132.0" text="Username" textFill="#8d8d8d" />
+                        <Button onAction="#handleSignout" mnemonicParsing="false" prefHeight="37.0" prefWidth="77.0" style="-fx-border-radius: 15px;" text="Log out" />
+                     </children></HBox>
+               </children></VBox>
          </children>
       </Pane>
       <Pane layoutX="726.0" prefHeight="754.0" prefWidth="246.0" style="-fx-border-radius: 4em; -fx-background-color: black;">
