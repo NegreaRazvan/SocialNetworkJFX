@@ -1,12 +1,14 @@
 package com.beginsecure.socialnetworkjfx;
 
 import controller.Controller;
+import controller.FriendSuggestionController;
 import controller.LogInController;
 import controller.MainWindowController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import map.domain.Friend;
 import map.domain.User;
 import map.domain.validators.UserValidator;
 import map.domain.validators.Validator;
@@ -16,7 +18,12 @@ import map.repository.db.UserRepositoryDB;
 import map.service.Service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class ApplicationManager {
     private Stage primaryStage;
@@ -80,6 +87,13 @@ public class ApplicationManager {
         return controller;
     }
 
+    public Controller initController(FXMLLoader fxmlLoader,Long friendId) {
+        FriendSuggestionController controller = fxmlLoader.getController();
+        controller.setApplicationManager(this);
+        controller.initializeFriendCard(friendId);
+        return controller;
+    }
+
     public void switchPage(String page, String title){
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
         initNewView(fxmlLoader, title);
@@ -91,6 +105,7 @@ public class ApplicationManager {
         initNewView(fxmlLoader, title);
         initController(fxmlLoader, username);
     }
+
 
     public Boolean isUsernameTaken(String username){
         return service.findOneUser(username).isPresent();
@@ -114,5 +129,26 @@ public class ApplicationManager {
 
     public User getUser(String username){
         return service.findOneUser(username).get();
+    }
+
+    public User getUser(Long id){
+        return service.findOneUser(id).get();
+    }
+
+    public List<Long> getNonFriendsOfUser(Long userId){
+        Iterable<Friend> friends=service.findAllFriendsOfAUser(userId);
+        List<Long> friendIDs= new java.util.ArrayList<>(StreamSupport
+                .stream(friends.spliterator(), false)
+                .flatMap(friend -> Stream.of(friend.first(), friend.second()))
+                .filter(id -> !Objects.equals(id, userId))
+                .distinct()
+                .toList());
+        friendIDs.add(userId);
+        List<Long> allUserIDsThatArentFriends= StreamSupport
+                .stream(service.findAllUsers().spliterator(),false)
+                .map(User::getId)
+                .filter(element -> !friendIDs.contains(element))
+                .toList();
+        return allUserIDsThatArentFriends;
     }
 }

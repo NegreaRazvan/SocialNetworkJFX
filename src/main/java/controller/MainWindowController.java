@@ -1,13 +1,16 @@
 package controller;
 
+import com.beginsecure.socialnetworkjfx.HelloApplication;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.util.List;
 
 public class MainWindowController extends Controller {
     String username;
@@ -16,7 +19,7 @@ public class MainWindowController extends Controller {
     @FXML
     Label nameLabel;
     @FXML
-    AnchorPane friendAnchorPane;
+    VBox friendsVBox;
 
 
 
@@ -27,26 +30,27 @@ public class MainWindowController extends Controller {
     public void initializeMainWindow(){
         usernameLabel.setText(username);
         nameLabel.setText(manager.getUser(username).getLastName() + " " + manager.getUser(username).getFirstName());
-//        Node[] nodes = new Node[3];
-//        for (int i = 0; i < nodes.length; i++) {
-//            try {
-//
-//                final int j = i;
-//                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("friend-suggestion.fxml"));
-//                FriendSuggestionController friendSuggestionController = fxmlLoader.load();
-//                nodes[i] = FXMLLoader.load(getClass().getResource("friend-suggestion.fxml"));
-//
-//                nodes[i].setOnMouseEntered(event -> {
-//                    nodes[j].setStyle("-fx-background-color : #0A0E3F");
-//                });
-//                nodes[i].setOnMouseExited(event -> {
-//                    nodes[j].setStyle("-fx-background-color : #02030A");
-//                });
-//                friendAnchorPane.getChildren().add(nodes[i]);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        friendsVBox.getChildren().clear();
+        Node[] nodes = new Node[3];
+        List<Long> nonFriends=manager.getNonFriendsOfUser(manager.getUser(username).getId());
+        for (int i = 0; i < nodes.length; i++) {
+            try {
+                final int j = i;
+                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("friend-suggestion.fxml"));
+                manager.initController(fxmlLoader, nonFriends.get(j));
+                nodes[i] = FXMLLoader.load(HelloApplication.class.getResource("friend-suggestion.fxml"));
+
+                nodes[i].setOnMouseEntered(event -> {
+                    nodes[j].setStyle("-fx-background-color : #0A0E3F");
+                });
+                nodes[i].setOnMouseExited(event -> {
+                    nodes[j].setStyle("-fx-background-color : #02030A");
+                });
+                friendsVBox.getChildren().add(nodes[i]);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML

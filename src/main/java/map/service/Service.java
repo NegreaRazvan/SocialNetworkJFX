@@ -8,6 +8,7 @@ import map.domain.validators.ValidationException;
 import map.domain.validators.Validator;
 import map.repository.Repository;
 import map.repository.db.AbstractDBRepository;
+import map.repository.db.FriendRepositoryDB;
 import map.repository.db.UserRepositoryDB;
 
 import java.util.ArrayList;
@@ -145,6 +146,11 @@ public class Service implements ServiceInterface{
             return null;
         }else
             throw new ValidationException("User not found");
+    }
+
+    public Iterable<Friend> findAllFriendsOfAUser(Long idUser) {
+        Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
+        return ((FriendRepositoryDB)friendRepository).findAll(idUser);
     }
 
     private boolean findFriend(Friend friend) {

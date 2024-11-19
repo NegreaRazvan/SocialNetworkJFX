@@ -5,7 +5,9 @@ import map.domain.Friend;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
     public FriendRepositoryDB(String url, String user, String password, String queryLoad) {
@@ -67,6 +69,30 @@ public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
             rs = ps.executeQuery();
         }
         return rs;
+    }
+
+
+    public Iterable<Friend> findAll(Long userId){
+        Set<Friend> entities = new HashSet<>();
+        try (Connection conn = DriverManager.getConnection(url, user, password)){
+            PreparedStatement pstmt = conn.prepareStatement("SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\" WHERE user_id = ? OR friend_id = ?");
+            {
+                pstmt.setLong(1, userId);
+                pstmt.setLong(2, userId);
+                ResultSet rs = pstmt.executeQuery();
+                {
+                    while (rs.next()) {
+                        Friend entity = queryToEntity(rs);
+                        entities.add(entity);
+                    }
+                }
+            }
+            return entities;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
