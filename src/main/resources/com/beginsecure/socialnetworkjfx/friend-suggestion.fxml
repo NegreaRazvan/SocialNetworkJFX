@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="51.3333" prefWidth="208.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.beginsecure.socialnetworkjfx.FriendSuggestion">
+   <children>
+      <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="51.3333" prefWidth="208.0" style="-fx-background-color: black;" />
+      <Label layoutX="14.0" layoutY="11.0" prefHeight="17.0" prefWidth="122.0" text="FirstName LastName" textFill="WHITE" />
+      <Label layoutX="14.0" layoutY="24.0" prefHeight="17.0" prefWidth="122.0" text="Username" textFill="#9a9a9a" />
+      <Button layoutX="139.0" layoutY="12.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="62.0" style="-fx-background-color: #5a9e96; -fx-border-radius: 15px;" text="Add" textFill="WHITE" />
+   </children>
+</AnchorPane>
