@@ -8,6 +8,7 @@ import map.domain.validators.ValidationException;
 import map.domain.validators.Validator;
 import map.repository.Repository;
 import map.repository.db.AbstractDBRepository;
+import map.repository.db.FriendRepositoryDB;
 import map.repository.db.UserRepositoryDB;
 
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class Service implements ServiceInterface{
         Iterable<Friend> friends = friendRepository.findAll();
         ArrayList<Friend> friend1 = new ArrayList<>();
         friends.forEach(x -> {
-            Friend f=new Friend(x.first(), x.second());
+            Friend f=new Friend(x.first(), x.second(),x.request());
             f.setId(x.getId());
             friend1.add(f);
         });
@@ -147,6 +148,11 @@ public class Service implements ServiceInterface{
             throw new ValidationException("User not found");
     }
 
+    public Iterable<Friend> findAllFriendsOfAUser(Long idUser) {
+        Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
+        return ((FriendRepositoryDB)friendRepository).findAll(idUser);
+    }
+
     private boolean findFriend(Friend friend) {
         for(var f: friendRepository.findAll()){
             if((f.first().equals(friend.second())&&f.second().equals(friend.first()))||(f.first().equals(friend.first())&&f.second().equals(friend.second())))
@@ -160,10 +166,10 @@ public class Service implements ServiceInterface{
     }
 
     @Override
-    public Optional<Friend> saveFriend(Long userId, Long friendId) throws ValidationException {
+    public Optional<Friend> saveFriend(Long userId, Long friendId, Boolean request) throws ValidationException {
         Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new ValidationException("First User not found"));
         Optional.ofNullable(userRepository.findOne(friendId)).orElseThrow(() -> new ValidationException("Second User not found"));
-        Friend entity = new Friend(userId, friendId);
+        Friend entity = new Friend(userId, friendId, request);
         entity.setId(maxIdFriend);
         if(isFriendLinkAlreadyInRepo(entity))
             throw new ValidationException("Friend link already exists");

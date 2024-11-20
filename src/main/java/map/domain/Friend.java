@@ -1,15 +1,18 @@
 package map.domain;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 public class Friend extends Entity<Long> {
 
 
     Tuple<Long> friendship;
-    LocalDateTime date;
+    Date date;
+    Boolean request;
 
-    public Friend(Long e1, Long e2) {
+    public Friend(Long e1, Long e2, Boolean request) {
         friendship = new Tuple<>(e1, e2);
+        this.request = request;
     }
 
     /**
@@ -27,7 +30,14 @@ public class Friend extends Entity<Long> {
         return friendship.second();
     }
 
-    public LocalDateTime date() { return date; }
+    public Date date() { return date; }
+
+    public void setDate(Date date) { this.date = date; }
+
+    public Boolean request() { return request; }
+
+    public void setRequest(Boolean request) { this.request = request; }
+
 
     @Override
     public String toString() {

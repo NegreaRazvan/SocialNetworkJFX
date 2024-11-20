@@ -68,7 +68,7 @@ public interface ServiceInterface{
      * @throws ValidationException      if the entity is not valid
      * @throws IllegalArgumentException if the given entity is null.     *
      */
-    Optional<Friend> saveFriend(Long userId, Long friendId);
+    Optional<Friend> saveFriend(Long userId, Long friendId, Boolean request);
 
     /**
      * removes the entity with the specified id

@@ -23,8 +23,9 @@ public class LogInController extends Controller {
         String password=this.password.getText();
         System.out.println("username: "+username +" password: "+password);
 
-        if(manager.isUserInDatabase(username, password))
-            MessageAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success", "You have successfully logged in");
+        if(manager.isUserInDatabase(username, password)) {;
+            manager.switchPage("main-window.fxml", "SocialNetwork", username);
+        }
         else{
             MessageAlert.showErrorMessage(null, "The password or the username was incorrect");
         }

@@ -2,6 +2,8 @@ package map.repository.file;
 
 import map.domain.Friend;
 
+import java.util.Date;
+
 public class FriendRepository extends AbstractFileRepository<Long, Friend> {
 
     public FriendRepository(String fileName) {
@@ -16,7 +18,7 @@ public class FriendRepository extends AbstractFileRepository<Long, Friend> {
     @Override
     public Friend lineToEntity(String line) {
         String[] splited = line.split(";");
-        Friend f = new Friend(Long.parseLong(splited[1]), Long.parseLong(splited[2]));
+        Friend f = new Friend(Long.parseLong(splited[1]), Long.parseLong(splited[2]),Boolean.parseBoolean(splited[3]));
         f.setId(Long.parseLong(splited[0]));
         return f;
     }
