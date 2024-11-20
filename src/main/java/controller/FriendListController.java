@@ -1,5 +1,6 @@
 package controller;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -37,6 +38,11 @@ public class FriendListController extends Controller {
             deleteButton.setStyle("-fx-background-color : #5a9e96");
         });
         friendUsername.setText(manager.getUser(friendId).getUsername());
+    }
+
+    @FXML
+    public void handleDeleteButtonAction(ActionEvent event) {
+        manager.deleteFriendFromList(userId, friendId);
     }
 
 

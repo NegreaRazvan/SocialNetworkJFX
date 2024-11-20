@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import map.domain.Friend;
 import map.domain.User;
 import map.domain.validators.UserValidator;
 import map.domain.validators.Validator;
@@ -14,8 +15,10 @@ import map.repository.db.UserRepositoryDB;
 import map.service.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class ApplicationManager {
@@ -135,7 +138,7 @@ public class ApplicationManager {
         return service.findOneUser(id).get();
     }
 
-    public List<Long> getNonFriendsOfUser(Long userId){
+    public ArrayList<Long> getNonFriendsOfUser(Long userId){
 //        Iterable<Friend> friends=service.findAllFriendsOfAUser(userId);
 //        List<Long> friendIDs= new java.util.ArrayList<>(StreamSupport
 //                .stream(friends.spliterator(), false)
@@ -150,15 +153,20 @@ public class ApplicationManager {
 //                .filter(element -> !friendIDs.contains(element))
 //                .toList();
 //        return allUserIDsThatArentFriends;
-        return StreamSupport.stream(service.findAllFriendsOfAUser(userId).spliterator(),false).toList();
+        return StreamSupport.stream(service.findAllFriendsOfAUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<Long> getFriendsOfUser(Long userId){
-        return StreamSupport.stream(service.findAllFriendsOfTheUser(userId).spliterator(),false).toList();
+    public ArrayList<Long> getFriendsOfUser(Long userId){
+        return StreamSupport.stream(service.findAllFriendsOfTheUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public void sendFriendRequest(Long userId, Long friendId){
         service.saveFriend(userId,friendId,true);
+    }
+
+    public void deleteFriendFromList(Long userId, Long friendId){
+        Optional<Friend> friend = service.findOneFriend(userId,friendId);
+        friend.ifPresent(value -> service.deleteFriend(value.getId()));
     }
 
     public void addObserverMainWindow(MainWindowController controller){

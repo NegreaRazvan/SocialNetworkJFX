@@ -161,6 +161,12 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         return ((FriendRepositoryDB)friendRepository).findAllUsersThatAreFriends(idUser);
     }
 
+    public Optional<Friend> findOneFriend(Long idUser, Long idFriend) {
+        Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
+        Optional.ofNullable(idFriend).orElseThrow(() -> new IllegalArgumentException("idFriend must be not null"));
+        return ((FriendRepositoryDB)friendRepository).findOne(idUser,idFriend);
+    }
+
     private boolean findFriend(Friend friend) {
         for(var f: friendRepository.findAll()){
             if((f.first().equals(friend.second())&&f.second().equals(friend.first()))||(f.first().equals(friend.first())&&f.second().equals(friend.second())))
@@ -196,7 +202,9 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     public Optional<Friend> deleteFriend(Long id) {
         Optional.ofNullable(id).orElseThrow(() -> new ValidationException("id must be not null"));
         calculateId();
-        return friendRepository.delete(id);
+        Optional<Friend> friend=friendRepository.delete(id);
+        notifyObservers(new FriendEntityChangeEvent(ChangeEventType.DELETE, friend.get()));
+        return friend;
     }
 
     @Override
