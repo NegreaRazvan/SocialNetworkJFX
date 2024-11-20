@@ -36,9 +36,11 @@ public class MainWindowController extends Controller {
         for (int i = 0; i < nodes.length; i++) {
             try {
                 final int j = i;
+
                 FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("friend-suggestion.fxml"));
+                nodes[i] = fxmlLoader.load();
+
                 manager.initController(fxmlLoader, nonFriends.get(j));
-                nodes[i] = FXMLLoader.load(HelloApplication.class.getResource("friend-suggestion.fxml"));
 
                 nodes[i].setOnMouseEntered(event -> {
                     nodes[j].setStyle("-fx-background-color : #0A0E3F");
