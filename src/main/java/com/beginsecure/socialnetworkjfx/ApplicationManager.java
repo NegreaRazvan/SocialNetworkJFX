@@ -1,14 +1,10 @@
 package com.beginsecure.socialnetworkjfx;
 
-import controller.Controller;
-import controller.FriendSuggestionController;
-import controller.LogInController;
-import controller.MainWindowController;
+import controller.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import map.domain.Friend;
 import map.domain.User;
 import map.domain.validators.UserValidator;
 import map.domain.validators.Validator;
@@ -19,10 +15,7 @@ import map.service.Service;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 public class ApplicationManager {
@@ -87,10 +80,17 @@ public class ApplicationManager {
         return controller;
     }
 
-    public Controller initController(FXMLLoader fxmlLoader,Long friendId) {
+    public Controller initController(FXMLLoader fxmlLoader,Long userId,Long friendId) {
         FriendSuggestionController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
-        controller.initializeFriendCard(friendId);
+        controller.initializeFriendCard(userId,friendId);
+        return controller;
+    }
+
+    public Controller initControllerFriendList(FXMLLoader fxmlLoader,Long userId,Long friendId) {
+        FriendListController controller = fxmlLoader.getController();
+        controller.setApplicationManager(this);
+        controller.initializeFriendCard(userId,friendId);
         return controller;
     }
 
@@ -136,19 +136,32 @@ public class ApplicationManager {
     }
 
     public List<Long> getNonFriendsOfUser(Long userId){
-        Iterable<Friend> friends=service.findAllFriendsOfAUser(userId);
-        List<Long> friendIDs= new java.util.ArrayList<>(StreamSupport
-                .stream(friends.spliterator(), false)
-                .flatMap(friend -> Stream.of(friend.first(), friend.second()))
-                .filter(id -> !Objects.equals(id, userId))
-                .distinct()
-                .toList());
-        friendIDs.add(userId);
-        List<Long> allUserIDsThatArentFriends= StreamSupport
-                .stream(service.findAllUsers().spliterator(),false)
-                .map(User::getId)
-                .filter(element -> !friendIDs.contains(element))
-                .toList();
-        return allUserIDsThatArentFriends;
+//        Iterable<Friend> friends=service.findAllFriendsOfAUser(userId);
+//        List<Long> friendIDs= new java.util.ArrayList<>(StreamSupport
+//                .stream(friends.spliterator(), false)
+//                .flatMap(friend -> Stream.of(friend.first(), friend.second()))
+//                .filter(id -> !Objects.equals(id, userId))
+//                .distinct()
+//                .toList());
+//        friendIDs.add(userId);
+//        List<Long> allUserIDsThatArentFriends= StreamSupport
+//                .stream(service.findAllUsers().spliterator(),false)
+//                .map(User::getId)
+//                .filter(element -> !friendIDs.contains(element))
+//                .toList();
+//        return allUserIDsThatArentFriends;
+        return StreamSupport.stream(service.findAllFriendsOfAUser(userId).spliterator(),false).toList();
+    }
+
+    public List<Long> getFriendsOfUser(Long userId){
+        return StreamSupport.stream(service.findAllFriendsOfTheUser(userId).spliterator(),false).toList();
+    }
+
+    public void sendFriendRequest(Long userId, Long friendId){
+        service.saveFriend(userId,friendId,true);
+    }
+
+    public void addObserverMainWindow(MainWindowController controller){
+        service.addObserver(controller);
     }
 }

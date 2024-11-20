@@ -72,18 +72,26 @@ public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
     }
 
 
-    public Iterable<Friend> findAll(Long userId){
-        Set<Friend> entities = new HashSet<>();
+    public Iterable<Long> findAll(Long userId){
+        Set<Long> entities = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(url, user, password)){
-            PreparedStatement pstmt = conn.prepareStatement("SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\" WHERE user_id = ? OR friend_id = ?");
+            PreparedStatement pstmt = conn.prepareStatement("SELECT id\n" +
+                    "FROM \"User\"\n" +
+                    "WHERE id!=? AND id NOT IN (SELECT U.id\n" +
+                    "    FROM \"User\" U\n" +
+                    "    INNER JOIN public.\"Friendship\" F on U.id = F.friend_id OR U.id = F.user_id\n" +
+                    "    WHERE (F.user_id = ? or F.friend_id = ?) AND U.id!=?\n" +
+                    ")");
             {
                 pstmt.setLong(1, userId);
                 pstmt.setLong(2, userId);
+                pstmt.setLong(3, userId);
+                pstmt.setLong(4, userId);
                 ResultSet rs = pstmt.executeQuery();
                 {
                     while (rs.next()) {
-                        Friend entity = queryToEntity(rs);
-                        entities.add(entity);
+                        Long id=rs.getLong("id");
+                        entities.add(id);
                     }
                 }
             }
@@ -94,6 +102,36 @@ public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
         }
         return null;
     }
+
+    public Iterable<Long> findAllUsersThatAreFriends(Long userId){
+        Set<Long> entities = new HashSet<>();
+        try (Connection conn = DriverManager.getConnection(url, user, password)){
+            PreparedStatement pstmt = conn.prepareStatement("SELECT U.id\n" +
+                    "    FROM \"User\" U\n" +
+                            "    INNER JOIN public.\"Friendship\" F on U.id = F.friend_id OR U.id = F.user_id\n" +
+                            "    WHERE (F.user_id = ? or F.friend_id = ?) AND U.id!=? AND F.request=false"
+                            );
+            {
+                pstmt.setLong(1, userId);
+                pstmt.setLong(2, userId);
+                pstmt.setLong(3, userId);
+                ResultSet rs = pstmt.executeQuery();
+                {
+                    while (rs.next()) {
+                        Long id=rs.getLong("id");
+                        entities.add(id);
+                    }
+                }
+            }
+            return entities;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 
 
     @Override

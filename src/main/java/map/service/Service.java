@@ -6,24 +6,26 @@ import map.domain.User;
 import map.domain.validators.UsernameUpperCaseException;
 import map.domain.validators.ValidationException;
 import map.domain.validators.Validator;
+import map.events.ChangeEventType;
+import map.events.FriendEntityChangeEvent;
+import map.observer.Observable;
+import map.observer.Observer;
 import map.repository.Repository;
 import map.repository.db.AbstractDBRepository;
 import map.repository.db.FriendRepositoryDB;
 import map.repository.db.UserRepositoryDB;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.StreamSupport;
 
-public class Service implements ServiceInterface{
+public class Service implements ServiceInterface, Observable<FriendEntityChangeEvent> {
 
     private Validator<User> userValidator;
     private Repository<Long,User> userRepository;
     private Repository<Long,Friend> friendRepository;
     private Long maxIdUser;
     private Long maxIdFriend;
+    private List<Observer<FriendEntityChangeEvent>> observers=new ArrayList<>();
 
     private void calculateId(){
         maxIdUser = StreamSupport.stream(userRepository.findAllIds().spliterator(),false).max(Comparator.naturalOrder()).orElse(1L);
@@ -148,9 +150,15 @@ public class Service implements ServiceInterface{
             throw new ValidationException("User not found");
     }
 
-    public Iterable<Friend> findAllFriendsOfAUser(Long idUser) {
+    ///TO DO: CHANGE THE NAME
+    public Iterable<Long> findAllFriendsOfAUser(Long idUser) {
         Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
         return ((FriendRepositoryDB)friendRepository).findAll(idUser);
+    }
+
+    public Iterable<Long> findAllFriendsOfTheUser(Long idUser) {
+        Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
+        return ((FriendRepositoryDB)friendRepository).findAllUsersThatAreFriends(idUser);
     }
 
     private boolean findFriend(Friend friend) {
@@ -178,6 +186,7 @@ public class Service implements ServiceInterface{
             return oldEntity;
         } else {
             friendRepository.save(entity);
+            notifyObservers(new FriendEntityChangeEvent(ChangeEventType.REQUEST, entity));
             calculateId();
             return Optional.empty();
         }
@@ -221,5 +230,20 @@ public class Service implements ServiceInterface{
         ArrayList<Optional<User>>users =new ArrayList<Optional<User>>();
         path.forEach(x->users.add((userRepository.findOne(Integer.toUnsignedLong(x)))));
         return users;
+    }
+
+    @Override
+    public void addObserver(Observer<FriendEntityChangeEvent> observer) {
+        observers.add(observer);
+    }
+
+    @Override
+    public void removeObserver(Observer<FriendEntityChangeEvent> observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers(FriendEntityChangeEvent event) {
+        observers.forEach(observer -> observer.update(event));
     }
 }
