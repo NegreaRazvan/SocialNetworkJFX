@@ -8,13 +8,15 @@ public class User extends Entity<Long>{
     private String password;
     private String username;
     private Boolean isAdmin;
+    private Integer numberOfNotifications;
 
-    public User(String firstName, String lastName,String password, String username, Boolean isAdmin) {
+    public User(String firstName, String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.username = username;
         this.isAdmin = isAdmin;
+        this.numberOfNotifications = numberOfNotifications;
     }
 
     /**
@@ -62,6 +64,8 @@ public class User extends Entity<Long>{
     public void setUsername(String username) { this.username = username; }
     public Boolean getIsAdmin() { return isAdmin; }
     public void setIsAdmin(Boolean isAdmin) { this.isAdmin = isAdmin; }
+    public Integer getNumberOfNotifications() { return numberOfNotifications; }
+    public void setNumberOfNotifications(Integer numberOfNotifications) { this.numberOfNotifications = numberOfNotifications; }
 
     @Override
     public String toString() {

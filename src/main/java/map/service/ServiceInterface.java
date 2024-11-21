@@ -3,6 +3,7 @@ package map.service;
 import map.domain.Friend;
 import map.domain.User;
 import map.domain.validators.ValidationException;
+import map.events.ChangeEventType;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -58,7 +59,7 @@ public interface ServiceInterface{
      * @throws ValidationException
      *             if the entity is not valid.
      */
-    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin);
+    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications);
 
     /**
      * @param userId   - the id of the user
@@ -77,7 +78,7 @@ public interface ServiceInterface{
      * @return the removed entity or null if there is no entity with the given id
      * @throws IllegalArgumentException if the given id is null.
      */
-    Optional<Friend> deleteFriend(Long id);
+    Optional<Friend> deleteFriend(Long id, ChangeEventType event);
 
     /**
      *

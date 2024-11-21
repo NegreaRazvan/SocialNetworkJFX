@@ -1,6 +1,7 @@
 package map.repository.db;
 
 import map.domain.Friend;
+import map.domain.User;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -71,28 +72,32 @@ public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
         return rs;
     }
 
+    public ResultSet entityToFindStatement(Connection con, Long userId, Long friendId) throws SQLException {
+        String query = "SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\" WHERE (user_id = ? AND friend_id = ?) OR (user_id = ? AND friend_id = ?) ";
+        ResultSet rs;
+        PreparedStatement ps = con.prepareStatement(query);{
+            ps.setLong(1, userId);
+            ps.setLong(2, friendId);
+            ps.setLong(3, friendId);
+            ps.setLong(4, userId);
+            rs = ps.executeQuery();
+        }
+        return rs;
+    }
 
-    public Iterable<Friend> findAll(Long userId){
-        Set<Friend> entities = new HashSet<>();
-        try (Connection conn = DriverManager.getConnection(url, user, password)){
-            PreparedStatement pstmt = conn.prepareStatement("SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\" WHERE user_id = ? OR friend_id = ?");
-            {
-                pstmt.setLong(1, userId);
-                pstmt.setLong(2, userId);
-                ResultSet rs = pstmt.executeQuery();
-                {
-                    while (rs.next()) {
-                        Friend entity = queryToEntity(rs);
-                        entities.add(entity);
-                    }
-                }
+    public Optional<Friend> findOne(Long userId, Long friendId) {
+        try (Connection conn = DriverManager.getConnection(url, user, password);) {
+            ResultSet rs = entityToFindStatement(conn, userId, friendId);
+            Friend entity = null;
+            if(rs.next()) {
+                entity = queryToEntity(rs);
             }
-            return entities;
+            return Optional.ofNullable(entity);
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
 

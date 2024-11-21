@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="70.9" prefWidth="386.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NotificationsAddFriendController">
+    <children>
+        <Label fx:id="nameLabel" layoutX="71.0" layoutY="16.0" prefHeight="17.0" prefWidth="122.0" text="FirstName LastName" textFill="WHITE" />
+        <Label fx:id="usernameLabel" layoutX="71.0" layoutY="37.0" prefHeight="17.0" prefWidth="122.0" text="Username" textFill="#9a9a9a" />
+        <Button fx:id="declineFriendButton" layoutX="318.0" layoutY="21.0" mnemonicParsing="false" onAction="#handleDeleteButtonAction" prefHeight="23.0" prefWidth="54.0" style="-fx-background-color: #5a9e96;" text="Reject" textFill="WHITE" />
+        <ImageView fitHeight="33.0" fitWidth="51.0" layoutX="14.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+                <Image url="@images/Male%20User.png" />
+            </image>
+        </ImageView>
+      <Button fx:id="addFriendButton" onAction="#handleAddFriendButtonAction" layoutX="247.0" layoutY="21.0" mnemonicParsing="false" prefHeight="23.0" prefWidth="54.0" style="-fx-background-color: #5a9e96;" text="Accept" textFill="WHITE" />
+    </children>
+</AnchorPane>

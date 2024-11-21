@@ -7,13 +7,14 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
+<?import java.net.URL?>
 <AnchorPane prefHeight="730.0" prefWidth="1036.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
    <children>
       <Pane layoutX="77.0" prefHeight="754.0" prefWidth="246.0" style="-fx-background-color: black;">
          <children>
             <VBox layoutY="67.0" prefHeight="556.0" prefWidth="242.0" spacing="5">
                <children>
-                  <Button alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Home" textFill="WHITE">
+                  <Button fx:id="homeButton" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#handleHomeButton" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Home" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -27,7 +28,7 @@
                            </image></ImageView>
                      </graphic>
                   </Button>
-                  <Button alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Explore" textFill="WHITE">
+                  <Button fx:id="exploreButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Explore" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -42,7 +43,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="57.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Notifications" textFill="WHITE">
+                  <Button fx:id="notificationsButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="57.0" mnemonicParsing="false" onAction="#handleNotificationButton" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Notifications" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -57,7 +58,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="104.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Messages" textFill="WHITE">
+                  <Button fx:id="messagesButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="104.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Messages" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -72,7 +73,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="151.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Bookmarks" textFill="WHITE">
+                  <Button fx:id="bookmarksButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="151.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Bookmarks" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -87,7 +88,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="198.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Profile" textFill="WHITE">
+                  <Button fx:id="profileButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="198.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Profile" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -102,6 +103,21 @@
                         </ImageView>
                      </graphic>
                   </Button>
+                  <Button fx:id="friendsButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="270.0" mnemonicParsing="false" onAction="#handleFriendsButton" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black; -fx-border-radius: 15px;" text="Friends" textFill="WHITE">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <graphic>
+                        <ImageView fitHeight="30.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/Customer.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
                </children>
             </VBox>
             <VBox layoutY="621.0" prefHeight="133.0" prefWidth="246.0">
@@ -110,14 +126,14 @@
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
                         <Label fx:id="usernameLabel" alignment="BASELINE_CENTER" prefHeight="37.0" prefWidth="132.0" text="Username" textFill="#8d8d8d" />
-                        <Button onAction="#handleSignout" mnemonicParsing="false" prefHeight="37.0" prefWidth="77.0" style="-fx-border-radius: 15px;" text="Log out" />
+                        <Button mnemonicParsing="false" onAction="#handleSignout" prefHeight="37.0" prefWidth="77.0" style="-fx-border-radius: 15px;" text="Log out" />
                      </children></HBox>
                </children></VBox>
          </children>
       </Pane>
       <Pane layoutX="726.0" prefHeight="754.0" prefWidth="246.0" style="-fx-border-radius: 4em; -fx-background-color: black;">
          <children>
-            <TextField layoutX="20.0" layoutY="14.0" prefHeight="32.0" prefWidth="208.0" promptText="Search" style="-fx-background-color: #3f3f3f; -fx-border-radius: 2em;">
+            <TextField fx:id="searchField" layoutX="20.0" layoutY="14.0" prefHeight="32.0" prefWidth="208.0" promptText="Search" style="-fx-background-color: #3f3f3f; -fx-border-radius: 2em;">
                <font>
                   <Font size="15.0" />
                </font></TextField>
@@ -154,5 +170,31 @@
             </Button>
          </children>
       </HBox>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <ImageView fx:id="redDotImage" fitHeight="26.0" fitWidth="24.0" layoutX="104.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/Red%20Circle.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="NotifCountLabel" layoutX="112.0" layoutY="183.0" prefHeight="17.0" prefWidth="32.0" text="0" textFill="WHITE" />
+         </children></AnchorPane>
+      <ScrollPane fx:id="scroller" layoutX="325.0" layoutY="74.0" prefHeight="708.0" prefWidth="387.0" style="-fx-background-color: black; -fx-border-color: black; -fx-background: black;">
+         <content>
+            <VBox fx:id="friendsScrollPane" prefHeight="709.0" prefWidth="386.0">
+               <children>
+                  <AnchorPane prefHeight="70.9" prefWidth="386.0" />
+                  <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="70.9" prefWidth="70.9" />
+                  <AnchorPane layoutX="10.0" layoutY="81.0" prefHeight="70.9" prefWidth="70.9" />
+                  <AnchorPane layoutX="10.0" layoutY="152.0" prefHeight="70.9" prefWidth="70.9" />
+                  <AnchorPane layoutX="10.0" layoutY="223.0" prefHeight="70.9" prefWidth="70.9" />
+                  <AnchorPane layoutX="10.0" layoutY="294.0" prefHeight="70.9" prefWidth="70.9" />
+                  <AnchorPane layoutX="10.0" layoutY="365.0" prefHeight="70.9" prefWidth="70.9" />
+                  <AnchorPane layoutX="10.0" layoutY="436.0" prefHeight="70.9" prefWidth="70.9" />
+                  <AnchorPane layoutX="10.0" layoutY="507.0" prefHeight="70.9" prefWidth="70.9" />
+               </children>
+            </VBox>
+         </content>
+      </ScrollPane>
    </children>
 </AnchorPane>
