@@ -21,7 +21,7 @@ public class UserRepository extends AbstractFileRepository<Long, User>{
         if("true".equals(splited[5]))
             isAdmin = true;
         else isAdmin = false;
-        User u = new User(splited[1], splited[2],splited[3],splited[4],isAdmin);
+        User u = new User(splited[1], splited[2],splited[3],splited[4],isAdmin, 0);
         u.setId(Long.parseLong(splited[0]));
         return u;
     }

@@ -9,6 +9,7 @@ import map.domain.Friend;
 import map.domain.User;
 import map.domain.validators.UserValidator;
 import map.domain.validators.Validator;
+import map.events.ChangeEventType;
 import map.repository.Repository;
 import map.repository.db.FriendRepositoryDB;
 import map.repository.db.UserRepositoryDB;
@@ -29,7 +30,7 @@ public class ApplicationManager {
         String url = "jdbc:postgresql://192.168.1.51:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
-        String queryLoad="SELECT id, first_name, last_name, password, username, admin FROM public.\"User\"";
+        String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
         String queryLoadF="SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\"";
 
         Repository repository = new UserRepositoryDB(url,user,password, queryLoad);
@@ -75,25 +76,32 @@ public class ApplicationManager {
         return controller;
     }
 
-    protected Controller initController(FXMLLoader fxmlLoader,String username) {
+    protected Controller initController(FXMLLoader fxmlLoader,User user) {
         MainWindowController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
-        controller.setUsername(username);
+        controller.setUser(user);
         controller.initializeMainWindow();
         return controller;
     }
 
-    public Controller initController(FXMLLoader fxmlLoader,Long userId,Long friendId) {
+    public Controller initController(FXMLLoader fxmlLoader,User user,User friend) {
         FriendSuggestionController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
-        controller.initializeFriendCard(userId,friendId);
+        controller.initializeFriendCard(user, friend);
         return controller;
     }
 
-    public Controller initControllerFriendList(FXMLLoader fxmlLoader,Long userId,Long friendId) {
+    public Controller initControllerFriendList(FXMLLoader fxmlLoader, User user, User friend) {
         FriendListController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
-        controller.initializeFriendCard(userId,friendId);
+        controller.initializeFriendCard(user, friend);
+        return controller;
+    }
+
+    public Controller initControllerNotifications(FXMLLoader fxmlLoader, User user, User friend) {
+        NotificationsAddFriendController controller = fxmlLoader.getController();
+        controller.setApplicationManager(this);
+        controller.initializeFriendCard(user, friend);
         return controller;
     }
 
@@ -103,10 +111,10 @@ public class ApplicationManager {
         initController(fxmlLoader);
     }
 
-    public void switchPage(String page, String title, String username){
+    public void switchPage(String page, String title, User user){
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
         initNewView(fxmlLoader, title);
-        initController(fxmlLoader, username);
+        initController(fxmlLoader, user);
     }
 
 
@@ -125,9 +133,9 @@ public class ApplicationManager {
     public void updateUser(String username, String password){
         Optional<User> user = service.findOneUser(username);
         if(user.isPresent())
-            service.updateUser(user.get().getId(), user.get().getFirstName(),user.get().getLastName(),password,username,false);
+            service.updateUser(user.get().getId(), user.get().getFirstName(),user.get().getLastName(),password,username,false, 0);
         else
-            service.updateUser(null,null,null,password,username,false);
+            service.updateUser(null,null,null,password,username,false, 0);
     }
 
     public User getUser(String username){
@@ -138,7 +146,7 @@ public class ApplicationManager {
         return service.findOneUser(id).get();
     }
 
-    public ArrayList<Long> getNonFriendsOfUser(Long userId){
+    public ArrayList<User> getNonFriendsOfUser(Long userId){
 //        Iterable<Friend> friends=service.findAllFriendsOfAUser(userId);
 //        List<Long> friendIDs= new java.util.ArrayList<>(StreamSupport
 //                .stream(friends.spliterator(), false)
@@ -156,9 +164,13 @@ public class ApplicationManager {
         return StreamSupport.stream(service.findAllFriendsOfAUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public ArrayList<Long> getFriendsOfUser(Long userId){
+    public ArrayList<User> getFriendsOfUser(Long userId){
         return StreamSupport.stream(service.findAllFriendsOfTheUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
+    public ArrayList<User> getFriendRequestsOfUser(Long userId){
+        return StreamSupport.stream(service.findAllFriendRequestsOfTheUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
+    }
+
 
     public void sendFriendRequest(Long userId, Long friendId){
         service.saveFriend(userId,friendId,true);
@@ -166,10 +178,23 @@ public class ApplicationManager {
 
     public void deleteFriendFromList(Long userId, Long friendId){
         Optional<Friend> friend = service.findOneFriend(userId,friendId);
-        friend.ifPresent(value -> service.deleteFriend(value.getId()));
+        friend.ifPresent(value -> service.deleteFriend(value.getId(), ChangeEventType.DELETE));
+    }
+
+    public void declineFriendRequest(Long userId, Long friendId){
+        Optional<Friend> friend = service.findOneFriend(userId,friendId);
+        friend.ifPresent(value -> service.deleteFriend(value.getId(), ChangeEventType.DECLINE));
     }
 
     public void addObserverMainWindow(MainWindowController controller){
         service.addObserver(controller);
+    }
+
+    public void acceptFriendRequest(Long userId, Long friendId){
+        service.acceptFriend(userId,friendId);
+    }
+
+    public void updateNotifications(User user,Integer numberOfNotifications){
+        service.updateUser(user.getId(),user.getFirstName(),user.getLastName(),user.getPassword(),user.getUsername(),false,numberOfNotifications);
     }
 }

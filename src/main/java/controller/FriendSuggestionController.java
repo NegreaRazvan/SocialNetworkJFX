@@ -4,10 +4,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import map.domain.User;
 
 public class FriendSuggestionController extends Controller {
-    Long friendId;
-    Long userId;
+    User friend;
+    User user;
     @FXML
     Label friendName;
     @FXML
@@ -15,30 +16,30 @@ public class FriendSuggestionController extends Controller {
     @FXML
     Button friendSuggestionButton;
 
-    public void setFriendId(Long friendId) {
-        this.friendId = friendId;
+    public void setFriend(User friend) {
+        this.friend = friend;
     }
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
 
-    public void initializeFriendCard(Long userId,Long friendId) {
-        setUserId(userId);
-        setFriendId(friendId);
-        friendName.setText(manager.getUser(friendId).getLastName() + " " + manager.getUser(friendId).getFirstName());
+    public void initializeFriendCard(User user, User friend) {
+        setFriend(friend);
+        setUser(user);
+        friendName.setText(friend.getLastName() + " " + friend.getFirstName());
         friendSuggestionButton.setOnMouseEntered(event -> {
             friendSuggestionButton.setStyle("-fx-background-color : #7EF4CC");
         });
         friendSuggestionButton.setOnMouseExited(event -> {
             friendSuggestionButton.setStyle("-fx-background-color : #5a9e96");
         });
-        friendUsername.setText(manager.getUser(friendId).getUsername());
+        friendUsername.setText(friend.getUsername());
     }
 
     @FXML
     public void handleButtonAction(ActionEvent event) {
-        manager.sendFriendRequest(userId,friendId);
+        manager.sendFriendRequest(user.getId(),friend.getId());
 
     }
 }

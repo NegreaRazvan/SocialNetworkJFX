@@ -12,6 +12,7 @@ import map.domain.validators.ValidationException;
 import messageAlert.MessageAlert;
 
 public class SignInController extends Controller {
+
     @FXML
     private TextField username;
     @FXML

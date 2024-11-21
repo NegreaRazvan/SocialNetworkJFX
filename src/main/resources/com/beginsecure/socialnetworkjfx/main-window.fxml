@@ -7,13 +7,14 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
+<?import java.net.URL?>
 <AnchorPane prefHeight="730.0" prefWidth="1036.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
    <children>
       <Pane layoutX="77.0" prefHeight="754.0" prefWidth="246.0" style="-fx-background-color: black;">
          <children>
             <VBox layoutY="67.0" prefHeight="556.0" prefWidth="242.0" spacing="5">
                <children>
-                  <Button fx:id="homeButton" onAction="#handleHomeButton" alignment="BASELINE_LEFT" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Home" textFill="WHITE">
+                  <Button fx:id="homeButton" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#handleHomeButton" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Home" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -42,7 +43,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="notificationsButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="57.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Notifications" textFill="WHITE">
+                  <Button fx:id="notificationsButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="57.0" mnemonicParsing="false" onAction="#handleNotificationButton" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Notifications" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -102,7 +103,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="friendsButton" onAction="#handleFriendsButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="270.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black; -fx-border-radius: 15px;" text="Friends" textFill="WHITE">
+                  <Button fx:id="friendsButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="270.0" mnemonicParsing="false" onAction="#handleFriendsButton" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black; -fx-border-radius: 15px;" text="Friends" textFill="WHITE">
                      <font>
                         <Font size="18.0" />
                      </font>
@@ -132,7 +133,7 @@
       </Pane>
       <Pane layoutX="726.0" prefHeight="754.0" prefWidth="246.0" style="-fx-border-radius: 4em; -fx-background-color: black;">
          <children>
-            <TextField layoutX="20.0" layoutY="14.0" prefHeight="32.0" prefWidth="208.0" promptText="Search" style="-fx-background-color: #3f3f3f; -fx-border-radius: 2em;">
+            <TextField fx:id="searchField" layoutX="20.0" layoutY="14.0" prefHeight="32.0" prefWidth="208.0" promptText="Search" style="-fx-background-color: #3f3f3f; -fx-border-radius: 2em;">
                <font>
                   <Font size="15.0" />
                </font></TextField>
@@ -169,8 +170,16 @@
             </Button>
          </children>
       </HBox>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0" />
-      <ScrollPane layoutX="325.0" layoutY="74.0" prefHeight="708.0" prefWidth="387.0" style="-fx-background-color: black; -fx-border-color: black; -fx-background: black;">
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <ImageView fx:id="redDotImage" fitHeight="26.0" fitWidth="24.0" layoutX="104.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@images/Red%20Circle.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="NotifCountLabel" layoutX="112.0" layoutY="183.0" prefHeight="17.0" prefWidth="32.0" text="0" textFill="WHITE" />
+         </children></AnchorPane>
+      <ScrollPane fx:id="scroller" layoutX="325.0" layoutY="74.0" prefHeight="708.0" prefWidth="387.0" style="-fx-background-color: black; -fx-border-color: black; -fx-background: black;">
          <content>
             <VBox fx:id="friendsScrollPane" prefHeight="709.0" prefWidth="386.0">
                <children>
