@@ -211,7 +211,7 @@ public class ApplicationManager {
         service.updateUser(user.getId(),user.getFirstName(),user.getLastName(),user.getPassword(),user.getUsername(),false,numberOfNotifications);
     }
 
-    public void closeStage(MainWindowController controller){
-
+    public Friend getFriendRequest(Long userId, Long friendId){
+        return service.findOneFriend(userId,friendId).get();
     }
 }

@@ -7,7 +7,7 @@ public class Friend extends Entity<Long> {
 
 
     Tuple<Long> friendship;
-    Date date;
+    LocalDateTime date;
     Boolean request;
 
     public Friend(Long e1, Long e2, Boolean request) {
@@ -30,9 +30,10 @@ public class Friend extends Entity<Long> {
         return friendship.second();
     }
 
-    public Date date() { return date; }
+    public LocalDateTime date() { return date; }
 
-    public void setDate(Date date) { this.date = date; }
+    public void setDate(LocalDateTime date) { this.date = date; }
+
 
     public Boolean request() { return request; }
 

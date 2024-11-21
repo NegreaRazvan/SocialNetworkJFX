@@ -21,10 +21,10 @@ public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
         Long userId = rs.getLong("user_id");
         Long friendId = rs.getLong("friend_id");
         Boolean request =rs.getBoolean("request");
-        Optional<Date> date = Optional.ofNullable(rs.getDate("date"));
+        Optional<Timestamp> date = Optional.ofNullable(rs.getTimestamp("date"));
         Friend friend = new Friend(userId, friendId, request);
         if(date.isPresent())
-            friend.setDate(date.get());
+            friend.setDate(date.get().toLocalDateTime());
         else
             friend.setDate(null);
         friend.setId(id);
@@ -47,7 +47,7 @@ public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
             ps.setLong(1, entity.first());
             ps.setLong(2, entity.second());
             ps.setBoolean(3, entity.request());
-            ps.setDate(4, Date.valueOf(LocalDate.now()));
+            ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
         }
         return ps;
     }
@@ -120,7 +120,7 @@ public class FriendRepositoryDB extends AbstractDBRepository<Long, Friend> {
                 ps.setLong(1, entity.first());
                 ps.setLong(2, entity.second());
                 ps.setBoolean(3, entity.request());
-                ps.setDate(4, Date.valueOf(LocalDate.now()));
+                ps.setTimestamp(4, Timestamp.valueOf(LocalDateTime.now()));
                 ps.setLong(5, entity.getId());
             }
         }
