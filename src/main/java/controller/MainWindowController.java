@@ -161,53 +161,73 @@ public class MainWindowController extends Controller implements Observer<FriendE
     @FXML
     public void handleSignout(ActionEvent event) {
         manager.updateNotifications(user,numberOfNotifications);
-        manager.switchPage("login.fxml", "Log In");
+
     }
 
     @Override
     public void update(FriendEntityChangeEvent event) {
+//        if (event.getType().equals(ChangeEventType.REQUEST)) {
+//            if (Objects.equals(event.getFriend().first(), user.getId())) {
+//                nonFriendsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().second()));
+//            }
+//            else {
+//            }
+//            updateFriendSuggestions(nonFriendsOfUser);
+        //}
+//        if (event.getType().equals(ChangeEventType.DELETE)) {
+//            if (Objects.equals(event.getFriend().first(), user.getId())) {
+//                friendsOfUser.removeIf(user -> user.getId().equals(event.getFriend().second()));
+//                nonFriendsOfUser.add(manager.getUser(event.getFriend().second()));
+//            } else {
+//                friendsOfUser.removeIf(user -> user.getId().equals(event.getFriend().first()));
+//                nonFriendsOfUser.add(manager.getUser(event.getFriend().first()));
+//            }
+//            handleFriendsButton(null);
+//            updateFriendSuggestions(nonFriendsOfUser);
+//        }
+//        if(event.getType().equals(ChangeEventType.ADD)) {
+//            if(Objects.equals(event.getFriend().first(), user.getId())) {
+//                friendsOfUser.add(manager.getUser(event.getFriend().second()));
+//            }
+//            else {
+//                friendsOfUser.add(manager.getUser(event.getFriend().first()));
+//                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().first()));
+//            }
+//            handleFriendsButton(null);
+//        }
+//        if(event.getType().equals(ChangeEventType.DECLINE)) {
+//            if(Objects.equals(event.getFriend().first(), user.getId())) {
+//                nonFriendsOfUser.add(manager.getUser(event.getFriend().second()));
+//                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().second()));
+//            }
+//            else {
+//                nonFriendsOfUser.add(manager.getUser(event.getFriend().first()));
+//                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().first()));
+//            }
+//            handleFriendsButton(null);
+//            updateFriendSuggestions(nonFriendsOfUser);
+//        }
+        nonFriendsOfUser=manager.getNonFriendsOfUser(user.getId());
+        friendsOfUser = manager.getFriendsOfUser(user.getId());
+        notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
         if (event.getType().equals(ChangeEventType.REQUEST)) {
-            if (Objects.equals(event.getFriend().first(), user.getId())) {
-                nonFriendsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().second()));
-            }
-            else {
-                nonFriendsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().first()));
-            }
             updateFriendSuggestions(nonFriendsOfUser);
-        }
-        if (event.getType().equals(ChangeEventType.DELETE)) {
-            if (Objects.equals(event.getFriend().first(), user.getId())) {
-                friendsOfUser.removeIf(user -> user.getId().equals(event.getFriend().second()));
-                nonFriendsOfUser.add(manager.getUser(event.getFriend().second()));
-            } else {
-                friendsOfUser.removeIf(user -> user.getId().equals(event.getFriend().first()));
-                nonFriendsOfUser.add(manager.getUser(event.getFriend().first()));
+            if (Objects.equals(event.getFriend().second(), user.getId())) {
+                numberOfNotifications++;
+                redDotImage.setVisible(true);
+                NotifCountLabel.setVisible(true);
+                NotifCountLabel.setText(numberOfNotifications + "");
             }
-            handleFriendsButton(null);
+        }
+        if(event.getType().equals(ChangeEventType.DECLINE))
+            if(Objects.equals(event.getFriend().second(), user.getId()))
+                handleFriendListNotifications(notificationsOfUser);
+
+        if(event.getType().equals(ChangeEventType.ADD))
+            handleFriendList(friendsOfUser);
+        if(event.getType().equals(ChangeEventType.DELETE)) {
             updateFriendSuggestions(nonFriendsOfUser);
-        }
-        if(event.getType().equals(ChangeEventType.ADD)) {
-            if(Objects.equals(event.getFriend().first(), user.getId())) {
-                friendsOfUser.add(manager.getUser(event.getFriend().second()));
-                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().second()));
-            }
-            else {
-                friendsOfUser.add(manager.getUser(event.getFriend().first()));
-                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().first()));
-            }
-            handleNotificationButton(null);
-        }
-        if(event.getType().equals(ChangeEventType.DECLINE)) {
-            if(Objects.equals(event.getFriend().first(), user.getId())) {
-                nonFriendsOfUser.add(manager.getUser(event.getFriend().second()));
-                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().second()));
-            }
-            else {
-                nonFriendsOfUser.add(manager.getUser(event.getFriend().first()));
-                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().first()));
-            }
-            handleNotificationButton(null);
-            updateFriendSuggestions(nonFriendsOfUser);
+            handleFriendList(friendsOfUser);
         }
     }
 

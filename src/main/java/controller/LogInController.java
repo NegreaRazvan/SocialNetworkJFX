@@ -11,6 +11,8 @@ import javafx.stage.Stage;
 import map.domain.validators.ValidationException;
 import messageAlert.MessageAlert;
 
+import java.io.IOException;
+
 public class LogInController extends Controller {
     @FXML
     private TextField username;
@@ -18,13 +20,13 @@ public class LogInController extends Controller {
     private TextField password;
 
     @FXML
-    private void handleLogInButton(ActionEvent event) {
+    private void handleLogInButton(ActionEvent event) throws IOException {
         String username=this.username.getText();
         String password=this.password.getText();
         System.out.println("username: "+username +" password: "+password);
 
         if(manager.isUserInDatabase(username, password)) {;
-            manager.switchPage("main-window.fxml", "SocialNetwork", manager.getUser(username));
+            manager.makeNewPage("main-window.fxml", "SocialNetwork", manager.getUser(username));
         }
         else{
             MessageAlert.showErrorMessage(null, "The password or the username was incorrect");

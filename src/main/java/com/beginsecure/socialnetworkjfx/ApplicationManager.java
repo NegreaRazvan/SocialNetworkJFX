@@ -111,6 +111,19 @@ public class ApplicationManager {
         initController(fxmlLoader);
     }
 
+    public void makeNewPage(String page, String title, User user) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
+        Pane root=fxmlLoader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        MainWindowController controller = fxmlLoader.getController();
+        controller.setApplicationManager(this);
+        controller.setUser(user);
+        controller.initializeMainWindow();
+        stage.setTitle(title);
+        stage.show();
+    }
+
     public void switchPage(String page, String title, User user){
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
         initNewView(fxmlLoader, title);
@@ -196,5 +209,9 @@ public class ApplicationManager {
 
     public void updateNotifications(User user,Integer numberOfNotifications){
         service.updateUser(user.getId(),user.getFirstName(),user.getLastName(),user.getPassword(),user.getUsername(),false,numberOfNotifications);
+    }
+
+    public void closeStage(MainWindowController controller){
+
     }
 }
