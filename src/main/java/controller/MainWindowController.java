@@ -19,6 +19,7 @@ import map.observer.Observer;
 
 import javax.swing.*;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class MainWindowController extends Controller implements Observer<FriendEntityChangeEvent> {
+    User user;
     Integer numberOfNotifications;
     ArrayList<User> friendsOfUser;
     ArrayList<User> nonFriendsOfUser;
@@ -35,8 +37,6 @@ public class MainWindowController extends Controller implements Observer<FriendE
     Label NotifCountLabel;
     @FXML
     ImageView redDotImage;
-    @FXML
-    User user;
     @FXML
     Label usernameLabel;
     @FXML
@@ -69,46 +69,43 @@ public class MainWindowController extends Controller implements Observer<FriendE
         this.user = user;
     }
 
-    public void updateFriendSuggestions(List<User> friends) {
-        Integer length = 3;
-        friendsVBox.getChildren().clear();
-        Node[] nodes = new Node[3];
-        if (friends.size() < 3) {
-            length = friends.size();
-        }
-        for (int i = 0; i < length; i++) {
-            try {
-                final int j = i;
-
-                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("friend-suggestion.fxml"));
-                nodes[i] = fxmlLoader.load();
-
-                manager.initController(fxmlLoader, user, friends.get(j));
-
-                friendsVBox.getChildren().add(nodes[i]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    public void initObjectController(User friend,FXMLLoader fxmlLoader, ControllerType controllerType) {
+        switch (controllerType) {
+            case FRIENDSUGGESTION -> manager.initController(fxmlLoader, user, friend);
+            case FRIENDLIST -> manager.initControllerFriendList(fxmlLoader, user, friend);
+            case NOTIFICATION -> manager.initControllerNotifications(fxmlLoader, user, friend);
         }
     }
 
-    public void initializeMainWindow() {
+    public void initObject(User friend,VBox container, String fxmlFile, ControllerType controllerType) {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlFile));
+        Node node = null;
+        try {
+            node = fxmlLoader.load();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        initObjectController(friend,fxmlLoader,controllerType);
+        container.getChildren().add(node);
+    }
+
+    public void updateContainer(List<User> friends, VBox container, Integer numberOfObjects, String fxmlFile, ControllerType controllerType) {
+        Integer length = numberOfObjects;
+        container.getChildren().clear();
+        if (friends.size() < numberOfObjects)
+            length = friends.size();
+        for (int i = 0; i < length; i++)
+            initObject(friends.get(i), container, fxmlFile, controllerType);
+    }
+
+    public void setCss(){
+        ///hide the scrollbar
         scroller.getScene().getStylesheets().add(HelloApplication.class.getResource("css/style.css").toExternalForm());
+        ///hide the initial notifcation image
         redDotImage.setVisible(false);
         NotifCountLabel.setVisible(false);
-        searchField.textProperty().addListener(o -> handleFIlter());
-        nonFriendsOfUser = manager.getNonFriendsOfUser(user.getId());
-        friendsOfUser = manager.getFriendsOfUser(user.getId());
-        notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
-        if(notificationsOfUser.size() > user.getNumberOfNotifications())
-            numberOfNotifications = notificationsOfUser.size()-user.getNumberOfNotifications();
-        else
-            numberOfNotifications = 0;
-        if(numberOfNotifications > 0){
-            redDotImage.setVisible(true);
-            NotifCountLabel.setVisible(true);
-            NotifCountLabel.setText(numberOfNotifications + "");
-        }
+        ///hove
         homeButton.setOnMouseEntered(event -> {
             homeButton.setStyle("-fx-background-color : #808080");
         });
@@ -152,16 +149,39 @@ public class MainWindowController extends Controller implements Observer<FriendE
             friendsButton.setStyle("-fx-background-color : black");
         });
         friendsScrollPane.getChildren().clear();
-        manager.addObserverMainWindow(this);
+        ///set the name and the username of the user curently logged in
         usernameLabel.setText(user.getUsername());
         nameLabel.setText(user.getLastName() + " " + user.getFirstName());
-        updateFriendSuggestions(nonFriendsOfUser);
+    }
+
+    public void initializeMainWindow() {
+        setCss();
+        ///makes it so when I search it filters the friend suggestion list
+        searchField.textProperty().addListener(o -> handleFIlter());
+        ///gets all the important lists that are going to be used
+        nonFriendsOfUser = manager.getNonFriendsOfUser(user.getId());
+        friendsOfUser = manager.getFriendsOfUser(user.getId());
+        notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
+        ///number of notifications
+        if(notificationsOfUser.size() > user.getNumberOfNotifications())
+            numberOfNotifications = notificationsOfUser.size()-user.getNumberOfNotifications();
+        else
+            numberOfNotifications = 0;
+        ///if user received notifications while offline, show them
+        if(numberOfNotifications > 0){
+            redDotImage.setVisible(true);
+            NotifCountLabel.setVisible(true);
+            NotifCountLabel.setText(numberOfNotifications + "");
+        }
+        ///make this window an observer of the service
+        manager.addObserverMainWindow(this);
+        ///updates the friend suggestion Window
+        updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
     }
 
     @FXML
     public void handleSignout(ActionEvent event) {
         manager.updateNotifications(user,numberOfNotifications);
-
     }
 
     @Override
@@ -211,7 +231,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
         friendsOfUser = manager.getFriendsOfUser(user.getId());
         notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
         if (event.getType().equals(ChangeEventType.REQUEST)) {
-            updateFriendSuggestions(nonFriendsOfUser);
+            updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
             if (Objects.equals(event.getFriend().second(), user.getId())) {
                 numberOfNotifications++;
                 redDotImage.setVisible(true);
@@ -221,73 +241,28 @@ public class MainWindowController extends Controller implements Observer<FriendE
         }
         if(event.getType().equals(ChangeEventType.DECLINE))
             if(Objects.equals(event.getFriend().second(), user.getId()))
-                handleFriendListNotifications(notificationsOfUser);
+                updateContainer(notificationsOfUser, friendsScrollPane, 9, "notifications.fxml", ControllerType.NOTIFICATION);
 
         if(event.getType().equals(ChangeEventType.ADD))
-            handleFriendList(friendsOfUser);
+            updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
         if(event.getType().equals(ChangeEventType.DELETE)) {
-            updateFriendSuggestions(nonFriendsOfUser);
-            handleFriendList(friendsOfUser);
+            updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
+            updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
         }
     }
 
-    public void handleFriendList(List<User> friends) {
-        Integer length = 9;
-        friendsScrollPane.getChildren().clear();
-        Node[] nodes = new Node[9];
-        if (friends.size() < 9) {
-            length = friends.size();
-        }
-        for (int i = 0; i < length; i++) {
-            try {
-                final int j = i;
-
-                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("friend-delete.fxml"));
-                nodes[i] = fxmlLoader.load();
-
-                manager.initControllerFriendList(fxmlLoader, user, friends.get(j));
-
-                friendsScrollPane.getChildren().add(nodes[i]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void handleFriendListNotifications(List<User> friends) {
-        Integer length = 9;
-        friendsScrollPane.getChildren().clear();
-        Node[] nodes = new Node[9];
-        if (friends.size() < 9) {
-            length = friends.size();
-        }
-        for (int i = 0; i < length; i++) {
-            try {
-                final int j = i;
-
-                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("notifications.fxml"));
-                nodes[i] = fxmlLoader.load();
-
-                manager.initControllerNotifications(fxmlLoader, user, friends.get(j));
-
-                friendsScrollPane.getChildren().add(nodes[i]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     @FXML
     public void handleNotificationButton(ActionEvent event) {
         redDotImage.setVisible(false);
         NotifCountLabel.setVisible(false);
         numberOfNotifications=0;
-        handleFriendListNotifications(notificationsOfUser);
+        updateContainer(notificationsOfUser, friendsScrollPane, 9, "notifications.fxml", ControllerType.NOTIFICATION);
     }
 
     @FXML
     public void handleFriendsButton(ActionEvent event) {
-        handleFriendList(friendsOfUser);
+        updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
     }
 
     @FXML
@@ -301,6 +276,6 @@ public class MainWindowController extends Controller implements Observer<FriendE
                 .stream()
                 .filter(p1)
                 .toList();
-        updateFriendSuggestions(filteredList);
+        updateContainer(filteredList, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
     }
 }

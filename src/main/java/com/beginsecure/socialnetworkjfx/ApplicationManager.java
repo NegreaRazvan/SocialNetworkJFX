@@ -27,7 +27,7 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://192.168.1.51:3580/Users";
+        String url = "jdbc:postgresql://localhost:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
@@ -76,7 +76,7 @@ public class ApplicationManager {
         return controller;
     }
 
-    protected Controller initController(FXMLLoader fxmlLoader,User user) {
+    protected Controller initController(FXMLLoader fxmlLoader, User user) {
         MainWindowController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
         controller.setUser(user);
@@ -84,7 +84,7 @@ public class ApplicationManager {
         return controller;
     }
 
-    public Controller initController(FXMLLoader fxmlLoader,User user,User friend) {
+    public Controller initController(FXMLLoader fxmlLoader, User user, User friend) {
         FriendSuggestionController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
         controller.initializeFriendCard(user, friend);
