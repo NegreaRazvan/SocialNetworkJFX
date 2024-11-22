@@ -11,7 +11,9 @@ public class HelloApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        ApplicationManager applicationManager = new ApplicationManager(stage);
+        ApplicationManager applicationManager = new ApplicationManager();
+        applicationManager.startApplication(stage);
+        stage.show();
     }
 
     public static void main(String[] args) {

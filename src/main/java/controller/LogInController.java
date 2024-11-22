@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import map.domain.validators.ValidationException;
+import map.events.ChangeEventType;
 import messageAlert.MessageAlert;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public class LogInController extends Controller {
         System.out.println("username: "+username +" password: "+password);
 
         if(manager.isUserInDatabase(username, password)) {;
-            manager.makeNewPage("main-window.fxml", "SocialNetwork", manager.getUser(username));
+            manager.switchPage("main-window.fxml", "SocialNetwork", manager.getUser(username), null, ControllerType.MAINWINDOW);
         }
         else{
             MessageAlert.showErrorMessage(null, "The password or the username was incorrect");
@@ -35,12 +36,12 @@ public class LogInController extends Controller {
 
     @FXML
     private void handleSignUpHyperLink(ActionEvent event) {
-        manager.switchPage("sign-up.fxml","Sign up");
+        manager.switchPage("sign-up.fxml","Sign up",null,null,null);
     }
 
     @FXML
     private void handleForgotHyperLink(ActionEvent event) {
-        manager.switchPage("forgot-password.fxml","Forgot password");
+        manager.switchPage("forgot-password.fxml","Forgot password",null,null,null);
     }
 
 

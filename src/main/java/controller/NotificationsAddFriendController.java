@@ -5,8 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import map.domain.User;
-
-import java.time.LocalDateTime;
+import map.events.ChangeEventType;
 
 public class NotificationsAddFriendController extends Controller{
     User user;
@@ -30,7 +29,7 @@ public class NotificationsAddFriendController extends Controller{
     }
 
 
-    public void initializeFriendCard(User user,User friend) {
+    public void initializeWindow(User user, User friend) {
         setUser(user);
         setFriend(friend);
         dateLabel.setText(manager.getFriendRequest(user.getId(),friend.getId()).date().toString());
@@ -52,7 +51,7 @@ public class NotificationsAddFriendController extends Controller{
 
     @FXML
     public void handleDeleteButtonAction(ActionEvent event) {
-        manager.declineFriendRequest(user.getId(), friend.getId());
+        manager.deleteOrDeclineFriend(user.getId(), friend.getId(), ChangeEventType.DECLINE);
     }
 
     @FXML

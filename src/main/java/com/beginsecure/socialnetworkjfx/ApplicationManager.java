@@ -17,7 +17,6 @@ import map.service.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -27,7 +26,7 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://localhost:3580/Users";
+        String url = "jdbc:postgresql://192.168.1.51:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
@@ -40,8 +39,9 @@ public class ApplicationManager {
         this.service=new Service(validator, repository, repositoryF);
     }
 
-    public ApplicationManager(Stage stage) throws IOException {
-        this.primaryStage=stage;
+
+    public void startApplication(Stage stage) throws IOException {
+        primaryStage=stage;
         initService();
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("login.fxml"));
         Pane root=fxmlLoader.load();
@@ -50,7 +50,6 @@ public class ApplicationManager {
         LogInController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
         primaryStage.setTitle("Log In");
-        primaryStage.show();
     }
 
 
@@ -70,45 +69,26 @@ public class ApplicationManager {
         }
     }
 
-    protected Controller initController(FXMLLoader fxmlLoader) {
-        Controller controller = fxmlLoader.getController();
-        controller.setApplicationManager(this);
-        return controller;
+    public <C extends Controller> void callInitialization(C controller,User user, User friend, ControllerType type) {
+        switch(type){
+            case MAINWINDOW -> {if( controller instanceof MainWindowController mainWindowController) mainWindowController.initializeWindow(user, null);}
+            case NOTIFICATION -> {if( controller instanceof NotificationsAddFriendController notificationsAddFriendController) notificationsAddFriendController.initializeWindow(user, friend);}
+            case FRIENDLIST -> {if( controller instanceof FriendListController friendListController) friendListController.initializeWindow(user, friend);}
+            case FRIENDSUGGESTION -> {if (controller instanceof FriendSuggestionController friendSuggestionController) friendSuggestionController.initializeWindow(user, friend);}
+        }
     }
 
-    protected Controller initController(FXMLLoader fxmlLoader, User user) {
-        MainWindowController controller = fxmlLoader.getController();
+    public <C extends Controller> void initController(FXMLLoader fxmlLoader, User user, User friend, ControllerType controllerType) {
+        C controller=fxmlLoader.getController();
         controller.setApplicationManager(this);
-        controller.setUser(user);
-        controller.initializeMainWindow();
-        return controller;
+        if(controllerType!=null)
+            callInitialization(controller,user,friend, controllerType);
     }
 
-    public Controller initController(FXMLLoader fxmlLoader, User user, User friend) {
-        FriendSuggestionController controller = fxmlLoader.getController();
-        controller.setApplicationManager(this);
-        controller.initializeFriendCard(user, friend);
-        return controller;
-    }
-
-    public Controller initControllerFriendList(FXMLLoader fxmlLoader, User user, User friend) {
-        FriendListController controller = fxmlLoader.getController();
-        controller.setApplicationManager(this);
-        controller.initializeFriendCard(user, friend);
-        return controller;
-    }
-
-    public Controller initControllerNotifications(FXMLLoader fxmlLoader, User user, User friend) {
-        NotificationsAddFriendController controller = fxmlLoader.getController();
-        controller.setApplicationManager(this);
-        controller.initializeFriendCard(user, friend);
-        return controller;
-    }
-
-    public void switchPage(String page, String title){
+    public void switchPage(String page, String title, User user, User friend, ControllerType controllerType) {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
         initNewView(fxmlLoader, title);
-        initController(fxmlLoader);
+        initController(fxmlLoader,user,friend,controllerType);
     }
 
     public void makeNewPage(String page, String title, User user) throws IOException {
@@ -118,18 +98,12 @@ public class ApplicationManager {
         stage.setScene(new Scene(root));
         MainWindowController controller = fxmlLoader.getController();
         controller.setApplicationManager(this);
-        controller.setUser(user);
-        controller.initializeMainWindow();
+        controller.initializeWindow(user, stage);
         stage.setTitle(title);
         stage.show();
     }
 
-    public void switchPage(String page, String title, User user){
-        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(page));
-        initNewView(fxmlLoader, title);
-        initController(fxmlLoader, user);
-    }
-
+    ///user related logic
 
     public Boolean isUsernameTaken(String username){
         return service.findOneUser(username).isPresent();
@@ -155,52 +129,31 @@ public class ApplicationManager {
         return service.findOneUser(username).get();
     }
 
-    public User getUser(Long id){
-        return service.findOneUser(id).get();
-    }
+
+
+    ///The 3 main lists
 
     public ArrayList<User> getNonFriendsOfUser(Long userId){
-//        Iterable<Friend> friends=service.findAllFriendsOfAUser(userId);
-//        List<Long> friendIDs= new java.util.ArrayList<>(StreamSupport
-//                .stream(friends.spliterator(), false)
-//                .flatMap(friend -> Stream.of(friend.first(), friend.second()))
-//                .filter(id -> !Objects.equals(id, userId))
-//                .distinct()
-//                .toList());
-//        friendIDs.add(userId);
-//        List<Long> allUserIDsThatArentFriends= StreamSupport
-//                .stream(service.findAllUsers().spliterator(),false)
-//                .map(User::getId)
-//                .filter(element -> !friendIDs.contains(element))
-//                .toList();
-//        return allUserIDsThatArentFriends;
         return StreamSupport.stream(service.findAllFriendsOfAUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public ArrayList<User> getFriendsOfUser(Long userId){
         return StreamSupport.stream(service.findAllFriendsOfTheUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
+
     public ArrayList<User> getFriendRequestsOfUser(Long userId){
         return StreamSupport.stream(service.findAllFriendRequestsOfTheUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
 
+    ///friend related logic
 
     public void sendFriendRequest(Long userId, Long friendId){
         service.saveFriend(userId,friendId,true);
     }
 
-    public void deleteFriendFromList(Long userId, Long friendId){
+    public void deleteOrDeclineFriend(Long userId, Long friendId, ChangeEventType changeEventType){
         Optional<Friend> friend = service.findOneFriend(userId,friendId);
-        friend.ifPresent(value -> service.deleteFriend(value.getId(), ChangeEventType.DELETE));
-    }
-
-    public void declineFriendRequest(Long userId, Long friendId){
-        Optional<Friend> friend = service.findOneFriend(userId,friendId);
-        friend.ifPresent(value -> service.deleteFriend(value.getId(), ChangeEventType.DECLINE));
-    }
-
-    public void addObserverMainWindow(MainWindowController controller){
-        service.addObserver(controller);
+        friend.ifPresent(value -> service.deleteFriend(value.getId(), changeEventType));
     }
 
     public void acceptFriendRequest(Long userId, Long friendId){
@@ -213,5 +166,9 @@ public class ApplicationManager {
 
     public Friend getFriendRequest(Long userId, Long friendId){
         return service.findOneFriend(userId,friendId).get();
+    }
+
+    public void addObserverMainWindow(MainWindowController controller){
+        service.addObserver(controller);
     }
 }

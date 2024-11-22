@@ -4,10 +4,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import map.domain.Friend;
 import map.domain.User;
-import map.events.FriendEntityChangeEvent;
-import map.observer.Observer;
+import map.events.ChangeEventType;
 
 public class FriendListController extends Controller {
 
@@ -28,7 +26,7 @@ public class FriendListController extends Controller {
     }
 
 
-    public void initializeFriendCard(User user,User friend) {
+    public void initializeWindow(User user, User friend) {
         setUser(user);
         setFriend(friend);
         friendName.setText(friend.getLastName() + " " + friend.getFirstName());
@@ -43,7 +41,7 @@ public class FriendListController extends Controller {
 
     @FXML
     public void handleDeleteButtonAction(ActionEvent event) {
-        manager.deleteFriendFromList(user.getId(), friend.getId());
+        manager.deleteOrDeclineFriend(user.getId(), friend.getId(), ChangeEventType.DELETE);
     }
 
 

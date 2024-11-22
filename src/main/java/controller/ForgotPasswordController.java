@@ -19,12 +19,12 @@ public class ForgotPasswordController extends Controller{
 
     @FXML
     private void handleLogInHyperlink(ActionEvent event) {
-        manager.switchPage("login.fxml", "Log In");
+        manager.switchPage("login.fxml", "Log In", null, null, null);
     }
 
     @FXML
     private void handleSignUpHyperLink(ActionEvent event) {
-        manager.switchPage("sign-up.fxml","Sign up");
+        manager.switchPage("sign-up.fxml","Sign up", null, null, null);
     }
 
     @FXML
@@ -41,7 +41,7 @@ public class ForgotPasswordController extends Controller{
                 this.passwordField.clear();
                 this.usernameField.clear();
                 MessageAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success", "Successfully updated your password");
-                manager.switchPage("login.fxml", "Log In");
+                manager.switchPage("login.fxml", "Log In", null, null, null);
 
             }catch (ValidationException e) {
                 MessageAlert.showErrorMessage(null, e.getMessage());

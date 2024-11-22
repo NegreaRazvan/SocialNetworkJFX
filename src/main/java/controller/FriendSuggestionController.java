@@ -24,7 +24,7 @@ public class FriendSuggestionController extends Controller {
     }
 
 
-    public void initializeFriendCard(User user, User friend) {
+    public void initializeWindow(User user, User friend) {
         setFriend(friend);
         setUser(user);
         friendName.setText(friend.getLastName() + " " + friend.getFirstName());

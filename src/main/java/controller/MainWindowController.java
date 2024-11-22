@@ -11,23 +11,20 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import map.domain.Friend;
+import javafx.stage.Stage;
 import map.domain.User;
 import map.events.ChangeEventType;
 import map.events.FriendEntityChangeEvent;
 import map.observer.Observer;
 
-import javax.swing.*;
-
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class MainWindowController extends Controller implements Observer<FriendEntityChangeEvent> {
+    Stage primaryStage;
     User user;
     Integer numberOfNotifications;
     ArrayList<User> friendsOfUser;
@@ -69,13 +66,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
         this.user = user;
     }
 
-    public void initObjectController(User friend,FXMLLoader fxmlLoader, ControllerType controllerType) {
-        switch (controllerType) {
-            case FRIENDSUGGESTION -> manager.initController(fxmlLoader, user, friend);
-            case FRIENDLIST -> manager.initControllerFriendList(fxmlLoader, user, friend);
-            case NOTIFICATION -> manager.initControllerNotifications(fxmlLoader, user, friend);
-        }
-    }
+    public void setStage(Stage stage) { this.primaryStage=stage;}
 
     public void initObject(User friend,VBox container, String fxmlFile, ControllerType controllerType) {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlFile));
@@ -85,8 +76,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
         }catch (IOException e){
             e.printStackTrace();
         }
-
-        initObjectController(friend,fxmlLoader,controllerType);
+        manager.initController(fxmlLoader, user, friend, controllerType);
         container.getChildren().add(node);
     }
 
@@ -154,7 +144,9 @@ public class MainWindowController extends Controller implements Observer<FriendE
         nameLabel.setText(user.getLastName() + " " + user.getFirstName());
     }
 
-    public void initializeMainWindow() {
+    public void initializeWindow(User user, Stage stage) {
+        setUser(user);
+        setStage(stage);
         setCss();
         ///makes it so when I search it filters the friend suggestion list
         searchField.textProperty().addListener(o -> handleFIlter());
@@ -182,6 +174,10 @@ public class MainWindowController extends Controller implements Observer<FriendE
     @FXML
     public void handleSignout(ActionEvent event) {
         manager.updateNotifications(user,numberOfNotifications);
+        if(primaryStage==null)
+            manager.switchPage("login.fxml", "Log In", null,null,null);
+        else
+            primaryStage.close();
     }
 
     @Override
