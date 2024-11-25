@@ -177,7 +177,8 @@ public class MainWindowController extends Controller implements Observer<FriendE
     }
 
     public void initializeWindow(User user, Stage stage) {
-        chatOnTop=true;
+        chatOnTop=false;
+        changePriorityOrderForContainerAnchorPane();
         setUser(user);
         setStage(stage);
         setCss();
