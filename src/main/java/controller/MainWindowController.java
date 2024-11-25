@@ -62,6 +62,16 @@ public class MainWindowController extends Controller implements Observer<FriendE
     TextField searchField;
     @FXML
     ScrollPane scroller;
+    @FXML
+    AnchorPane mainPane;
+    @FXML
+    AnchorPane containerAnchorPane;
+    @FXML
+    VBox logOut;
+    @FXML
+    AnchorPane listFriendsSuggestionFriendsAnchorPane;
+    @FXML
+    AnchorPane chatPane;
 
 
     public void setUser(User user) {
@@ -95,6 +105,25 @@ public class MainWindowController extends Controller implements Observer<FriendE
     }
 
     public void setCss(){
+        ///resize  handle
+        primaryStage.setMinWidth(1036.0);
+        primaryStage.setMinHeight(730);
+
+        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            double center = (newValue.doubleValue() - containerAnchorPane.getWidth()) / 2;
+
+            // Avoid overlapping issues by ensuring bounds are valid
+            containerAnchorPane.setLayoutX(Math.max(center, 0)); // Prevent negative layoutX values
+        });
+
+        primaryStage.heightProperty().addListener((observable, oldValue, newValue) -> {
+            double yPosition = newValue.doubleValue() - logOut.getHeight();
+
+            // Ensure logOut is always visible and does not overlap buttons
+            logOut.setLayoutY(Math.max(yPosition, 0));
+        });
+
+
 
         ///hide the scrollbar
         scroller.getScene().getStylesheets().add(HelloApplication.class.getResource("css/style.css").toExternalForm());
@@ -102,6 +131,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
         redDotImage.setVisible(false);
         NotifCountLabel.setVisible(false);
         ///hove
+
         homeButton.setOnMouseEntered(event -> {
             homeButton.setStyle("-fx-background-color : #808080");
         });
@@ -175,6 +205,25 @@ public class MainWindowController extends Controller implements Observer<FriendE
         manager.addObserverMainWindow(this);
         ///updates the friend suggestion Window
         updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
+    }
+
+    @FXML void handleMessages(ActionEvent event) {
+        var childen = chatPane.getChildren();
+        for(var child: childen){
+            child.setVisible(false);
+        }
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("chat.fxml"));
+        AnchorPane node = null;
+        try {
+            node = fxmlLoader.load();
+            node.prefWidthProperty().bind(listFriendsSuggestionFriendsAnchorPane.widthProperty());
+
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        manager.initController(fxmlLoader, user, null, ControllerType.CHAT);
+        listFriendsSuggestionFriendsAnchorPane.getChildren().add(node);
     }
 
     @FXML
@@ -256,6 +305,11 @@ public class MainWindowController extends Controller implements Observer<FriendE
 
     @FXML
     public void handleNotificationButton(ActionEvent event) {
+        var childen = chatPane.getChildren();
+        for(var child: childen){
+            child.setVisible(true);
+        }
+        listFriendsSuggestionFriendsAnchorPane.getChildren().clear();
         redDotImage.setVisible(false);
         NotifCountLabel.setVisible(false);
         numberOfNotifications=0;

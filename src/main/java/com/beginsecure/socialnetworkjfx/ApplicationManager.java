@@ -26,7 +26,7 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://localhost:3580/Users";
+        String url = "jdbc:postgresql://192.168.1.57:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
@@ -71,10 +71,11 @@ public class ApplicationManager {
 
     public <C extends Controller> void callInitialization(C controller,User user, User friend, ControllerType type) {
         switch(type){
-            case MAINWINDOW -> {if( controller instanceof MainWindowController mainWindowController) mainWindowController.initializeWindow(user, null);}
+            case MAINWINDOW -> {if( controller instanceof MainWindowController mainWindowController) mainWindowController.initializeWindow(user, primaryStage);}
             case NOTIFICATION -> {if( controller instanceof NotificationsAddFriendController notificationsAddFriendController) notificationsAddFriendController.initializeWindow(user, friend);}
             case FRIENDLIST -> {if( controller instanceof FriendListController friendListController) friendListController.initializeWindow(user, friend);}
             case FRIENDSUGGESTION -> {if (controller instanceof FriendSuggestionController friendSuggestionController) friendSuggestionController.initializeWindow(user, friend);}
+            case CHAT -> {if( controller instanceof ChatController chatController) chatController.initializeWindow(user, friend);}
         }
     }
 
