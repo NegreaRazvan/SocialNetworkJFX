@@ -142,7 +142,6 @@
                <Label fx:id="NotifCountLabel" layoutX="40.0" layoutY="182.0" prefHeight="17.0" prefWidth="8.0" text="0" textFill="WHITE" />
             </children>
          </AnchorPane>
-         <AnchorPane fx:id="listFriendsSuggestionFriendsAnchorPane" layoutX="233.0" prefHeight="1552.0" prefWidth="803.0" />
          <AnchorPane fx:id="chatPane" layoutX="243.0" layoutY="6.0" prefHeight="1452.0" prefWidth="793.0">
             <children>
                <Pane layoutX="502.0" layoutY="24.0" style="-fx-border-radius: 4em; -fx-background-color: black;">
@@ -190,6 +189,7 @@
                </ScrollPane>
             </children>
          </AnchorPane>
+         <AnchorPane fx:id="listFriendsSuggestionFriendsAnchorPane" layoutX="233.0" prefHeight="1552.0" prefWidth="803.0" />
       </children>
    </AnchorPane>
 </AnchorPane>

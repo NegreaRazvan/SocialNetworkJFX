@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class MainWindowController extends Controller implements Observer<FriendEntityChangeEvent> {
+    Boolean chatOnTop;
     Stage primaryStage;
     User user;
     Integer numberOfNotifications;
@@ -109,18 +110,13 @@ public class MainWindowController extends Controller implements Observer<FriendE
         primaryStage.setMinWidth(1036.0);
         primaryStage.setMinHeight(730);
 
-        primaryStage.widthProperty().addListener((observable, oldValue, newValue) -> {
+        primaryStage.widthProperty().addListener((_, _, newValue) -> {
             double center = (newValue.doubleValue() - containerAnchorPane.getWidth()) / 2;
-
-            // Avoid overlapping issues by ensuring bounds are valid
-            containerAnchorPane.setLayoutX(Math.max(center, 0)); // Prevent negative layoutX values
+            containerAnchorPane.setLayoutX(center);
         });
 
-        primaryStage.heightProperty().addListener((observable, oldValue, newValue) -> {
-            double yPosition = newValue.doubleValue() - logOut.getHeight();
-
-            // Ensure logOut is always visible and does not overlap buttons
-            logOut.setLayoutY(Math.max(yPosition, 0));
+        primaryStage.heightProperty().addListener((_, _, newValue) -> {
+            logOut.setLayoutY(newValue.doubleValue() - logOut.getHeight());
         });
 
 
@@ -181,6 +177,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
     }
 
     public void initializeWindow(User user, Stage stage) {
+        chatOnTop=true;
         setUser(user);
         setStage(stage);
         setCss();
@@ -207,9 +204,20 @@ public class MainWindowController extends Controller implements Observer<FriendE
         updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
     }
 
-    @FXML void handleMessages(ActionEvent event) {
-        var childen = chatPane.getChildren();
-        for(var child: childen){
+    void changePriorityOrderForContainerAnchorPane(){
+        var sizeChildren=containerAnchorPane.getChildren().size();
+        var secondToLastChild= containerAnchorPane.getChildren().get(sizeChildren-2);
+        var lastChild = containerAnchorPane.getChildren().get(sizeChildren-1);
+        containerAnchorPane.getChildren().remove(lastChild);
+        containerAnchorPane.getChildren().remove(secondToLastChild);
+        containerAnchorPane.getChildren().add(lastChild);
+        containerAnchorPane.getChildren().add(secondToLastChild);
+    }
+
+    @FXML
+    void handleMessages(ActionEvent event) {
+        var children = chatPane.getChildren();
+        for(var child: children){
             child.setVisible(false);
         }
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("chat.fxml"));
@@ -224,6 +232,10 @@ public class MainWindowController extends Controller implements Observer<FriendE
         }
         manager.initController(fxmlLoader, user, null, ControllerType.CHAT);
         listFriendsSuggestionFriendsAnchorPane.getChildren().add(node);
+        if(!chatOnTop) {
+            changePriorityOrderForContainerAnchorPane();
+            chatOnTop=true;
+        }
     }
 
     @FXML
@@ -237,47 +249,6 @@ public class MainWindowController extends Controller implements Observer<FriendE
 
     @Override
     public void update(FriendEntityChangeEvent event) {
-//        if (event.getType().equals(ChangeEventType.REQUEST)) {
-//            if (Objects.equals(event.getFriend().first(), user.getId())) {
-//                nonFriendsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().second()));
-//            }
-//            else {
-//            }
-//            updateFriendSuggestions(nonFriendsOfUser);
-        //}
-//        if (event.getType().equals(ChangeEventType.DELETE)) {
-//            if (Objects.equals(event.getFriend().first(), user.getId())) {
-//                friendsOfUser.removeIf(user -> user.getId().equals(event.getFriend().second()));
-//                nonFriendsOfUser.add(manager.getUser(event.getFriend().second()));
-//            } else {
-//                friendsOfUser.removeIf(user -> user.getId().equals(event.getFriend().first()));
-//                nonFriendsOfUser.add(manager.getUser(event.getFriend().first()));
-//            }
-//            handleFriendsButton(null);
-//            updateFriendSuggestions(nonFriendsOfUser);
-//        }
-//        if(event.getType().equals(ChangeEventType.ADD)) {
-//            if(Objects.equals(event.getFriend().first(), user.getId())) {
-//                friendsOfUser.add(manager.getUser(event.getFriend().second()));
-//            }
-//            else {
-//                friendsOfUser.add(manager.getUser(event.getFriend().first()));
-//                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().first()));
-//            }
-//            handleFriendsButton(null);
-//        }
-//        if(event.getType().equals(ChangeEventType.DECLINE)) {
-//            if(Objects.equals(event.getFriend().first(), user.getId())) {
-//                nonFriendsOfUser.add(manager.getUser(event.getFriend().second()));
-//                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().second()));
-//            }
-//            else {
-//                nonFriendsOfUser.add(manager.getUser(event.getFriend().first()));
-//                notificationsOfUser.removeIf(user1 -> user1.getId().equals(event.getFriend().first()));
-//            }
-//            handleFriendsButton(null);
-//            updateFriendSuggestions(nonFriendsOfUser);
-//        }
         nonFriendsOfUser=manager.getNonFriendsOfUser(user.getId());
         friendsOfUser = manager.getFriendsOfUser(user.getId());
         notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
@@ -314,11 +285,19 @@ public class MainWindowController extends Controller implements Observer<FriendE
         NotifCountLabel.setVisible(false);
         numberOfNotifications=0;
         updateContainer(notificationsOfUser, friendsScrollPane, 9, "notifications.fxml", ControllerType.NOTIFICATION);
+        if(chatOnTop) {
+            changePriorityOrderForContainerAnchorPane();
+            chatOnTop=false;
+        }
     }
 
     @FXML
     public void handleFriendsButton(ActionEvent event) {
         updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
+        if(chatOnTop) {
+            changePriorityOrderForContainerAnchorPane();
+            chatOnTop=false;
+        }
     }
 
     @FXML
