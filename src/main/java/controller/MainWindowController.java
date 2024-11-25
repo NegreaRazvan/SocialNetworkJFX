@@ -247,6 +247,61 @@ public class MainWindowController extends Controller implements Observer<FriendE
             primaryStage.close();
     }
 
+
+    @FXML
+    public void handleNotificationButton(ActionEvent event) {
+        var childen = chatPane.getChildren();
+        for(var child: childen){
+            child.setVisible(true);
+        }
+        listFriendsSuggestionFriendsAnchorPane.getChildren().clear();
+        redDotImage.setVisible(false);
+        NotifCountLabel.setVisible(false);
+        numberOfNotifications=0;
+        updateContainer(notificationsOfUser, friendsScrollPane, 9, "notifications.fxml", ControllerType.NOTIFICATION);
+        if(chatOnTop) {
+            changePriorityOrderForContainerAnchorPane();
+            chatOnTop=false;
+        }
+    }
+
+    @FXML
+    public void handleFriendsButton(ActionEvent event) {
+        var childen = chatPane.getChildren();
+        for(var child: childen){
+            child.setVisible(true);
+        }
+        listFriendsSuggestionFriendsAnchorPane.getChildren().clear();
+        updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
+        if(chatOnTop) {
+            changePriorityOrderForContainerAnchorPane();
+            chatOnTop=false;
+        }
+    }
+
+    @FXML
+    public void handleHomeButton(ActionEvent event) {
+        var childen = chatPane.getChildren();
+        for(var child: childen){
+            child.setVisible(true);
+        }
+        listFriendsSuggestionFriendsAnchorPane.getChildren().clear();
+        friendsScrollPane.getChildren().clear();
+        if(chatOnTop) {
+            changePriorityOrderForContainerAnchorPane();
+            chatOnTop=false;
+        }
+    }
+
+    public void handleFIlter() {
+        Predicate<User> p1 = user -> ((user.getLastName() + " " + user.getLastName()).startsWith(searchField.getText()));
+        List<User> filteredList = nonFriendsOfUser
+                .stream()
+                .filter(p1)
+                .toList();
+        updateContainer(filteredList, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
+    }
+
     @Override
     public void update(FriendEntityChangeEvent event) {
         nonFriendsOfUser=manager.getNonFriendsOfUser(user.getId());
@@ -271,46 +326,5 @@ public class MainWindowController extends Controller implements Observer<FriendE
             updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
             updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
         }
-    }
-
-
-    @FXML
-    public void handleNotificationButton(ActionEvent event) {
-        var childen = chatPane.getChildren();
-        for(var child: childen){
-            child.setVisible(true);
-        }
-        listFriendsSuggestionFriendsAnchorPane.getChildren().clear();
-        redDotImage.setVisible(false);
-        NotifCountLabel.setVisible(false);
-        numberOfNotifications=0;
-        updateContainer(notificationsOfUser, friendsScrollPane, 9, "notifications.fxml", ControllerType.NOTIFICATION);
-        if(chatOnTop) {
-            changePriorityOrderForContainerAnchorPane();
-            chatOnTop=false;
-        }
-    }
-
-    @FXML
-    public void handleFriendsButton(ActionEvent event) {
-        updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
-        if(chatOnTop) {
-            changePriorityOrderForContainerAnchorPane();
-            chatOnTop=false;
-        }
-    }
-
-    @FXML
-    public void handleHomeButton(ActionEvent event) {
-        friendsScrollPane.getChildren().clear();
-    }
-
-    public void handleFIlter() {
-        Predicate<User> p1 = user -> ((user.getLastName() + " " + user.getLastName()).startsWith(searchField.getText()));
-        List<User> filteredList = nonFriendsOfUser
-                .stream()
-                .filter(p1)
-                .toList();
-        updateContainer(filteredList, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
     }
 }

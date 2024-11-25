@@ -76,6 +76,8 @@ public class ApplicationManager {
             case FRIENDLIST -> {if( controller instanceof FriendListController friendListController) friendListController.initializeWindow(user, friend);}
             case FRIENDSUGGESTION -> {if (controller instanceof FriendSuggestionController friendSuggestionController) friendSuggestionController.initializeWindow(user, friend);}
             case CHAT -> {if( controller instanceof ChatController chatController) chatController.initializeWindow(user, friend);}
+            case FRIENDSHOWCHATLIST -> {if(controller instanceof FriendShowOnChatListController friendShowOnChatListController) friendShowOnChatListController.initializeWindow(friend);}
+            case FRIENDSHOWCHAT -> {if (controller instanceof FriendShowOnChatController friendShowOnChatController) friendShowOnChatController.initializeWindow(friend);}
         }
     }
 

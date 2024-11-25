@@ -7,21 +7,22 @@
 
 <AnchorPane prefHeight="1452.0" prefWidth="793.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.ChatController">
    <children>
-      <TextField fx:id="searchField" layoutX="14.0" layoutY="50.0" prefHeight="32.0" prefWidth="280.0" promptText="Search for people" style="-fx-background-color: #3f3f3f; -fx-border-radius: 2em;">
+      <TextField fx:id="searchFriend" layoutX="14.0" layoutY="50.0" prefHeight="32.0" prefWidth="280.0" promptText="Search for people" style="-fx-background-color: #3f3f3f; -fx-border-radius: 2em;">
          <font>
             <Font size="15.0" />
          </font>
       </TextField>
       <Line endX="-100.0" endY="1187.0" layoutX="416.0" layoutY="272.0" startX="-100.0" startY="-265.0" stroke="#313131" />
-      <ScrollPane layoutX="2.0" layoutY="99.0" prefHeight="1356.0" prefWidth="307.0" style="-fx-background-color: black;">
+      <ScrollPane fx:id="scrollFriends" layoutX="2.0" layoutY="99.0" prefHeight="1356.0" prefWidth="307.0" style="-fx-background-color: black;">
          <content>
-            <VBox prefHeight="1354.0" prefWidth="308.0" style="-fx-background-color: black;" />
+            <VBox fx:id="friendListChat" prefHeight="1354.0" prefWidth="308.0" style="-fx-background-color: black;" />
          </content>
       </ScrollPane>
-      <ScrollPane layoutX="326.0" layoutY="72.0" prefHeight="1380.0" prefWidth="461.0" style="-fx-background-color: black;">
+      <ScrollPane fx:id="scrollChats" layoutX="326.0" layoutY="143.0" prefHeight="1309.0" prefWidth="461.0" style="-fx-background-color: black;">
         <content>
-           <VBox prefHeight="1361.0" prefWidth="457.0" style="-fx-background-color: black;" />
+           <VBox prefHeight="1326.0" prefWidth="457.0" style="-fx-background-color: black;" />
         </content>
       </ScrollPane>
+      <HBox fx:id="friendHBox" layoutX="326.0" layoutY="-2.0" prefHeight="136.0" prefWidth="461.0" />
    </children>
 </AnchorPane>
