@@ -7,12 +7,11 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<?import java.net.URL?>
 <AnchorPane prefHeight="730.0" prefWidth="1036.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MainWindowController">
    <children>
       <Pane layoutX="77.0" prefHeight="754.0" prefWidth="246.0" style="-fx-background-color: black;">
          <children>
-            <VBox layoutY="67.0" prefHeight="556.0" prefWidth="242.0" spacing="5">
+            <VBox layoutX="-51.0" layoutY="67.0" prefHeight="556.0" prefWidth="218.0" spacing="5">
                <children>
                   <Button fx:id="homeButton" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#handleHomeButton" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Home" textFill="WHITE">
                      <font>
@@ -120,15 +119,17 @@
                   </Button>
                </children>
             </VBox>
-            <VBox layoutY="621.0" prefHeight="133.0" prefWidth="246.0">
+            <VBox layoutX="-51.0" layoutY="623.0" prefHeight="133.0" prefWidth="218.0">
                <children>
                   <Label fx:id="nameLabel" alignment="CENTER" prefHeight="38.0" prefWidth="180.0" text="LastName First name" textFill="WHITE" />
-                  <HBox prefHeight="100.0" prefWidth="200.0">
+                  <HBox prefHeight="93.0" prefWidth="159.0">
                      <children>
-                        <Label fx:id="usernameLabel" alignment="BASELINE_CENTER" prefHeight="37.0" prefWidth="132.0" text="Username" textFill="#8d8d8d" />
+                        <Label fx:id="usernameLabel" alignment="BASELINE_CENTER" prefHeight="37.0" prefWidth="66.0" text="Username" textFill="#8d8d8d" />
                         <Button mnemonicParsing="false" onAction="#handleSignout" prefHeight="37.0" prefWidth="77.0" style="-fx-border-radius: 15px;" text="Log out" />
                      </children></HBox>
                </children></VBox>
+            <Line endX="-100.0" endY="698.0" layoutX="267.0" layoutY="1.0" startX="-100.0" startY="-29.33333396911621" stroke="#313131" />
+            <Line endX="-100.0" endY="721.0" layoutX="266.0" layoutY="50.0" startX="-100.0" startY="649.0" stroke="#313131" />
          </children>
       </Pane>
       <Pane layoutX="726.0" prefHeight="754.0" prefWidth="246.0" style="-fx-border-radius: 4em; -fx-background-color: black;">
@@ -151,26 +152,24 @@
                </children>
             </VBox>
          </children></Pane>
-      <Line endX="-100.0" endY="698.0" layoutX="422.0" layoutY="1.0" startX="-100.0" stroke="#313131" />
-      <Line endX="-100.0" endY="721.0" layoutX="421.0" layoutY="52.0" startX="-100.0" startY="649.0" stroke="#313131" />
       <Line endX="-100.0" endY="698.0" layoutX="815.0" layoutY="1.0" startX="-100.0" stroke="#313131" />
       <Line endX="-99.5" endY="714.7929077148438" layoutX="814.0" layoutY="60.0" startX="-99.5" startY="639.5" stroke="#313131" />
-      <Line endX="197.5" layoutX="517.0" layoutY="50.0" startX="-195.5" stroke="#313131" />
-      <HBox layoutX="325.0" prefHeight="47.0" prefWidth="387.0">
+      <Line endX="197.5" layoutX="517.0" layoutY="50.0" startX="-272.5" startY="3.814697265625E-6" stroke="#313131" />
+      <HBox layoutX="241.0" prefHeight="47.0" prefWidth="471.0">
          <children>
-            <Button mnemonicParsing="false" prefHeight="51.0" prefWidth="190.0" style="-fx-background-color: black;" text="Posts" textFill="WHITE">
+            <Button mnemonicParsing="false" prefHeight="47.0" prefWidth="235.0" style="-fx-background-color: black;" text="Posts" textFill="WHITE">
                <font>
                   <Font size="17.0" />
                </font>
             </Button>
-            <Button mnemonicParsing="false" prefHeight="49.0" prefWidth="199.0" style="-fx-background-color: black;" text="For you" textFill="WHITE">
+            <Button mnemonicParsing="false" prefHeight="47.0" prefWidth="235.0" style="-fx-background-color: black;" text="For you" textFill="WHITE">
                <font>
                   <Font size="17.0" />
                </font>
             </Button>
          </children>
       </HBox>
-    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+    <AnchorPane layoutX="-56.0" minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
          <children>
             <ImageView fx:id="redDotImage" fitHeight="26.0" fitWidth="24.0" layoutX="104.0" layoutY="179.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -179,11 +178,11 @@
             </ImageView>
             <Label fx:id="NotifCountLabel" layoutX="112.0" layoutY="183.0" prefHeight="17.0" prefWidth="32.0" text="0" textFill="WHITE" />
          </children></AnchorPane>
-      <ScrollPane fx:id="scroller" layoutX="325.0" layoutY="74.0" prefHeight="708.0" prefWidth="387.0" style="-fx-background-color: black; -fx-border-color: black; -fx-background: black;">
+      <ScrollPane fx:id="scroller" layoutX="249.0" layoutY="74.0" prefHeight="708.0" prefWidth="463.0" style="-fx-background-color: black; -fx-border-color: black; -fx-background: black;">
          <content>
-            <VBox fx:id="friendsScrollPane" prefHeight="709.0" prefWidth="386.0">
+            <VBox fx:id="friendsScrollPane" prefHeight="709.0" prefWidth="462.0">
                <children>
-                  <AnchorPane prefHeight="70.9" prefWidth="386.0" />
+                  <AnchorPane prefHeight="71.0" prefWidth="436.0" />
                   <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="70.9" prefWidth="70.9" />
                   <AnchorPane layoutX="10.0" layoutY="81.0" prefHeight="70.9" prefWidth="70.9" />
                   <AnchorPane layoutX="10.0" layoutY="152.0" prefHeight="70.9" prefWidth="70.9" />

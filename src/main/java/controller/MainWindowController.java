@@ -10,6 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import map.domain.User;
@@ -70,9 +72,12 @@ public class MainWindowController extends Controller implements Observer<FriendE
 
     public void initObject(User friend,VBox container, String fxmlFile, ControllerType controllerType) {
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource(fxmlFile));
-        Node node = null;
+        AnchorPane node = null;
         try {
             node = fxmlLoader.load();
+            node.prefWidthProperty().bind(container.widthProperty());
+
+
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -90,6 +95,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
     }
 
     public void setCss(){
+
         ///hide the scrollbar
         scroller.getScene().getStylesheets().add(HelloApplication.class.getResource("css/style.css").toExternalForm());
         ///hide the initial notifcation image
