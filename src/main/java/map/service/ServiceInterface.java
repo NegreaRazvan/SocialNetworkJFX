@@ -1,6 +1,7 @@
 package map.service;
 
 import map.domain.Friend;
+import map.domain.MessageDTO;
 import map.domain.User;
 import map.domain.validators.ValidationException;
 import map.events.ChangeEventType;
@@ -95,4 +96,8 @@ public interface ServiceInterface{
      * @return the vertices that make up the longest path
      */
     ArrayList<Optional<User>> longestPath();
+
+    public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage);
+
+    public Optional<MessageDTO> findOneMessage(Long to, Long from);
 }

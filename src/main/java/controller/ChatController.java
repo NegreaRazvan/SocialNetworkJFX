@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import map.domain.User;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class ChatController extends Controller{
+    Stage primaryStage;
     User friend;
     User user;
     @FXML
@@ -33,6 +35,12 @@ public class ChatController extends Controller{
     TextField searchFriend;
     @FXML
     ToggleGroup toggleGroup;
+    @FXML
+    AnchorPane sendMessage;
+    @FXML
+    TextField sendField;
+    @FXML
+    Button sendButton;
 
     public void setFriend(User friend) {
         this.friend = friend;
@@ -76,24 +84,39 @@ public class ChatController extends Controller{
             initObject(friends.get(i), container, fxmlFile, controllerType);
     }
 
+    public void handleToggleButtonPress(){
+        ToggleButton selected = (ToggleButton) toggleGroup.getSelectedToggle();
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("friend-show.fxml"));
+        AnchorPane node = null;
+        try {
+            node = fxmlLoader.load();
+            node.prefWidthProperty().bind(friendHBox.widthProperty());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        manager.initController(fxmlLoader, user, manager.getUser(selected.getText()), ControllerType.FRIENDSHOWCHAT);
+        friendHBox.getChildren().clear();
+        friendHBox.getChildren().add(node);
+        sendField.setVisible(true);
+        sendButton.setVisible(true);
+    }
 
-    public void initializeWindow(User user, User friend) {
+    public void initializeWindow(User user, User friend, Stage stage) {
+        sendField.setVisible(false);
+        sendButton.setVisible(false);
+        primaryStage = stage;
+        sendMessage.setLayoutY(primaryStage.getHeight() - 2.5*sendMessage.getHeight());
+        primaryStage.heightProperty().addListener((_, _, newValue) -> {
+            System.out.println(primaryStage.getHeight());
+            sendMessage.setLayoutY(newValue.doubleValue() - 2.5*sendMessage.getHeight());
+        });
         toggleGroup=new ToggleGroup();
-        toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+        toggleGroup.selectedToggleProperty().addListener((_, _, newValue) -> {
             if (newValue != null) {
-                ToggleButton selected = (ToggleButton) toggleGroup.getSelectedToggle();
-                FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("friend-show.fxml"));
-                AnchorPane node = null;
-                try {
-                    node = fxmlLoader.load();
-                    node.prefWidthProperty().bind(friendHBox.widthProperty());
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
-                manager.initController(fxmlLoader, user, manager.getUser(selected.getText()), ControllerType.FRIENDSHOWCHAT);
-                friendHBox.getChildren().add(node);
+                handleToggleButtonPress();
             } else {
-                friendHBox.getChildren().clear();
+                sendField.setVisible(false);
+                sendButton.setVisible(false);
             }
         });
         setFriend(friend);

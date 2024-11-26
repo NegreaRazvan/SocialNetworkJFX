@@ -1,8 +1,6 @@
 package map.service;
 
-import map.domain.Friend;
-import map.domain.Graph;
-import map.domain.User;
+import map.domain.*;
 import map.domain.validators.UsernameUpperCaseException;
 import map.domain.validators.ValidationException;
 import map.domain.validators.Validator;
@@ -15,44 +13,23 @@ import map.repository.db.AbstractDBRepository;
 import map.repository.db.FriendRepositoryDB;
 import map.repository.db.UserRepositoryDB;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.StreamSupport;
 
 public class Service implements ServiceInterface, Observable<FriendEntityChangeEvent> {
 
     private Validator<User> userValidator;
+    private Repository<Long, MessageDTO> messageRepository;
     private Repository<Long,User> userRepository;
     private Repository<Long,Friend> friendRepository;
-    private Long maxIdUser;
-    private Long maxIdFriend;
     private List<Observer<FriendEntityChangeEvent>> observers=new ArrayList<>();
 
-    private void calculateId(){
-        maxIdUser = StreamSupport.stream(userRepository.findAllIds().spliterator(),false).max(Comparator.naturalOrder()).orElse(1L);
-        maxIdFriend= StreamSupport.stream(friendRepository.findAllIds().spliterator(),false).max(Comparator.naturalOrder()).orElse(1L);
-
-        Long maxU=maxIdUser,maxI=maxIdFriend;
-        for(long i =1; i <= maxIdUser; i++)
-            if(userRepository.findOne(i).isEmpty()) {
-                maxIdUser = i;
-                break;
-            }
-        for(long i =1; i <= maxIdFriend; i++)
-            if(friendRepository.findOne(i).isEmpty()) {
-                maxIdFriend = i;
-            }
-        if(Objects.equals(maxIdUser, maxU))
-            maxIdUser++;
-        if(maxIdFriend.equals(maxI))
-            maxIdFriend++;
-    }
-
-    public Service(Validator<User> userValidator, Repository<Long, User> userRepository, Repository<Long, Friend> friendRepository) {
+    public Service(Validator<User> userValidator, Repository<Long, User> userRepository, Repository<Long, Friend> friendRepository, Repository<Long,MessageDTO> messageRepository) {
         this.userValidator = userValidator;
         this.userRepository = userRepository;
         this.friendRepository = friendRepository;
-        maxIdUser = maxIdFriend =  -1L;
-        calculateId();
+        this.messageRepository = messageRepository;
     }
 
     @Override
@@ -91,14 +68,14 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
             entity= new User(firstName, lastName, password, e.getMessage(), false, 0);
 
         }
-        entity.setId(maxIdUser);
+        entity.setId(null);
         Optional<User> oldEntity = userRepository.findOne(entity.getId());
 
         if (oldEntity.isPresent()) {
             return oldEntity;
         } else {
             userRepository.save(entity);
-            calculateId();
+
             return Optional.empty();
         }
     }
@@ -129,7 +106,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         Optional.ofNullable(id).orElseThrow(() -> new IllegalArgumentException("id must be not null"));
         if(!(userRepository instanceof AbstractDBRepository<Long, User>))
             updateRepoFriends(id);
-        calculateId();
+
         return userRepository.delete(id);
     }
 
@@ -196,7 +173,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new ValidationException("First User not found"));
         Optional.ofNullable(userRepository.findOne(friendId)).orElseThrow(() -> new ValidationException("Second User not found"));
         Friend entity = new Friend(userId, friendId, request);
-        entity.setId(maxIdFriend);
+        entity.setId(null);
         if(isFriendLinkAlreadyInRepo(entity))
             throw new ValidationException("Friend link already exists");
         Optional<Friend> oldEntity = friendRepository.findOne(entity.getId());
@@ -250,6 +227,26 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         ArrayList<Optional<User>>users =new ArrayList<Optional<User>>();
         path.forEach(x->users.add((userRepository.findOne(Integer.toUnsignedLong(x)))));
         return users;
+    }
+
+    @Override
+    public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage) {
+        Optional.ofNullable(userRepository.findOne(to)).orElseThrow(() -> new ValidationException("User id not found"));
+        Optional.ofNullable(userRepository.findOne(from)).orElseThrow(() -> new ValidationException("User not found"));
+        MessageDTO messageDTO;
+        if(idReplyMessage==null)
+            messageDTO=new MessageDTO(null, from,to, message, LocalDateTime.now());
+        else
+            messageDTO=new ReplyMessageDTO(null, from, to ,message, LocalDateTime.now(), idReplyMessage);
+        messageRepository.save(messageDTO);
+        notifyObservers(new FriendEntityChangeEvent(ChangeEventType.MESSAGESENT, messageDTO));
+        return Optional.empty();
+    }
+
+
+    @Override
+    public Optional<MessageDTO> findOneMessage(Long to, Long from) {
+        return Optional.empty();
     }
 
     @Override

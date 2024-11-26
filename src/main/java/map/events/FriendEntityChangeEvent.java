@@ -1,12 +1,14 @@
 package map.events;
 
 import map.domain.Friend;
+import map.domain.MessageDTO;
 import map.domain.User;
 
 public class FriendEntityChangeEvent implements Event {
     private ChangeEventType type;
     private Friend friend, oldFriend;
     private User user, friendUser;
+    MessageDTO message;
 
     public FriendEntityChangeEvent(ChangeEventType type, Friend friend, Friend oldFriend) {
         this.type = type;
@@ -23,6 +25,11 @@ public class FriendEntityChangeEvent implements Event {
         this.type = type;
         this.user = user;
         this.friendUser = friend;
+    }
+
+    public FriendEntityChangeEvent(ChangeEventType type, MessageDTO message) {
+        this.type = type;
+        this.message = message;
     }
 
 

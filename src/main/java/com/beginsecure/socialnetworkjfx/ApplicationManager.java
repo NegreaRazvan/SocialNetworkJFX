@@ -6,16 +6,19 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import map.domain.Friend;
+import map.domain.ReplyMessageDTO;
 import map.domain.User;
 import map.domain.validators.UserValidator;
 import map.domain.validators.Validator;
 import map.events.ChangeEventType;
 import map.repository.Repository;
 import map.repository.db.FriendRepositoryDB;
+import map.repository.db.MessageRepositoryDB;
 import map.repository.db.UserRepositoryDB;
 import map.service.Service;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,12 +34,15 @@ public class ApplicationManager {
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
         String queryLoadF="SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\"";
+        String queryLoadM="SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\" FROM public.\"Message\"";
 
         Repository repository = new UserRepositoryDB(url,user,password, queryLoad);
         Repository repositoryF = new FriendRepositoryDB(url,user,password,queryLoadF);
+        Repository repositoryM = new MessageRepositoryDB(url,user,password,queryLoadM);
+
         Validator validator = new UserValidator();
 
-        this.service=new Service(validator, repository, repositoryF);
+        this.service=new Service(validator, repository, repositoryF, repositoryM);
     }
 
 
@@ -75,7 +81,7 @@ public class ApplicationManager {
             case NOTIFICATION -> {if( controller instanceof NotificationsAddFriendController notificationsAddFriendController) notificationsAddFriendController.initializeWindow(user, friend);}
             case FRIENDLIST -> {if( controller instanceof FriendListController friendListController) friendListController.initializeWindow(user, friend);}
             case FRIENDSUGGESTION -> {if (controller instanceof FriendSuggestionController friendSuggestionController) friendSuggestionController.initializeWindow(user, friend);}
-            case CHAT -> {if( controller instanceof ChatController chatController) chatController.initializeWindow(user, friend);}
+            case CHAT -> {if( controller instanceof ChatController chatController) chatController.initializeWindow(user, friend, primaryStage);}
             case FRIENDSHOWCHATLIST -> {if(controller instanceof FriendShowOnChatListController friendShowOnChatListController) friendShowOnChatListController.initializeWindow(friend);}
             case FRIENDSHOWCHAT -> {if (controller instanceof FriendShowOnChatController friendShowOnChatController) friendShowOnChatController.initializeWindow(friend);}
         }
