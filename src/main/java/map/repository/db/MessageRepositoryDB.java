@@ -4,7 +4,9 @@ import map.domain.*;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 public class MessageRepositoryDB extends AbstractDBRepository<Long, MessageDTO> {
     public MessageRepositoryDB(String url, String user, String password, String queryLoad) {
@@ -63,27 +65,54 @@ public class MessageRepositoryDB extends AbstractDBRepository<Long, MessageDTO> 
         return rs;
     }
 
-    public Optional<MessageDTO> findOne(Long from,Long to) {
-        try (Connection conn = DriverManager.getConnection(url, user, password);) {
-            ResultSet rs;
-            if(to==null)
-                rs=entityToFindStatement(conn, "SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\" FROM public.\"Message\" WHERE \"from\" = ? ", from);
-            else
-                rs=entityToFindStatement(conn, "SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\" FROM public.\"Message\" WHERE \"to\" = ? ", to);
-            MessageDTO entity = null;
-            if(rs.next()) {
-                entity = queryToEntity(rs);
+//    public Optional<MessageDTO> findOne(Long from,Long to) {
+//        try (Connection conn = DriverManager.getConnection(url, user, password);) {
+//            ResultSet rs;
+//            if(to==null)
+//                rs=entityToFindStatement(conn, "SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\" FROM public.\"Message\" WHERE \"from\" = ? ", from);
+//            else
+//                rs=entityToFindStatement(conn, "SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\" FROM public.\"Message\" WHERE \"to\" = ? ", to);
+//            MessageDTO entity = null;
+//            if(rs.next()) {
+//                entity = queryToEntity(rs);
+//            }
+//            return Optional.ofNullable(entity);
+//        }
+//        catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return Optional.empty();
+//    }
+
+    @Override
+    public PreparedStatement entityToUpdateStatement(Connection con, MessageDTO entity) throws SQLException {
+        return null;
+    }
+
+    public Iterable<MessageDTO> findAll(Long from, Long to){
+        Set<MessageDTO> entities = new HashSet<>();
+        String query;
+        try (Connection conn = DriverManager.getConnection(url, user, password)){
+            query = "SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\" FROM public.\"Message\" WHERE (\"from\" = ? AND \"to\" = ? ) OR (\"from\" = ? AND \"to\" = ? )";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            {
+                pstmt.setLong(1, from);
+                pstmt.setLong(2, to);
+                pstmt.setLong(3, to);
+                pstmt.setLong(4, from);
+                ResultSet rs = pstmt.executeQuery();
+                {
+                    while (rs.next()) {
+                        MessageDTO u= queryToEntity(rs);
+                        entities.add(u);
+                    }
+                }
             }
-            return Optional.ofNullable(entity);
+            return entities;
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
-        return Optional.empty();
-    }
-
-    @Override
-    public PreparedStatement entityToUpdateStatement(Connection con, MessageDTO entity) throws SQLException {
         return null;
     }
 }

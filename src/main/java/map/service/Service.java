@@ -11,6 +11,7 @@ import map.observer.Observer;
 import map.repository.Repository;
 import map.repository.db.AbstractDBRepository;
 import map.repository.db.FriendRepositoryDB;
+import map.repository.db.MessageRepositoryDB;
 import map.repository.db.UserRepositoryDB;
 
 import java.time.LocalDateTime;
@@ -138,6 +139,12 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     public Iterable<User> findAllFriendsOfAUser(Long idUser) {
         Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
         return ((UserRepositoryDB)userRepository).findAll(idUser);
+    }
+
+    public Iterable<MessageDTO> findAllSentMessages(Long from, Long to){
+        Optional.ofNullable(from).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
+        Optional.ofNullable(to).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
+        return ((MessageRepositoryDB)messageRepository).findAll(from,to);
     }
 
     public Iterable<User> findAllFriendsOfTheUser(Long idUser) {

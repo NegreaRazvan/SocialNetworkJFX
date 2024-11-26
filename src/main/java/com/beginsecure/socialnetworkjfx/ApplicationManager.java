@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import map.domain.Friend;
+import map.domain.MessageDTO;
 import map.domain.ReplyMessageDTO;
 import map.domain.User;
 import map.domain.validators.UserValidator;
@@ -152,6 +153,10 @@ public class ApplicationManager {
 
     public ArrayList<User> getFriendRequestsOfUser(Long userId){
         return StreamSupport.stream(service.findAllFriendRequestsOfTheUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public ArrayList<MessageDTO> getSentMessages(Long userId, Long friendId){
+        return StreamSupport.stream(service.findAllSentMessages(friendId, userId).spliterator(), false).collect(Collectors.toCollection(ArrayList::new));
     }
 
     ///friend related logic
