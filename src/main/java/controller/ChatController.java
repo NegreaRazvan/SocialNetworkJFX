@@ -111,27 +111,45 @@ public class ChatController extends Controller implements Observer<FriendEntityC
     }
 
     public void receivedMessage(MessageDTO message, VBox container) {
+//        HBox BighBox = new HBox();
+//        StackPane stackPane = new StackPane();
+//        stackPane.setAlignment(Pos.CENTER_LEFT);
+//        stackPane.setPadding(new Insets(5,5,5,10));
+//        ToggleButton toggleButton = new ToggleButton();
+//        toggleButton.setText(String.valueOf(message.getId()));
+//        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
+//        toggleButton.setToggleGroup(toggleGroupForReplies);
+//        toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
+//        toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
+//        Text text= new Text(message.getMessage());
+//        TextFlow textFlow = new TextFlow(text);
+//        String style = "-fx-color: rgb(233,233,235); " +
+//                "-fx-background-color: rgb(0,255,0); " +
+//                "-fx-background-radius: 20px;";
+//        textFlow.setStyle(style);
+//        textFlow.setPadding(new Insets(5,5,5,10));
+//        text.setFill(Color.color(0.934,0.945,0.996));
+//        textFlow.setMouseTransparent(true);
+//        stackPane.getChildren().addAll(toggleButton, textFlow);
+//        BighBox.getChildren().add(stackPane);
+//        container.getChildren().add(BighBox);
+
         HBox BighBox = new HBox();
         StackPane stackPane = new StackPane();
         stackPane.setAlignment(Pos.CENTER_LEFT);
         stackPane.setPadding(new Insets(5,5,5,10));
 
-//        Image image = new Image("C://Users//Razvan//IdeaProjects//SocialNetworkGUI//src//main//resources//com//beginsecure//socialnetworkjfx//images//Plus.png");
-//        ImageView imageView=new ImageView(image);
         ToggleButton toggleButton = new ToggleButton();
-        toggleButton.setText(String.valueOf(message.getId()));
+        toggleButton.setText(message.getMessage());
         toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
         toggleButton.setToggleGroup(toggleGroupForReplies);
-        toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
-        toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
-//        toggleButton.setGraphic(imageView);
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
         String style = "-fx-color: rgb(233,233,235); " +
                 "-fx-background-color: rgb(0,255,0); " +
                 "-fx-background-radius: 20px;";
         textFlow.setStyle(style);
-        textFlow.setPadding(new Insets(5,5,5,10));
+        textFlow.setPadding(new Insets(5,10,5,10));
         text.setFill(Color.color(0.934,0.945,0.996));
         textFlow.setMouseTransparent(true);
         stackPane.getChildren().addAll(toggleButton, textFlow);
@@ -141,15 +159,16 @@ public class ChatController extends Controller implements Observer<FriendEntityC
 
     public void receivedMessageReply(MessageDTO message, VBox container) {
         HBox BighBox = new HBox();
+        BighBox.setAlignment(Pos.CENTER_LEFT);
 
         VBox vBox = new VBox();
-        vBox.setAlignment(Pos.CENTER_RIGHT);
-        vBox.setPadding(new Insets(5,5,5,10));
+        vBox.setAlignment(Pos.CENTER_LEFT);
+
         StackPane stackPaneReply = new StackPane();
-        stackPaneReply.setAlignment(Pos.CENTER_RIGHT);
-        stackPaneReply.setPadding(new Insets(5,5,5,10));
+        stackPaneReply.setAlignment(Pos.CENTER_LEFT);
+
         Button jumpToMessage = new Button();
-        jumpToMessage.setText("id");
+        jumpToMessage.setText(String.valueOf(((ReplyMessageDTO)message).getIdReplyMessage()));
         jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
         jumpToMessage.setOnMouseClicked(event -> {
             System.out.println(jumpToMessage.getText());
@@ -157,34 +176,38 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
         jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
 
+
         Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
         TextFlow replyMessage = new TextFlow(textReply);
         String style1 = "-fx-color: rgb(233,233,235); " +
                 "-fx-background-color: rgb(0,150,0); " +
                 "-fx-background-radius: 20px;";
         replyMessage.setStyle(style1);
-        replyMessage.setPadding(new Insets(5,5,5,10));
         textReply.setFill(Color.color(0.934,0.945,0.996));
+        replyMessage.setPadding(new Insets(5,5,5,10));
         replyMessage.setMouseTransparent(true);
+
         stackPaneReply.getChildren().addAll(jumpToMessage, replyMessage);
-        vBox.getChildren().add(stackPaneReply);
+        HBox stackContainer= new HBox();
+        stackContainer.setAlignment(Pos.CENTER_LEFT);
+        stackContainer.setPadding(new Insets(5,5,5,10));
+        stackContainer.getChildren().addAll(stackPaneReply);
+        vBox.getChildren().add(stackContainer);
 
 
 
         StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.CENTER_RIGHT);
-        stackPane.setPadding(new Insets(5,5,5,10));
+        stackPane.setAlignment(Pos.CENTER_LEFT);
 
         ToggleButton toggleButton = new ToggleButton();
         toggleButton.setText(String.valueOf(message.getId()));
         toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
         toggleButton.setToggleGroup(toggleGroupForReplies);
-        toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
-        toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
+
 
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
-        String style2 = "-fx-color: rgb(233,233,235); " +
+        String style2 = "-fx-color: rgb(239,242,255); " +
                 "-fx-background-color: rgb(0,255,0); " +
                 "-fx-background-radius: 20px;";
         textFlow.setStyle(style2);
@@ -192,8 +215,15 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         text.setFill(Color.color(0.934,0.945,0.996));
         textFlow.setMouseTransparent(true);
 
+        toggleButton.prefWidthProperty().bind(textFlow.widthProperty());
+        toggleButton.prefHeightProperty().bind(textFlow.heightProperty());
+
         stackPane.getChildren().addAll(toggleButton, textFlow);
-        vBox.getChildren().add(stackPane);
+        HBox stackContainer1= new HBox();
+        stackContainer1.setAlignment(Pos.CENTER_LEFT);
+        stackContainer1.setPadding(new Insets(5,5,5,10));
+        stackContainer1.getChildren().addAll(stackPane);
+        vBox.getChildren().add(stackContainer1);
 
 
         BighBox.getChildren().add(vBox);
@@ -235,20 +265,22 @@ public class ChatController extends Controller implements Observer<FriendEntityC
     public void sentMessageReply(MessageDTO message, VBox container) {
         HBox BighBox = new HBox();
         BighBox.setAlignment(Pos.CENTER_RIGHT);
-        BighBox.setPadding(new Insets(5,10,5,10));
 
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER_RIGHT);
+
         StackPane stackPaneReply = new StackPane();
         stackPaneReply.setAlignment(Pos.CENTER_RIGHT);
+
         Button jumpToMessage = new Button();
-        jumpToMessage.setText("id");
+        jumpToMessage.setText(String.valueOf(((ReplyMessageDTO)message).getIdReplyMessage()));
         jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
         jumpToMessage.setOnMouseClicked(event -> {
             System.out.println(jumpToMessage.getText());
         });
         jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
         jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
+
 
         Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
         TextFlow replyMessage = new TextFlow(textReply);
@@ -259,6 +291,8 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         textReply.setFill(Color.color(0.934,0.945,0.996));
         replyMessage.setPadding(new Insets(5,10,5,10));
         replyMessage.setMouseTransparent(true);
+
+
         stackPaneReply.getChildren().addAll(jumpToMessage, replyMessage);
         HBox stackContainer= new HBox();
         stackContainer.setAlignment(Pos.CENTER_RIGHT);
@@ -287,9 +321,12 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         textFlow.setPadding(new Insets(5,10,5,10));
         text.setFill(Color.color(0.934,0.945,0.996));
         textFlow.setMouseTransparent(true);
-
         stackPane.getChildren().addAll(toggleButton, textFlow);
-        vBox.getChildren().add(stackPane);
+        HBox stackContainer1= new HBox();
+        stackContainer1.setAlignment(Pos.CENTER_RIGHT);
+        stackContainer1.setPadding(new Insets(5,10,5,10));
+        stackContainer1.getChildren().addAll(stackPane);
+        vBox.getChildren().add(stackContainer1);
 
 
         BighBox.getChildren().add(vBox);
