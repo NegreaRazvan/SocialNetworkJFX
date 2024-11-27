@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
@@ -173,7 +174,38 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         jumpToMessage.setText(String.valueOf(((ReplyMessageDTO)message).getIdReplyMessage()));
         jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
         jumpToMessage.setOnMouseClicked(event -> {
-            System.out.println(jumpToMessage.getText());
+            for (Node node : container.getChildren()) {
+                if (node instanceof HBox) {
+                    if(((HBox) node).getChildren().get(0) instanceof StackPane) {
+                        StackPane stackPane1 = (StackPane) ((HBox) node).getChildren().get(0);
+                        var children = stackPane1.getChildren();
+                        ToggleButton button = (ToggleButton) children.get(0);
+                        if (button.getText().equals(jumpToMessage.getText())) {
+                            double contentHeight = container.getHeight();
+                            double scrollPaneHeight = scrollMessages.getViewportBounds().getHeight();
+                            double buttonY = button.getLayoutY();
+                            double targetValue = button.localToScene(button.getBoundsInLocal()).getMaxY() / contentHeight;
+                            var vheight=stackPane1.getLayoutY();
+                            smoothScroll(stackPane1.getLayoutY()/(container.getHeight()-scrollPaneHeight));
+                            break;
+                        }
+                    }else {
+                        VBox vBox1=(VBox) ((HBox) node).getChildren().get(0);
+                        HBox hbox1=(HBox) vBox1.getChildren().get(0);
+                        StackPane stackPane1 = (StackPane) hbox1.getChildren().get(0);
+                        Button button = (Button) stackPane1.getChildren().get(0);
+                        if (button.getText().equals(jumpToMessage.getText())) {
+                            double contentHeight = container.getHeight();
+                            var vheight=vBox1.getLayoutY();
+                            double scrollPaneHeight = scrollMessages.getViewportBounds().getHeight();
+                            double buttonY = button.getLayoutY();
+                            double targetValue = button.localToScene(button.getBoundsInLocal()).getMaxY() / contentHeight;
+                            smoothScroll(vBox1.getLayoutY()/(container.getHeight()-scrollPaneHeight));
+                            break;
+                        }
+                    }
+                }
+            }
         });
         jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
         jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
@@ -278,7 +310,44 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         jumpToMessage.setText(String.valueOf(((ReplyMessageDTO)message).getIdReplyMessage()));
         jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
         jumpToMessage.setOnMouseClicked(event -> {
-            System.out.println(jumpToMessage.getText());
+            double height=0;
+            for (Node node : container.getChildren()) {
+                if (node instanceof HBox) {
+                    if(((HBox) node).getChildren().get(0) instanceof StackPane) {
+                        StackPane stackPane1 = (StackPane) ((HBox) node).getChildren().get(0);
+                        var children = stackPane1.getChildren();
+                        ToggleButton button = (ToggleButton) children.get(0);
+                        height+=button.getHeight();
+                        if (button.getText().equals(jumpToMessage.getText())) {
+                            double contentHeight = container.getHeight();
+                            double scrollPaneHeight = scrollMessages.getViewportBounds().getHeight();
+                            double var=button.localToScene(button.getBoundsInLocal()).getMinY();
+                            double var1=container.localToScene(container.getBoundsInLocal()).getMaxY();
+                            double targetValue = var/var1;
+                            smoothScroll(targetValue);
+                            break;
+                        }
+                    }else {
+                        VBox vBox1=(VBox) ((HBox) node).getChildren().get(0);
+                        HBox hbox1=(HBox) vBox1.getChildren().get(0);
+                        HBox hbox2=(HBox) vBox1.getChildren().get(1);
+                        StackPane stackPane1 = (StackPane) hbox1.getChildren().get(0);
+                        StackPane stackPane2 = (StackPane) hbox2.getChildren().get(0);
+                        ToggleButton button1 = (ToggleButton) stackPane2.getChildren().get(0);
+                        Button button = (Button) stackPane1.getChildren().get(0);
+                        height+=button.getHeight();
+                        height+=button1.getHeight();
+                        if (button.getText().equals(jumpToMessage.getText())) {
+                            double contentHeight = container.getHeight();
+                            double scrollPaneHeight = scrollMessages.getViewportBounds().getHeight();
+                            double targetValue = button.localToScene(button.getBoundsInLocal()).getMaxY() / contentHeight;
+                            double var=container.localToScene(button.getBoundsInLocal()).getMaxY();
+                            smoothScroll(targetValue);
+                            break;
+                        }
+                    }
+                }
+            }
         });
         jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
         jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
@@ -339,10 +408,6 @@ public class ChatController extends Controller implements Observer<FriendEntityC
     void handleSendMessage(ActionEvent event) {
         if(!sendField.getText().isEmpty()) {
             if(toggleGroupForReplies.getSelectedToggle()!=null) {
-//                var username = ((Label)c.getChildren().get(2)).getText();
-                var a=manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId();
-                var b=manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getMessage();
-                var c=manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getId();
                 manager.sendMessage(user.getId(), manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId(), sendField.getText(), manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getMessage(), manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getId());
             }
             else {
@@ -366,8 +431,6 @@ public class ChatController extends Controller implements Observer<FriendEntityC
                 else
                     sentMessage(messages.get(i),container);
         Platform.runLater(() -> scrollMessages.setVvalue(1.0));
-
-
     }
 
     private void smoothScroll(double targetValue) {
@@ -444,7 +507,6 @@ public class ChatController extends Controller implements Observer<FriendEntityC
                 .toList();
         updateContainer(filteredList, friendListChat, 20, "friend-show-chat-list.fxml", ControllerType.FRIENDSHOWCHATLIST);
     }
-
 
     @Override
     public void update(FriendEntityChangeEvent event) {
