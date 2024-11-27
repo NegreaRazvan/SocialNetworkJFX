@@ -140,7 +140,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         stackPane.setPadding(new Insets(5,5,5,10));
 
         ToggleButton toggleButton = new ToggleButton();
-        toggleButton.setText(message.getMessage());
+        toggleButton.setText(String.valueOf(message.getId()));
         toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
         toggleButton.setToggleGroup(toggleGroupForReplies);
         Text text= new Text(message.getMessage());
@@ -152,6 +152,8 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         textFlow.setPadding(new Insets(5,10,5,10));
         text.setFill(Color.color(0.934,0.945,0.996));
         textFlow.setMouseTransparent(true);
+        toggleButton.prefWidthProperty().bind(textFlow.widthProperty());
+        toggleButton.prefHeightProperty().bind(textFlow.heightProperty());
         stackPane.getChildren().addAll(toggleButton, textFlow);
         BighBox.getChildren().add(stackPane);
         container.getChildren().add(BighBox);
@@ -338,8 +340,10 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         if(!sendField.getText().isEmpty()) {
             if(toggleGroupForReplies.getSelectedToggle()!=null) {
 //                var username = ((Label)c.getChildren().get(2)).getText();
-                ((ToggleButton)toggleGroup.getSelectedToggle()).getText();
-                manager.sendMessage(user.getId(), manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId(), sendField.getText(), ((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText(), manager.getUser(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText()).getId());
+                var a=manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId();
+                var b=manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getMessage();
+                var c=manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getId();
+                manager.sendMessage(user.getId(), manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId(), sendField.getText(), manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getMessage(), manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getId());
             }
             else {
                 manager.sendMessage(user.getId(), manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId(), sendField.getText(), null, null );
@@ -361,6 +365,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
                     sentMessageReply(messages.get(i), container);
                 else
                     sentMessage(messages.get(i),container);
+        Platform.runLater(() -> scrollMessages.setVvalue(1.0));
 
 
     }
@@ -394,7 +399,6 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         sendMessage.setVisible(true);
         sendMessage.setLayoutY(primaryStage.getHeight() - 2.5*sendMessage.getHeight());
         updateContainer(list, messages);
-        Platform.runLater(() -> scrollMessages.setVvalue(1.0));
     }
 
     public void initializeWindow(User user, User friend, Stage stage) {

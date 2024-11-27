@@ -100,4 +100,6 @@ public interface ServiceInterface{
     public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage,Long idOfTheReplyMessage);
 
     public Optional<MessageDTO> findOneMessage(Long to, Long from);
+
+    public Optional<MessageDTO> findOneMessage(Long id);
 }

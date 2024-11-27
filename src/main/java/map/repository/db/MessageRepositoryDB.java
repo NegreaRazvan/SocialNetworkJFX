@@ -30,7 +30,7 @@ public class MessageRepositoryDB extends AbstractDBRepository<Long, MessageDTO> 
 
     @Override
     public PreparedStatement entityToSaveStatement(Connection con, MessageDTO entity) throws SQLException {
-        String query = "INSERT INTO public.\"Message\" (\"to\", \"from\", message, date, \"idReplyMessage\", \"idOfTheReplyMessage\") VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO public.\"Message\" (\"to\", \"from\", message, date, \"idReplyMessage\", \"idOfTheReplyMessage\") VALUES (?, ?, ?, ?, ?,?)";
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setLong(1, entity.getTo());
             ps.setLong(2, entity.getFrom());
@@ -38,9 +38,13 @@ public class MessageRepositoryDB extends AbstractDBRepository<Long, MessageDTO> 
             ps.setTimestamp(4, Timestamp.valueOf( entity.getDate()));
             if(entity instanceof ReplyMessageDTO) {
                 ps.setString(5, ((ReplyMessageDTO) entity).getMsg());
+                ps.setLong(6, ((ReplyMessageDTO) entity).getIdReplyMessage());
             }
-            else
-                ps.setNull(5, Types.VARCHAR);
+            else {
+                ps.setNull(5, Types.NULL);
+                ps.setNull(6, Types.NULL);
+            }
+
         }
         return ps;
     }
@@ -52,7 +56,13 @@ public class MessageRepositoryDB extends AbstractDBRepository<Long, MessageDTO> 
 
     @Override
     public ResultSet entityToFindStatement(Connection con, Long aLong) throws SQLException {
-        return null;
+        String query = "SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\", \"idOfTheReplyMessage\" FROM public.\"Message\" WHERE id=? ";
+        ResultSet rs;
+        PreparedStatement ps = con.prepareStatement(query);{
+            ps.setLong(1, aLong);
+            rs = ps.executeQuery();
+        }
+        return rs;
     }
 
 

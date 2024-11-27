@@ -257,6 +257,11 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     }
 
     @Override
+    public Optional<MessageDTO> findOneMessage(Long id){
+        return messageRepository.findOne(id);
+    }
+
+    @Override
     public void addObserver(Observer<FriendEntityChangeEvent> observer) {
         observers.add(observer);
     }

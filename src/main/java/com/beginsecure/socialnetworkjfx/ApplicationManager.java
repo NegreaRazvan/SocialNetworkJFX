@@ -30,7 +30,7 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://localhost:3580/Users";
+        String url = "jdbc:postgresql://192.168.1.57:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
@@ -141,6 +141,7 @@ public class ApplicationManager {
 
 
 
+
     ///The 3 main lists
 
     public ArrayList<User> getNonFriendsOfUser(Long userId){
@@ -194,6 +195,10 @@ public class ApplicationManager {
 
     public void sendMessage(Long from, Long to, String message, String replyMessage, Long idOfTheReplyMessage){
         service.saveMessage(to,from,message,replyMessage,idOfTheReplyMessage);
+    }
+
+    public MessageDTO getMessage(Long id){
+        return service.findOneMessage(id).get();
     }
 
 }
