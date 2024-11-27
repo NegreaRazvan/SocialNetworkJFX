@@ -33,6 +33,9 @@ public class FriendEntityChangeEvent implements Event {
     }
 
 
+    public MessageDTO getMessage() {
+        return message;
+    }
     public ChangeEventType getType() {
         return type;
     }

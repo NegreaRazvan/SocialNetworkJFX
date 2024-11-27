@@ -97,7 +97,7 @@ public interface ServiceInterface{
      */
     ArrayList<Optional<User>> longestPath();
 
-    public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage);
+    public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage,Long idOfTheReplyMessage);
 
     public Optional<MessageDTO> findOneMessage(Long to, Long from);
 }

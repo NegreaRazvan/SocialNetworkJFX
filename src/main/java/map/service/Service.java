@@ -237,14 +237,14 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     }
 
     @Override
-    public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage) {
+    public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage,Long idOfTheReplyMessage) {
         Optional.ofNullable(userRepository.findOne(to)).orElseThrow(() -> new ValidationException("User id not found"));
         Optional.ofNullable(userRepository.findOne(from)).orElseThrow(() -> new ValidationException("User not found"));
         MessageDTO messageDTO;
         if(idReplyMessage==null)
             messageDTO=new MessageDTO(null, from,to, message, LocalDateTime.now());
         else
-            messageDTO=new ReplyMessageDTO(null, from, to ,message, LocalDateTime.now(), idReplyMessage);
+            messageDTO=new ReplyMessageDTO(null, from, to ,message, LocalDateTime.now(), idReplyMessage, idOfTheReplyMessage);
         messageRepository.save(messageDTO);
         notifyObservers(new FriendEntityChangeEvent(ChangeEventType.MESSAGESENT, messageDTO));
         return Optional.empty();

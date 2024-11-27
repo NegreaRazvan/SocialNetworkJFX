@@ -35,7 +35,7 @@ public class ApplicationManager {
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
         String queryLoadF="SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\"";
-        String queryLoadM="SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\" FROM public.\"Message\"";
+        String queryLoadM="SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\", \"idOfReplyMessage\" FROM public.\"Message\"";
 
         Repository repository = new UserRepositoryDB(url,user,password, queryLoad);
         Repository repositoryF = new FriendRepositoryDB(url,user,password,queryLoadF);
@@ -185,4 +185,15 @@ public class ApplicationManager {
     public void addObserverMainWindow(MainWindowController controller){
         service.addObserver(controller);
     }
+
+    public void addObserverChatWindow(ChatController controller){
+        service.addObserver(controller);
+    }
+
+    //message related logic
+
+    public void sendMessage(Long from, Long to, String message, String replyMessage, Long idOfTheReplyMessage){
+        service.saveMessage(to,from,message,replyMessage,idOfTheReplyMessage);
+    }
+
 }

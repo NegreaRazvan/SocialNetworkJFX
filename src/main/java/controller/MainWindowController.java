@@ -305,16 +305,18 @@ public class MainWindowController extends Controller implements Observer<FriendE
 
     @Override
     public void update(FriendEntityChangeEvent event) {
-        nonFriendsOfUser=manager.getNonFriendsOfUser(user.getId());
-        friendsOfUser = manager.getFriendsOfUser(user.getId());
-        notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
-        if (event.getType().equals(ChangeEventType.REQUEST)) {
-            updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
-            if (Objects.equals(event.getFriend().second(), user.getId())) {
-                numberOfNotifications++;
-                redDotImage.setVisible(true);
-                NotifCountLabel.setVisible(true);
-                NotifCountLabel.setText(numberOfNotifications + "");
+        if(event.getType().equals(ChangeEventType.DECLINE)||event.getType().equals(ChangeEventType.ADD)||event.getType().equals(ChangeEventType.DELETE)){
+            nonFriendsOfUser = manager.getNonFriendsOfUser(user.getId());
+            friendsOfUser = manager.getFriendsOfUser(user.getId());
+            notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
+            if (event.getType().equals(ChangeEventType.REQUEST)) {
+                updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
+                if (Objects.equals(event.getFriend().second(), user.getId())) {
+                    numberOfNotifications++;
+                    redDotImage.setVisible(true);
+                    NotifCountLabel.setVisible(true);
+                    NotifCountLabel.setText(numberOfNotifications + "");
+                }
             }
         }
         if(event.getType().equals(ChangeEventType.DECLINE))

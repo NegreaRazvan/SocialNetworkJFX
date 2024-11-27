@@ -19,6 +19,7 @@ public class FriendShowOnChatController extends Controller{
 
     public void setTextFriend(User friend) {
         friendName.setText(friend.getLastName() + " " + friend.getFirstName());
+
         friendUsername.setText(friend.getUsername());
     }
 

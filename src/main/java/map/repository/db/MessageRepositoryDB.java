@@ -21,15 +21,16 @@ public class MessageRepositoryDB extends AbstractDBRepository<Long, MessageDTO> 
         String message = rs.getString("message");
         LocalDateTime date = rs.getTimestamp("date").toLocalDateTime();
         String idReply = rs.getString("idReplyMessage");
+        Long idReplyMessage = rs.getLong("idOfTheReplyMessage");
         if(idReply == null)
             return new MessageDTO(id, from, to, message, date);
         else
-            return new ReplyMessageDTO(id,from,to,message,date,idReply);
+            return new ReplyMessageDTO(id,from,to,message,date,idReply, idReplyMessage);
     }
 
     @Override
     public PreparedStatement entityToSaveStatement(Connection con, MessageDTO entity) throws SQLException {
-        String query = "INSERT INTO public.\"Message\" (\"to\", \"from\", message, date, \"idReplyMessage\") VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO public.\"Message\" (\"to\", \"from\", message, date, \"idReplyMessage\", \"idOfTheReplyMessage\") VALUES (?, ?, ?, ?, ?)";
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setLong(1, entity.getTo());
             ps.setLong(2, entity.getFrom());
@@ -93,7 +94,7 @@ public class MessageRepositoryDB extends AbstractDBRepository<Long, MessageDTO> 
         Set<MessageDTO> entities = new HashSet<>();
         String query;
         try (Connection conn = DriverManager.getConnection(url, user, password)){
-            query = "SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\" FROM public.\"Message\" WHERE (\"from\" = ? AND \"to\" = ? ) OR (\"from\" = ? AND \"to\" = ? )";
+            query = "SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\", \"idOfTheReplyMessage\" FROM public.\"Message\" WHERE (\"from\" = ? AND \"to\" = ? ) OR (\"from\" = ? AND \"to\" = ? )";
             PreparedStatement pstmt = conn.prepareStatement(query);
             {
                 pstmt.setLong(1, from);

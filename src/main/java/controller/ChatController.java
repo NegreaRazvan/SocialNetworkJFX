@@ -1,6 +1,11 @@
 package controller;
 
 import com.beginsecure.socialnetworkjfx.HelloApplication;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,17 +19,23 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import map.domain.*;
 import javafx.scene.image.ImageView;
+import map.events.ChangeEventType;
+import map.events.FriendEntityChangeEvent;
 
 import javax.swing.text.Element;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
+import map.observer.Observer;
 
-public class ChatController extends Controller{
+public class ChatController extends Controller implements Observer<FriendEntityChangeEvent> {
     Stage primaryStage;
     User friend;
     User user;
@@ -54,6 +65,8 @@ public class ChatController extends Controller{
     Button sendButton;
     @FXML
     VBox messages;
+    @FXML
+    ScrollPane scrollMessages;
 
     public void setFriend(User friend) {
         this.friend = friend;
@@ -106,9 +119,11 @@ public class ChatController extends Controller{
 //        Image image = new Image("C://Users//Razvan//IdeaProjects//SocialNetworkGUI//src//main//resources//com//beginsecure//socialnetworkjfx//images//Plus.png");
 //        ImageView imageView=new ImageView(image);
         ToggleButton toggleButton = new ToggleButton();
-        toggleButton.setText(message.getMessage());
+        toggleButton.setText(String.valueOf(message.getId()));
         toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
         toggleButton.setToggleGroup(toggleGroupForReplies);
+        toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
+        toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
 //        toggleButton.setGraphic(imageView);
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
@@ -116,67 +131,89 @@ public class ChatController extends Controller{
                 "-fx-background-color: rgb(0,255,0); " +
                 "-fx-background-radius: 20px;";
         textFlow.setStyle(style);
-        textFlow.setPadding(new Insets(5,10,5,10));
+        textFlow.setPadding(new Insets(5,5,5,10));
         text.setFill(Color.color(0.934,0.945,0.996));
         textFlow.setMouseTransparent(true);
         stackPane.getChildren().addAll(toggleButton, textFlow);
         BighBox.getChildren().add(stackPane);
+        container.getChildren().add(BighBox);
+    }
+
+    public void receivedMessageReply(MessageDTO message, VBox container) {
+        HBox BighBox = new HBox();
+
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER_RIGHT);
+        vBox.setPadding(new Insets(5,5,5,10));
+        StackPane stackPaneReply = new StackPane();
+        stackPaneReply.setAlignment(Pos.CENTER_RIGHT);
+        stackPaneReply.setPadding(new Insets(5,5,5,10));
+        Button jumpToMessage = new Button();
+        jumpToMessage.setText("id");
+        jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
+        jumpToMessage.setOnMouseClicked(event -> {
+            System.out.println(jumpToMessage.getText());
+        });
+        jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
+        jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
+
+        Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
+        TextFlow replyMessage = new TextFlow(textReply);
+        String style1 = "-fx-color: rgb(233,233,235); " +
+                "-fx-background-color: rgb(0,150,0); " +
+                "-fx-background-radius: 20px;";
+        replyMessage.setStyle(style1);
+        replyMessage.setPadding(new Insets(5,5,5,10));
+        textReply.setFill(Color.color(0.934,0.945,0.996));
+        replyMessage.setMouseTransparent(true);
+        stackPaneReply.getChildren().addAll(jumpToMessage, replyMessage);
+        vBox.getChildren().add(stackPaneReply);
+
+
+
+        StackPane stackPane = new StackPane();
+        stackPane.setAlignment(Pos.CENTER_RIGHT);
+        stackPane.setPadding(new Insets(5,5,5,10));
+
+        ToggleButton toggleButton = new ToggleButton();
+        toggleButton.setText(String.valueOf(message.getId()));
+        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
+        toggleButton.setToggleGroup(toggleGroupForReplies);
+        toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
+        toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
+
+        Text text= new Text(message.getMessage());
+        TextFlow textFlow = new TextFlow(text);
+        String style2 = "-fx-color: rgb(233,233,235); " +
+                "-fx-background-color: rgb(0,255,0); " +
+                "-fx-background-radius: 20px;";
+        textFlow.setStyle(style2);
+        textFlow.setPadding(new Insets(5,5,5,10));
+        text.setFill(Color.color(0.934,0.945,0.996));
+        textFlow.setMouseTransparent(true);
+
+        stackPane.getChildren().addAll(toggleButton, textFlow);
+        vBox.getChildren().add(stackPane);
+
+
+        BighBox.getChildren().add(vBox);
         container.getChildren().add(BighBox);
     }
 
     public void sentMessage(MessageDTO message, VBox container) {
         HBox BighBox = new HBox();
-        StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.CENTER_RIGHT);
-        stackPane.setPadding(new Insets(5,5,5,10));
-        ToggleButton toggleButton = new ToggleButton();
-        toggleButton.setText(message.getMessage());
-        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
-        toggleButton.setToggleGroup(toggleGroupForReplies);
-        Text text= new Text(message.getMessage());
-        TextFlow textFlow = new TextFlow(text);
-        String style = "-fx-color: rgb(239,242,255); " +
-                "-fx-background-color: rgb(15,125,242); " +
-                "-fx-background-radius: 20px;";
-        textFlow.setStyle(style);
-        textFlow.setPadding(new Insets(5,10,5,10));
-        text.setFill(Color.color(0.934,0.945,0.996));
-        textFlow.setMouseTransparent(true);
-        stackPane.getChildren().addAll(toggleButton, textFlow);
-        BighBox.getChildren().add(stackPane);
-        container.getChildren().add(BighBox);
-    }
-
-    public void sentMessageReply(MessageDTO message, VBox container) {
-        HBox BighBox = new HBox();
         BighBox.setAlignment(Pos.CENTER_RIGHT);
-        BighBox.setPadding(new Insets(5,5,5,10));
-        VBox vBox = new VBox();
-        vBox.setAlignment(Pos.CENTER_RIGHT);
-        vBox.setPadding(new Insets(5,5,5,10));
-        Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
-        TextFlow replyMessage = new TextFlow(textReply);
-        String style1 = "-fx-color: rgb(233,233,235); " +
-                "-fx-background-color: rgb(0,0,255); " +
-                "-fx-background-radius: 20px;";
-        replyMessage.setStyle(style1);
-        replyMessage.setPadding(new Insets(5,10,5,10));
-        textReply.setFill(Color.color(0.934,0.945,0.996));
-        replyMessage.setMouseTransparent(true);
-        vBox.getChildren().add(replyMessage);
+        BighBox.setPadding(new Insets(5,10,5,10));
 
-
-
-        HBox hBox = new HBox();
         StackPane stackPane = new StackPane();
         stackPane.setAlignment(Pos.CENTER_RIGHT);
-        stackPane.setPadding(new Insets(5,5,5,10));
-        hBox.setAlignment(Pos.CENTER_RIGHT);
-        hBox.setPadding(new Insets(5,5,5,10));
+
         ToggleButton toggleButton = new ToggleButton();
-        toggleButton.setText(message.getMessage());
+        toggleButton.setText(String.valueOf(message.getId()));
         toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
         toggleButton.setToggleGroup(toggleGroupForReplies);
+        toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
+        toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
 
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
@@ -187,26 +224,119 @@ public class ChatController extends Controller{
         textFlow.setPadding(new Insets(5,10,5,10));
         text.setFill(Color.color(0.934,0.945,0.996));
         textFlow.setMouseTransparent(true);
+
+        stackPane.getChildren().addAll(toggleButton, textFlow);
+
+
+        BighBox.getChildren().add(stackPane);
+        container.getChildren().add(BighBox);
+    }
+
+    public void sentMessageReply(MessageDTO message, VBox container) {
+        HBox BighBox = new HBox();
+        BighBox.setAlignment(Pos.CENTER_RIGHT);
+        BighBox.setPadding(new Insets(5,10,5,10));
+
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER_RIGHT);
+        StackPane stackPaneReply = new StackPane();
+        stackPaneReply.setAlignment(Pos.CENTER_RIGHT);
+        Button jumpToMessage = new Button();
+        jumpToMessage.setText("id");
+        jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
+        jumpToMessage.setOnMouseClicked(event -> {
+            System.out.println(jumpToMessage.getText());
+        });
+        jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
+        jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
+
+        Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
+        TextFlow replyMessage = new TextFlow(textReply);
+        String style1 = "-fx-color: rgb(233,233,235); " +
+                "-fx-background-color: rgb(0,0,255); " +
+                "-fx-background-radius: 20px;";
+        replyMessage.setStyle(style1);
+        textReply.setFill(Color.color(0.934,0.945,0.996));
+        replyMessage.setPadding(new Insets(5,10,5,10));
+        replyMessage.setMouseTransparent(true);
+        stackPaneReply.getChildren().addAll(jumpToMessage, replyMessage);
+        HBox stackContainer= new HBox();
+        stackContainer.setAlignment(Pos.CENTER_RIGHT);
+        stackContainer.setPadding(new Insets(5,10,5,10));
+        stackContainer.getChildren().addAll(stackPaneReply);
+        vBox.getChildren().add(stackContainer);
+
+
+
+        StackPane stackPane = new StackPane();
+        stackPane.setAlignment(Pos.CENTER_RIGHT);
+
+        ToggleButton toggleButton = new ToggleButton();
+        toggleButton.setText(String.valueOf(message.getId()));
+        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
+        toggleButton.setToggleGroup(toggleGroupForReplies);
+        toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
+        toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
+
+        Text text= new Text(message.getMessage());
+        TextFlow textFlow = new TextFlow(text);
+        String style2 = "-fx-color: rgb(239,242,255); " +
+                "-fx-background-color: rgb(15,125,242); " +
+                "-fx-background-radius: 20px;";
+        textFlow.setStyle(style2);
+        textFlow.setPadding(new Insets(5,10,5,10));
+        text.setFill(Color.color(0.934,0.945,0.996));
+        textFlow.setMouseTransparent(true);
+
         stackPane.getChildren().addAll(toggleButton, textFlow);
         vBox.getChildren().add(stackPane);
+
+
         BighBox.getChildren().add(vBox);
         container.getChildren().add(BighBox);
+    }
+
+    @FXML
+    void handleSendMessage(ActionEvent event) {
+        if(!sendField.getText().isEmpty()) {
+            if(toggleGroupForReplies.getSelectedToggle()!=null) {
+//                var username = ((Label)c.getChildren().get(2)).getText();
+                ((ToggleButton)toggleGroup.getSelectedToggle()).getText();
+                manager.sendMessage(user.getId(), manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId(), sendField.getText(), ((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText(), manager.getUser(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText()).getId());
+            }
+            else {
+                manager.sendMessage(user.getId(), manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId(), sendField.getText(), null, null );
+                System.out.println("is empty");
+            }
+        }
     }
 
     public void updateContainer(List<MessageDTO> messages, VBox container) {
         container.getChildren().clear();
         for (int i = 0; i < messages.size(); i++)
             if(messages.get(i).getTo().equals(user.getId()))
-                receivedMessage(messages.get(i), container);
+                if(messages.get(i) instanceof ReplyMessageDTO)
+                    receivedMessageReply(messages.get(i), container);
+                else
+                    receivedMessage(messages.get(i), container);
             else
                 if(messages.get(i) instanceof ReplyMessageDTO)
                     sentMessageReply(messages.get(i), container);
                 else
                     sentMessage(messages.get(i),container);
 
+
     }
 
+    private void smoothScroll(double targetValue) {
 
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.millis(500),
+                        new KeyValue(scrollMessages.vvalueProperty(), targetValue, Interpolator.EASE_BOTH)
+                )
+        );
+        timeline.play();
+    }
 
     public void handleToggleButtonPress(){
         ToggleButton selected = (ToggleButton) toggleGroup.getSelectedToggle();
@@ -227,9 +357,11 @@ public class ChatController extends Controller{
         sendMessage.setVisible(true);
         sendMessage.setLayoutY(primaryStage.getHeight() - 2.5*sendMessage.getHeight());
         updateContainer(list, messages);
+        Platform.runLater(() -> scrollMessages.setVvalue(1.0));
     }
 
     public void initializeWindow(User user, User friend, Stage stage) {
+        manager.addObserverChatWindow(this);
         sendMessage.setVisible(false);
         primaryStage = stage;
         sendMessage.setLayoutY(primaryStage.getHeight() - 2.5*sendMessage.getHeight());
@@ -272,4 +404,13 @@ public class ChatController extends Controller{
         updateContainer(filteredList, friendListChat, 20, "friend-show-chat-list.fxml", ControllerType.FRIENDSHOWCHATLIST);
     }
 
+
+    @Override
+    public void update(FriendEntityChangeEvent event) {
+        if(event.getType().equals(ChangeEventType.MESSAGESENT)){
+            var list = manager.getSentMessages(event.getMessage().getTo(), event.getMessage().getFrom());
+            list.sort(Comparator.comparingLong(Entity::getId));
+            updateContainer(list, messages);
+        }
+    }
 }

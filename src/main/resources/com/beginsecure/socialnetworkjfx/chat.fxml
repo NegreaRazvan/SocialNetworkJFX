@@ -18,16 +18,16 @@
             <VBox fx:id="friendListChat" prefHeight="1358.0" prefWidth="308.0" style="-fx-background-color: black;" />
          </content>
       </ScrollPane>
-      <ScrollPane fx:id="scrollChats" layoutX="326.0" layoutY="143.0" prefHeight="648.0" prefWidth="430.0" style="-fx-background-color: black;">
+      <ScrollPane fx:id="scrollMessages" layoutX="326.0" layoutY="143.0" prefHeight="505.0" prefWidth="430.0" style="-fx-background-color: black;">
         <content>
-           <VBox fx:id="messages" prefHeight="647.0" prefWidth="416.0" style="-fx-background-color: black;" />
+           <VBox fx:id="messages" prefHeight="536.0" prefWidth="416.0" style="-fx-background-color: black;" />
         </content>
       </ScrollPane>
       <HBox fx:id="friendHBox" layoutX="326.0" layoutY="-2.0" prefHeight="122.0" prefWidth="442.0" />
       <AnchorPane fx:id="sendMessage" layoutX="329.0" layoutY="801.0" prefHeight="32.0" prefWidth="430.0">
          <children>
             <TextField fx:id="sendField" prefHeight="32.0" prefWidth="430.0" promptText="Send a message" style="-fx-background-color: #3f3f3f;" />
-            <Button fx:id="sendButton" layoutX="404.0" layoutY="2.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="26.0" text="Send" />
+            <Button fx:id="sendButton" layoutX="404.0" layoutY="2.0" mnemonicParsing="false" onAction="#handleSendMessage" prefHeight="25.0" prefWidth="26.0" text="Send" />
          </children>
       </AnchorPane>
       <Line endX="-100.0" endY="1187.5" layoutX="868.0" layoutY="356.0" startX="-100.0" startY="-359.0" stroke="#313131" />
