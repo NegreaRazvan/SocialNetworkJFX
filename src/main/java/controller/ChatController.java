@@ -13,26 +13,23 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
+import javafx.scene.effect.Glow;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import map.domain.*;
-import javafx.scene.image.ImageView;
 import map.events.ChangeEventType;
 import map.events.FriendEntityChangeEvent;
 
-import javax.swing.text.Element;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import map.observer.Observer;
 
@@ -115,6 +112,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
 
         HBox BighBox = new HBox();
         StackPane stackPane = new StackPane();
+        stackPane.setAccessibleText("message");
         stackPane.setAlignment(Pos.CENTER_LEFT);
         stackPane.setPadding(new Insets(5,5,5,10));
 
@@ -125,7 +123,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
         String style = "-fx-color: rgb(233,233,235); " +
-                "-fx-background-color: rgb(0,255,0); " +
+                "-fx-background-color: 	rgb(60,179,113); " +
                 "-fx-background-radius: 20px;";
         textFlow.setStyle(style);
         textFlow.setPadding(new Insets(5,10,5,10));
@@ -142,7 +140,8 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         HBox BighBox = new HBox();
         BighBox.setAlignment(Pos.CENTER_LEFT);
 
-        VBox vBox = new VBox();
+        StackPane vBox = new StackPane();
+        vBox.setAccessibleText("reply");
         vBox.setAlignment(Pos.CENTER_LEFT);
 
         StackPane stackPaneReply = new StackPane();
@@ -155,20 +154,24 @@ public class ChatController extends Controller implements Observer<FriendEntityC
             System.out.println(jumpToMessage.getText());
             for (Node node : container.getChildren()) {
                 if (node instanceof HBox) {
-                    if(((HBox) node).getChildren().get(0) instanceof StackPane) {
+                    if(((HBox) node).getChildren().get(0).getAccessibleText().equals("message")) {
                         StackPane stackPane1 = (StackPane) ((HBox) node).getChildren().get(0);
                         ToggleButton button = (ToggleButton) stackPane1.getChildren().get(0);
+                        TextFlow textFlow1=(TextFlow) stackPane1.getChildren().get(1);
                         if (button.getText().equals(jumpToMessage.getText())) {
                             smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
+                            addGlowAnimation(textFlow1);
                             break;
                         }
                     }else {
-                        VBox vBox1=(VBox) ((HBox) node).getChildren().get(0);
+                        StackPane vBox1=(StackPane) ((HBox) node).getChildren().get(0);
                         HBox hbox2=(HBox) vBox1.getChildren().get(1);
                         StackPane stackPane2 = (StackPane) hbox2.getChildren().get(0);
                         ToggleButton button2 = (ToggleButton) stackPane2.getChildren().get(0);
+                        TextFlow textFlow1=(TextFlow) stackPane2.getChildren().get(1);
                         if (button2.getText().equals(jumpToMessage.getText())) {
                             smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
+                            addGlowAnimation(textFlow1);
                             break;
                         }
                     }
@@ -182,7 +185,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
         TextFlow replyMessage = new TextFlow(textReply);
         String style1 = "-fx-color: rgb(233,233,235); " +
-                "-fx-background-color: rgb(0,150,0); " +
+                "-fx-background-color: rgb(105,105,105); " +
                 "-fx-background-radius: 20px;";
         replyMessage.setStyle(style1);
         textReply.setFill(Color.color(0.934,0.945,0.996));
@@ -199,18 +202,18 @@ public class ChatController extends Controller implements Observer<FriendEntityC
 
 
         StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.CENTER_LEFT);
+        stackPane.setAlignment(Pos.TOP_LEFT);
 
         ToggleButton toggleButton = new ToggleButton();
         toggleButton.setText(String.valueOf(message.getId()));
-        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
+        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : transparent");
         toggleButton.setToggleGroup(toggleGroupForReplies);
 
 
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
         String style2 = "-fx-color: rgb(239,242,255); " +
-                "-fx-background-color: rgb(0,255,0); " +
+                "-fx-background-color: 	rgb(60,179,113); " +
                 "-fx-background-radius: 20px;";
         textFlow.setStyle(style2);
         textFlow.setPadding(new Insets(5,5,5,10));
@@ -222,12 +225,30 @@ public class ChatController extends Controller implements Observer<FriendEntityC
 
         stackPane.getChildren().addAll(toggleButton, textFlow);
         HBox stackContainer1= new HBox();
-        stackContainer1.setAlignment(Pos.CENTER_LEFT);
+        stackContainer1.setAlignment(Pos.TOP_LEFT);
         stackContainer1.setPadding(new Insets(5,5,5,10));
         stackContainer1.getChildren().addAll(stackPane);
+
+        AtomicReference<Double> replyHeight= new AtomicReference<>((double) 0);
+        AtomicReference<Double> messageHeight = new AtomicReference<>((double) 0);
+        Platform.runLater(()->{
+            messageHeight.set(textFlow.getBoundsInLocal().getHeight());
+            messageHeight.set(replyMessage.getBoundsInLocal().getHeight());
+            System.out.println("Inside of the runLater: " +  textFlow.getBoundsInLocal().getHeight() + "and " + replyMessage.getBoundsInLocal().getHeight());
+            stackPane.setMinHeight(textFlow.getLayoutBounds().getHeight());
+            stackPane.setMaxHeight(textFlow.getLayoutBounds().getHeight());
+            stackContainer1.setTranslateY((double) (0.95 * replyMessage.getBoundsInLocal().getHeight()));
+            VBox.setMargin(BighBox, new Insets(0,0,textFlow.getBoundsInLocal().getHeight(),0));
+
+        });
+        System.out.println("Outside of the runLater: " +  messageHeight.get() + "and " + replyHeight.get());
+        stackPane.setMinHeight(0);
+        stackPane.setMaxHeight(0);
         vBox.getChildren().add(stackContainer1);
+        stackContainer1.setTranslateY(20);
         BighBox.getChildren().add(vBox);
         container.getChildren().add(BighBox);
+        VBox.setMargin(BighBox, new Insets(0,0,20,0));
     }
 
     public void sentMessage(MessageDTO message, VBox container) {
@@ -236,6 +257,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         BighBox.setPadding(new Insets(5,10,5,10));
 
         StackPane stackPane = new StackPane();
+        stackPane.setAccessibleText("message");
         stackPane.setAlignment(Pos.CENTER_RIGHT);
 
         ToggleButton toggleButton = new ToggleButton();
@@ -248,7 +270,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
         String style2 = "-fx-color: rgb(239,242,255); " +
-                "-fx-background-color: rgb(15,125,242); " +
+                "-fx-background-color: 	rgb(30,144,255); " +
                 "-fx-background-radius: 20px;";
         textFlow.setStyle(style2);
         textFlow.setPadding(new Insets(5,10,5,10));
@@ -266,8 +288,9 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         HBox BighBox = new HBox();
         BighBox.setAlignment(Pos.CENTER_RIGHT);
 
-        VBox vBox = new VBox();
-        vBox.setAlignment(Pos.CENTER_RIGHT);
+        StackPane vBox = new StackPane();
+        vBox.setAccessibleText("reply");
+        vBox.setAlignment(Pos.TOP_RIGHT);
 
         StackPane stackPaneReply = new StackPane();
         stackPaneReply.setAlignment(Pos.CENTER_RIGHT);
@@ -275,42 +298,45 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         Button jumpToMessage = new Button();
         jumpToMessage.setText(String.valueOf(((ReplyMessageDTO)message).getIdReplyMessage()));
         jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
+        jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
+        jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
+
+        String f= vBox.getAccessibleText();
+
         jumpToMessage.setOnMouseClicked(event -> {
             System.out.println(jumpToMessage.getText());
             for (Node node : container.getChildren()) {
                 if (node instanceof HBox) {
-                    if(((HBox) node).getChildren().get(0) instanceof StackPane) {
+                    if(((HBox) node).getChildren().get(0).getAccessibleText().equals("message")) {
                         StackPane stackPane1 = (StackPane) ((HBox) node).getChildren().get(0);
-                        var children = stackPane1.getChildren();
-                        ToggleButton button = (ToggleButton) children.get(0);
+                        ToggleButton button = (ToggleButton) stackPane1.getChildren().get(0);
+                        TextFlow textFlow1=(TextFlow) stackPane1.getChildren().get(1);
                         if (button.getText().equals(jumpToMessage.getText())) {
                             smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
+                            addGlowAnimation(textFlow1);
                             break;
                         }
                     }else {
-                        VBox vBox1=(VBox) ((HBox) node).getChildren().get(0);
-                        HBox hbox1=(HBox) vBox1.getChildren().get(0);
+                        StackPane vBox1=(StackPane) ((HBox) node).getChildren().get(0);
                         HBox hbox2=(HBox) vBox1.getChildren().get(1);
-                        StackPane stackPane1 = (StackPane) hbox1.getChildren().get(0);
                         StackPane stackPane2 = (StackPane) hbox2.getChildren().get(0);
-                        Button button = (Button) stackPane1.getChildren().get(0);
                         ToggleButton button2 = (ToggleButton) stackPane2.getChildren().get(0);
+                        TextFlow textFlow1=(TextFlow) stackPane2.getChildren().get(1);
                         if (button2.getText().equals(jumpToMessage.getText())) {
                             smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
+                            addGlowAnimation(textFlow1);
                             break;
                         }
                     }
                 }
             }
         });
-        jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
-        jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
 
 
         Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
         TextFlow replyMessage = new TextFlow(textReply);
         String style1 = "-fx-color: rgb(233,233,235); " +
-                "-fx-background-color: rgb(0,0,255); " +
+                "-fx-background-color: rgb(105,105,105); " +
                 "-fx-background-radius: 20px;";
         replyMessage.setStyle(style1);
         textReply.setFill(Color.color(0.934,0.945,0.996));
@@ -327,12 +353,13 @@ public class ChatController extends Controller implements Observer<FriendEntityC
 
 
 
+
         StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.CENTER_RIGHT);
+        stackPane.setAlignment(Pos.TOP_RIGHT);
 
         ToggleButton toggleButton = new ToggleButton();
         toggleButton.setText(String.valueOf(message.getId()));
-        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
+        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : transparent");
         toggleButton.setToggleGroup(toggleGroupForReplies);
         toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
         toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
@@ -340,20 +367,40 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
         String style2 = "-fx-color: rgb(239,242,255); " +
-                "-fx-background-color: rgb(15,125,242); " +
+                "-fx-background-color: 	rgb(30,144,255); " +
                 "-fx-background-radius: 20px;";
         textFlow.setStyle(style2);
         textFlow.setPadding(new Insets(5,10,5,10));
+
         text.setFill(Color.color(0.934,0.945,0.996));
         textFlow.setMouseTransparent(true);
         stackPane.getChildren().addAll(toggleButton, textFlow);
         HBox stackContainer1= new HBox();
-        stackContainer1.setAlignment(Pos.CENTER_RIGHT);
+        stackContainer1.setAlignment(Pos.TOP_RIGHT);
         stackContainer1.setPadding(new Insets(5,10,5,10));
+
+
+        AtomicReference<Double> replyHeight= new AtomicReference<>((double) 0);
+        AtomicReference<Double> messageHeight = new AtomicReference<>((double) 0);
+        Platform.runLater(()->{
+            messageHeight.set(textFlow.getBoundsInLocal().getHeight());
+            messageHeight.set(replyMessage.getBoundsInLocal().getHeight());
+            System.out.println("Inside of the runLater: " +  textFlow.getBoundsInLocal().getHeight() + "and " + replyMessage.getBoundsInLocal().getHeight());
+            stackPane.setMinHeight(textFlow.getLayoutBounds().getHeight());
+            stackPane.setMaxHeight(textFlow.getLayoutBounds().getHeight());
+            stackContainer1.setTranslateY((double) (0.95 * replyMessage.getBoundsInLocal().getHeight()));
+            VBox.setMargin(BighBox, new Insets(0,0,textFlow.getBoundsInLocal().getHeight(),0));
+
+        });
+        System.out.println("Outside of the runLater: " +  messageHeight.get() + "and " + replyHeight.get());
+        stackPane.setMinHeight(messageHeight.get());
+        stackPane.setMaxHeight(messageHeight.get());
+//        double messageHeight=textFlow.getBoundsInLocal().getHeight();
         stackContainer1.getChildren().addAll(stackPane);
+        stackContainer1.setTranslateY((double) (0.95 * replyHeight.get()));
+        VBox.setMargin(BighBox, new Insets(0,0,messageHeight.get(),0));
+
         vBox.getChildren().add(stackContainer1);
-
-
         BighBox.getChildren().add(vBox);
         container.getChildren().add(BighBox);
     }
@@ -396,6 +443,20 @@ public class ChatController extends Controller implements Observer<FriendEntityC
                 )
         );
         timeline.play();
+    }
+    public void addGlowAnimation(TextFlow textFlow) {
+        Glow glow = new Glow(0.0); // Start with no glow
+        textFlow.setEffect(glow);
+
+
+        Timeline glowAnimation = new Timeline(
+                new KeyFrame(Duration.millis(1000), new KeyValue(glow.levelProperty(), 0.0)),
+                new KeyFrame(Duration.millis(1500), new KeyValue(glow.levelProperty(), 1.0)),
+                new KeyFrame(Duration.millis(2000), new KeyValue(glow.levelProperty(), 0.0))
+        );
+
+
+        glowAnimation.play();
     }
 
     public void handleToggleButtonPress(){
