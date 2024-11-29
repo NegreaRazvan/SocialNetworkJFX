@@ -24,6 +24,7 @@ public class FriendShowOnChatListController extends Controller{
 
     public void setTextFriend(User friend) {
         friendToggleButton.setText(friend.getUsername());
+        friendToggleButton.setStyle("-fx-text-fill: transparent; -fx-background-color: transparent;");
         friendImage.setMouseTransparent(true);
         friendName.setMouseTransparent(true);
         friendUsername.setMouseTransparent(true);

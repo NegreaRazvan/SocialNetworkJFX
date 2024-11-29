@@ -14,10 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -39,12 +36,6 @@ public class ChatController extends Controller implements Observer<FriendEntityC
     User user;
     @FXML
     ScrollPane scrollFriends;
-    @FXML
-    ScrollPane scrollChats;
-    @FXML
-    TextField friendName;
-    @FXML
-    TextField friendUsername;
     @FXML
     HBox friendHBox;
     @FXML
@@ -88,14 +79,12 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         manager.initController(fxmlLoader, user, friend, controllerType);
         toggleButton.setToggleGroup(toggleGroup);
         toggleButton.setOnMouseEntered(event -> {
-            toggleButton.setStyle("-fx-background-color : #808080");
+            toggleButton.setStyle("-fx-background-color : #808080; -fx-text-fill: transparent;");
         });
         toggleButton.setOnMouseExited(event -> {
-            toggleButton.setStyle("-fx-background-color : black");
+            toggleButton.setStyle("-fx-background-color : black; -fx-text-fill: transparent;");
         });
-        toggleButton.setOnAction(event -> {
-            toggleButton.setStyle("-fx-background-color : #808080");
-        });
+
         container.getChildren().add(node);
     }
 
@@ -108,301 +97,163 @@ public class ChatController extends Controller implements Observer<FriendEntityC
             initObject(friends.get(i), container, fxmlFile, controllerType);
     }
 
-    public void receivedMessage(MessageDTO message, VBox container) {
-
-        HBox BighBox = new HBox();
-        StackPane stackPane = new StackPane();
-        stackPane.setAccessibleText("message");
-        stackPane.setAlignment(Pos.CENTER_LEFT);
-        stackPane.setPadding(new Insets(5,5,5,10));
-
-        ToggleButton toggleButton = new ToggleButton();
-        toggleButton.setText(String.valueOf(message.getId()));
-        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
-        toggleButton.setToggleGroup(toggleGroupForReplies);
-        Text text= new Text(message.getMessage());
-        TextFlow textFlow = new TextFlow(text);
-        String style = "-fx-color: rgb(233,233,235); " +
-                "-fx-background-color: 	rgb(60,179,113); " +
-                "-fx-background-radius: 20px;";
-        textFlow.setStyle(style);
-        textFlow.setPadding(new Insets(5,10,5,10));
-        text.setFill(Color.color(0.934,0.945,0.996));
-        textFlow.setMouseTransparent(true);
-        toggleButton.prefWidthProperty().bind(textFlow.widthProperty());
-        toggleButton.prefHeightProperty().bind(textFlow.heightProperty());
-        stackPane.getChildren().addAll(toggleButton, textFlow);
-        BighBox.getChildren().add(stackPane);
-        container.getChildren().add(BighBox);
-    }
-
-    public void receivedMessageReply(MessageDTO message, VBox container) {
-        HBox BighBox = new HBox();
-        BighBox.setAlignment(Pos.CENTER_LEFT);
-
-        StackPane vBox = new StackPane();
-        vBox.setAccessibleText("reply");
-        vBox.setAlignment(Pos.CENTER_LEFT);
-
-        StackPane stackPaneReply = new StackPane();
-        stackPaneReply.setAlignment(Pos.CENTER_LEFT);
-
-        Button jumpToMessage = new Button();
-        jumpToMessage.setText(String.valueOf(((ReplyMessageDTO)message).getIdReplyMessage()));
-        jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
-        jumpToMessage.setOnMouseClicked(event -> {
-            System.out.println(jumpToMessage.getText());
-            for (Node node : container.getChildren()) {
-                if (node instanceof HBox) {
-                    if(((HBox) node).getChildren().get(0).getAccessibleText().equals("message")) {
-                        StackPane stackPane1 = (StackPane) ((HBox) node).getChildren().get(0);
-                        ToggleButton button = (ToggleButton) stackPane1.getChildren().get(0);
-                        TextFlow textFlow1=(TextFlow) stackPane1.getChildren().get(1);
-                        if (button.getText().equals(jumpToMessage.getText())) {
-                            smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
-                            addGlowAnimation(textFlow1);
-                            break;
-                        }
-                    }else {
-                        StackPane vBox1=(StackPane) ((HBox) node).getChildren().get(0);
-                        HBox hbox2=(HBox) vBox1.getChildren().get(1);
-                        StackPane stackPane2 = (StackPane) hbox2.getChildren().get(0);
-                        ToggleButton button2 = (ToggleButton) stackPane2.getChildren().get(0);
-                        TextFlow textFlow1=(TextFlow) stackPane2.getChildren().get(1);
-                        if (button2.getText().equals(jumpToMessage.getText())) {
-                            smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
-                            addGlowAnimation(textFlow1);
-                            break;
-                        }
+    public void handleScrollToTheMessage(Button jumpToMessage, VBox container) {
+        for (Node node : container.getChildren()) {
+            if (node instanceof HBox) {
+                if(((HBox) node).getChildren().get(0).getAccessibleText().equals("message")) {
+                    StackPane stackPane1 = (StackPane) ((HBox) node).getChildren().get(0);
+                    ToggleButton button = (ToggleButton) stackPane1.getChildren().get(0);
+                    TextFlow textFlow1=(TextFlow) stackPane1.getChildren().get(1);
+                    if (button.getText().equals(jumpToMessage.getText())) {
+                        smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
+                        addGlowAnimation(textFlow1);
+                        break;
+                    }
+                }else {
+                    StackPane vBox1=(StackPane) ((HBox) node).getChildren().get(0);
+                    HBox hbox2=(HBox) vBox1.getChildren().get(1);
+                    StackPane stackPane2 = (StackPane) hbox2.getChildren().get(0);
+                    ToggleButton button = (ToggleButton) stackPane2.getChildren().get(0);
+                    TextFlow textFlow1=(TextFlow) stackPane2.getChildren().get(1);
+                    if (button.getText().equals(jumpToMessage.getText())) {
+                        smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
+                        addGlowAnimation(textFlow1);
+                        break;
                     }
                 }
             }
-        });
-        jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
-        jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
-
-
-        Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
-        TextFlow replyMessage = new TextFlow(textReply);
-        String style1 = "-fx-color: rgb(233,233,235); " +
-                "-fx-background-color: rgb(105,105,105); " +
-                "-fx-background-radius: 20px;";
-        replyMessage.setStyle(style1);
-        textReply.setFill(Color.color(0.934,0.945,0.996));
-        replyMessage.setPadding(new Insets(5,5,5,10));
-        replyMessage.setMouseTransparent(true);
-
-        stackPaneReply.getChildren().addAll(jumpToMessage, replyMessage);
-        HBox stackContainer= new HBox();
-        stackContainer.setAlignment(Pos.CENTER_LEFT);
-        stackContainer.setPadding(new Insets(5,5,5,10));
-        stackContainer.getChildren().addAll(stackPaneReply);
-        vBox.getChildren().add(stackContainer);
-
-
-
-        StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.TOP_LEFT);
-
-        ToggleButton toggleButton = new ToggleButton();
-        toggleButton.setText(String.valueOf(message.getId()));
-        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : transparent");
-        toggleButton.setToggleGroup(toggleGroupForReplies);
-
-
-        Text text= new Text(message.getMessage());
-        TextFlow textFlow = new TextFlow(text);
-        String style2 = "-fx-color: rgb(239,242,255); " +
-                "-fx-background-color: 	rgb(60,179,113); " +
-                "-fx-background-radius: 20px;";
-        textFlow.setStyle(style2);
-        textFlow.setPadding(new Insets(5,5,5,10));
-        text.setFill(Color.color(0.934,0.945,0.996));
-        textFlow.setMouseTransparent(true);
-
-        toggleButton.prefWidthProperty().bind(textFlow.widthProperty());
-        toggleButton.prefHeightProperty().bind(textFlow.heightProperty());
-
-        stackPane.getChildren().addAll(toggleButton, textFlow);
-        HBox stackContainer1= new HBox();
-        stackContainer1.setAlignment(Pos.TOP_LEFT);
-        stackContainer1.setPadding(new Insets(5,5,5,10));
-        stackContainer1.getChildren().addAll(stackPane);
-
-        AtomicReference<Double> replyHeight= new AtomicReference<>((double) 0);
-        AtomicReference<Double> messageHeight = new AtomicReference<>((double) 0);
-        Platform.runLater(()->{
-            messageHeight.set(textFlow.getBoundsInLocal().getHeight());
-            messageHeight.set(replyMessage.getBoundsInLocal().getHeight());
-            System.out.println("Inside of the runLater: " +  textFlow.getBoundsInLocal().getHeight() + "and " + replyMessage.getBoundsInLocal().getHeight());
-            stackPane.setMinHeight(textFlow.getLayoutBounds().getHeight());
-            stackPane.setMaxHeight(textFlow.getLayoutBounds().getHeight());
-            stackContainer1.setTranslateY((double) (0.95 * replyMessage.getBoundsInLocal().getHeight()));
-            VBox.setMargin(BighBox, new Insets(0,0,textFlow.getBoundsInLocal().getHeight(),0));
-
-        });
-        System.out.println("Outside of the runLater: " +  messageHeight.get() + "and " + replyHeight.get());
-        stackPane.setMinHeight(0);
-        stackPane.setMaxHeight(0);
-        vBox.getChildren().add(stackContainer1);
-        stackContainer1.setTranslateY(20);
-        BighBox.getChildren().add(vBox);
-        container.getChildren().add(BighBox);
-        VBox.setMargin(BighBox, new Insets(0,0,20,0));
+        }
     }
 
-    public void sentMessage(MessageDTO message, VBox container) {
+    public void handleMessage(MessageDTO message, VBox container, Pos pos,String style){
         HBox BighBox = new HBox();
-        BighBox.setAlignment(Pos.CENTER_RIGHT);
+        BighBox.setAlignment(pos);
         BighBox.setPadding(new Insets(5,10,5,10));
 
         StackPane stackPane = new StackPane();
-        stackPane.setAccessibleText("message");
-        stackPane.setAlignment(Pos.CENTER_RIGHT);
-
-        ToggleButton toggleButton = new ToggleButton();
-        toggleButton.setText(String.valueOf(message.getId()));
-        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : black");
-        toggleButton.setToggleGroup(toggleGroupForReplies);
-        toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
-        toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
-
-        Text text= new Text(message.getMessage());
-        TextFlow textFlow = new TextFlow(text);
-        String style2 = "-fx-color: rgb(239,242,255); " +
-                "-fx-background-color: 	rgb(30,144,255); " +
-                "-fx-background-radius: 20px;";
-        textFlow.setStyle(style2);
-        textFlow.setPadding(new Insets(5,10,5,10));
-        text.setFill(Color.color(0.934,0.945,0.996));
-        textFlow.setMouseTransparent(true);
-
-        stackPane.getChildren().addAll(toggleButton, textFlow);
-
+        messageStructure(message, stackPane , style);
 
         BighBox.getChildren().add(stackPane);
         container.getChildren().add(BighBox);
     }
 
-    public void sentMessageReply(MessageDTO message, VBox container) {
-        HBox BighBox = new HBox();
-        BighBox.setAlignment(Pos.CENTER_RIGHT);
-
-        StackPane vBox = new StackPane();
-        vBox.setAccessibleText("reply");
-        vBox.setAlignment(Pos.TOP_RIGHT);
-
-        StackPane stackPaneReply = new StackPane();
-        stackPaneReply.setAlignment(Pos.CENTER_RIGHT);
+    public void replyStructure(MessageDTO message,VBox container, StackPane stackPane){
 
         Button jumpToMessage = new Button();
         jumpToMessage.setText(String.valueOf(((ReplyMessageDTO)message).getIdReplyMessage()));
-        jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : black");
-        jumpToMessage.prefWidthProperty().bind(stackPaneReply.widthProperty());
-        jumpToMessage.prefHeightProperty().bind(stackPaneReply.heightProperty());
-
-        String f= vBox.getAccessibleText();
+        jumpToMessage.setStyle("-fx-text-fill: black; -fx-background-color : transparent;");
+        jumpToMessage.prefWidthProperty().bind(stackPane.widthProperty());
+        jumpToMessage.prefHeightProperty().bind(stackPane.heightProperty());
 
         jumpToMessage.setOnMouseClicked(event -> {
-            System.out.println(jumpToMessage.getText());
-            for (Node node : container.getChildren()) {
-                if (node instanceof HBox) {
-                    if(((HBox) node).getChildren().get(0).getAccessibleText().equals("message")) {
-                        StackPane stackPane1 = (StackPane) ((HBox) node).getChildren().get(0);
-                        ToggleButton button = (ToggleButton) stackPane1.getChildren().get(0);
-                        TextFlow textFlow1=(TextFlow) stackPane1.getChildren().get(1);
-                        if (button.getText().equals(jumpToMessage.getText())) {
-                            smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
-                            addGlowAnimation(textFlow1);
-                            break;
-                        }
-                    }else {
-                        StackPane vBox1=(StackPane) ((HBox) node).getChildren().get(0);
-                        HBox hbox2=(HBox) vBox1.getChildren().get(1);
-                        StackPane stackPane2 = (StackPane) hbox2.getChildren().get(0);
-                        ToggleButton button2 = (ToggleButton) stackPane2.getChildren().get(0);
-                        TextFlow textFlow1=(TextFlow) stackPane2.getChildren().get(1);
-                        if (button2.getText().equals(jumpToMessage.getText())) {
-                            smoothScroll(node.getBoundsInParent().getMinY()/container.getHeight());
-                            addGlowAnimation(textFlow1);
-                            break;
-                        }
-                    }
-                }
-            }
+            handleScrollToTheMessage( jumpToMessage,  container);
         });
 
 
         Text textReply= new Text(((ReplyMessageDTO)message).getMsg());
         TextFlow replyMessage = new TextFlow(textReply);
-        String style1 = "-fx-color: rgb(233,233,235); " +
-                "-fx-background-color: rgb(105,105,105); " +
+        String style = "-fx-background-color: rgb(105,105,105); " +
                 "-fx-background-radius: 20px;";
-        replyMessage.setStyle(style1);
-        textReply.setFill(Color.color(0.934,0.945,0.996));
+        replyMessage.setStyle(style);
+        textReply.setFill(Color.LIGHTGREY);
         replyMessage.setPadding(new Insets(5,10,5,10));
         replyMessage.setMouseTransparent(true);
 
 
-        stackPaneReply.getChildren().addAll(jumpToMessage, replyMessage);
-        HBox stackContainer= new HBox();
-        stackContainer.setAlignment(Pos.CENTER_RIGHT);
-        stackContainer.setPadding(new Insets(5,10,5,10));
-        stackContainer.getChildren().addAll(stackPaneReply);
-        vBox.getChildren().add(stackContainer);
+        stackPane.getChildren().addAll(jumpToMessage, replyMessage);
+    }
 
-
-
-
-        StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.TOP_RIGHT);
+    public void messageStructure(MessageDTO message,StackPane stackPane,String style) {
+        stackPane.setAccessibleText("message");
 
         ToggleButton toggleButton = new ToggleButton();
         toggleButton.setText(String.valueOf(message.getId()));
-        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : transparent");
+        toggleButton.setStyle("-fx-text-fill: black; -fx-background-color : transparent;");
         toggleButton.setToggleGroup(toggleGroupForReplies);
         toggleButton.prefWidthProperty().bind(stackPane.widthProperty());
         toggleButton.prefHeightProperty().bind(stackPane.heightProperty());
 
         Text text= new Text(message.getMessage());
         TextFlow textFlow = new TextFlow(text);
-        String style2 = "-fx-color: rgb(239,242,255); " +
-                "-fx-background-color: 	rgb(30,144,255); " +
-                "-fx-background-radius: 20px;";
-        textFlow.setStyle(style2);
+        textFlow.setStyle(style);
         textFlow.setPadding(new Insets(5,10,5,10));
-
-        text.setFill(Color.color(0.934,0.945,0.996));
+        text.setFill(Color.WHITE);
         textFlow.setMouseTransparent(true);
+
         stackPane.getChildren().addAll(toggleButton, textFlow);
+    }
+
+    public void handleReply(MessageDTO message,VBox container, Pos pos,String style) {
+        HBox BighBox = new HBox();
+        BighBox.setAlignment(pos);
+
+        StackPane stackPaneThatContainsTheReplyAndTheMessage = new StackPane();
+        stackPaneThatContainsTheReplyAndTheMessage.setAccessibleText("reply");
+        stackPaneThatContainsTheReplyAndTheMessage.setAlignment(pos);
+
+        StackPane stackPaneReply = new StackPane();
+        replyStructure(message, container, stackPaneReply);
+        TextFlow replyMessage= (TextFlow) stackPaneReply.getChildren().get(1);
+
+        HBox stackContainer= new HBox();
+        stackContainer.setAlignment(pos);
+        stackContainer.setPadding(new Insets(5,10,5,10));
+        stackContainer.getChildren().addAll(stackPaneReply);
+
+
+        stackPaneThatContainsTheReplyAndTheMessage.getChildren().add(stackContainer);
+
+
+
+        StackPane stackPane = new StackPane();
+        messageStructure(message,stackPane,style);
+        TextFlow textFlow = (TextFlow) stackPane.getChildren().get(1);
+
         HBox stackContainer1= new HBox();
-        stackContainer1.setAlignment(Pos.TOP_RIGHT);
+        stackContainer1.setAlignment(pos);
         stackContainer1.setPadding(new Insets(5,10,5,10));
+        stackContainer1.getChildren().addAll(stackPane);
 
 
-        AtomicReference<Double> replyHeight= new AtomicReference<>((double) 0);
-        AtomicReference<Double> messageHeight = new AtomicReference<>((double) 0);
+        stackPaneThatContainsTheReplyAndTheMessage.getChildren().add(stackContainer1);
+
+        stackPaneThatContainsTheReplyAndTheMessage.setMinHeight(0);
+        stackPaneThatContainsTheReplyAndTheMessage.setMaxHeight(0);
+
+
         Platform.runLater(()->{
-            messageHeight.set(textFlow.getBoundsInLocal().getHeight());
-            messageHeight.set(replyMessage.getBoundsInLocal().getHeight());
-            System.out.println("Inside of the runLater: " +  textFlow.getBoundsInLocal().getHeight() + "and " + replyMessage.getBoundsInLocal().getHeight());
-            stackPane.setMinHeight(textFlow.getLayoutBounds().getHeight());
-            stackPane.setMaxHeight(textFlow.getLayoutBounds().getHeight());
             stackContainer1.setTranslateY((double) (0.95 * replyMessage.getBoundsInLocal().getHeight()));
             VBox.setMargin(BighBox, new Insets(0,0,textFlow.getBoundsInLocal().getHeight(),0));
-
+            BighBox.setPadding(new Insets(0,0,0.95 * replyMessage.getBoundsInLocal().getHeight()+10,0));
         });
-        System.out.println("Outside of the runLater: " +  messageHeight.get() + "and " + replyHeight.get());
-        stackPane.setMinHeight(messageHeight.get());
-        stackPane.setMaxHeight(messageHeight.get());
-//        double messageHeight=textFlow.getBoundsInLocal().getHeight();
-        stackContainer1.getChildren().addAll(stackPane);
-        stackContainer1.setTranslateY((double) (0.95 * replyHeight.get()));
-        VBox.setMargin(BighBox, new Insets(0,0,messageHeight.get(),0));
 
-        vBox.getChildren().add(stackContainer1);
-        BighBox.getChildren().add(vBox);
+        BighBox.getChildren().add(stackPaneThatContainsTheReplyAndTheMessage);
         container.getChildren().add(BighBox);
+    }
+
+    public void receivedMessage(MessageDTO message, VBox container) {
+        String style = "-fx-background-color: 	rgb(60,179,113); " +
+                "-fx-background-radius: 20px;";
+        handleMessage(message, container, Pos.TOP_LEFT, style);
+    }
+
+    public void sentMessage(MessageDTO message, VBox container) {
+        String style = "-fx-background-color: 	rgb(30,144,255); " +
+                "-fx-background-radius: 20px;";
+        handleMessage(message, container, Pos.TOP_RIGHT, style);
+    }
+
+    public void receivedMessageReply(MessageDTO message, VBox container) {
+        String style = "-fx-background-color: 	rgb(60,179,113); " +
+                "-fx-background-radius: 20px;";
+        handleReply(message, container, Pos.TOP_LEFT, style);
+    }
+
+    public void sentMessageReply(MessageDTO message, VBox container) {
+        String style = "-fx-background-color: 	rgb(30,144,255); " +
+                "-fx-background-radius: 20px;";
+        handleReply(message, container, Pos.TOP_RIGHT, style);
+
     }
 
     @FXML
@@ -410,29 +261,30 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         if(!sendField.getText().isEmpty()) {
             if(toggleGroupForReplies.getSelectedToggle()!=null) {
                 manager.sendMessage(user.getId(), manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId(), sendField.getText(), manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getMessage(), manager.getMessage(Long.valueOf(((ToggleButton)toggleGroupForReplies.getSelectedToggle()).getText())).getId());
+                sendField.setText("");
             }
             else {
                 manager.sendMessage(user.getId(), manager.getUser( ((ToggleButton)toggleGroup.getSelectedToggle()).getText()).getId(), sendField.getText(), null, null );
-                System.out.println("is empty");
+                sendField.setText("");
             }
         }
     }
 
-    public void updateContainer(List<MessageDTO> messages, VBox container) {
+    public void updateContainer(List<MessageDTO> messagesInOrder, VBox container) {
         container.getChildren().clear();
-        for (int i = 0; i < messages.size(); i++)
-            if(messages.get(i).getTo().equals(user.getId()))
-                if(messages.get(i) instanceof ReplyMessageDTO)
-                    receivedMessageReply(messages.get(i), container);
+        for (int i = 0; i < messagesInOrder.size(); i++) {
+            if (messagesInOrder.get(i).getTo().equals(user.getId()))
+                if (messagesInOrder.get(i) instanceof ReplyMessageDTO)
+                    receivedMessageReply(messagesInOrder.get(i), container);
                 else
-                    receivedMessage(messages.get(i), container);
+                    receivedMessage(messagesInOrder.get(i), container);
+            else if (messagesInOrder.get(i) instanceof ReplyMessageDTO)
+                sentMessageReply(messagesInOrder.get(i), container);
             else
-                if(messages.get(i) instanceof ReplyMessageDTO)
-                    sentMessageReply(messages.get(i), container);
-                else
-                    sentMessage(messages.get(i),container);
-                if(container.getHeight()>537)
-                     Platform.runLater(() -> scrollMessages.setVvalue(1.0));
+                sentMessage(messagesInOrder.get(i), container);
+        }
+
+        smoothScroll(messages.getHeight());
     }
 
     private void smoothScroll(double targetValue) {
@@ -444,6 +296,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         );
         timeline.play();
     }
+
     public void addGlowAnimation(TextFlow textFlow) {
         Glow glow = new Glow(0.0); // Start with no glow
         textFlow.setEffect(glow);
@@ -482,13 +335,17 @@ public class ChatController extends Controller implements Observer<FriendEntityC
     }
 
     public void initializeWindow(User user, User friend, Stage stage) {
-        System.out.println(messages.getHeight());
+
+        sendField.setStyle("-fx-background-color: #313131;-fx-text-fill: white;");
+
+        sendButton.setStyle("-fx-background-color: transparent;");
         manager.addObserverChatWindow(this);
         sendMessage.setVisible(false);
         primaryStage = stage;
         sendMessage.setLayoutY(primaryStage.getHeight() - 2.5*sendMessage.getHeight());
+        scrollMessages.prefHeightProperty().bind(primaryStage.heightProperty().subtract(friendHBox.heightProperty()).subtract(85));
+        messages.prefHeightProperty().bind(scrollMessages.heightProperty());
         primaryStage.heightProperty().addListener((_, _, newValue) -> {
-            System.out.println(primaryStage.getHeight());
             sendMessage.setLayoutY(newValue.doubleValue() - 2.5*sendMessage.getHeight());
         });
         toggleGroupForReplies=new ToggleGroup();
@@ -513,8 +370,6 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         setUser(user);
         searchFriend.textProperty().addListener(o -> handleFilter());
         updateContainer(manager.getFriendsOfUser(user.getId()), friendListChat, 20, "friend-show-chat-list.fxml", ControllerType.FRIENDSHOWCHATLIST);
-//        scrollFriends.getScene().getStylesheets().add(HelloApplication.class.getResource("css/style.css").toExternalForm());
-//        scrollChats.getScene().getStylesheets().add(HelloApplication.class.getResource("css/style.css").toExternalForm());
     }
 
     public void handleFilter(){
