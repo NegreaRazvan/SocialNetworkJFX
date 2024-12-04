@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -18,14 +19,18 @@ import map.domain.User;
 import map.events.ChangeEventType;
 import map.events.FriendEntityChangeEvent;
 import map.observer.Observer;
+import map.paging.Page;
+import map.paging.Pageable;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.StreamSupport;
 
 public class MainWindowController extends Controller implements Observer<FriendEntityChangeEvent> {
+    Integer currentElements=0;
     Boolean chatOnTop;
     Stage primaryStage;
     User user;
@@ -186,7 +191,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
         searchField.textProperty().addListener(o -> handleFIlter());
         ///gets all the important lists that are going to be used
         nonFriendsOfUser = manager.getNonFriendsOfUser(user.getId());
-        friendsOfUser = manager.getFriendsOfUser(user.getId());
+        friendsOfUser = manager.getFriendsOfUser(new Pageable(0, 9),user.getId());
         notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
         ///number of notifications
         if(notificationsOfUser.size() > user.getNumberOfNotifications())
@@ -217,6 +222,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
 
     @FXML
     void handleMessages(ActionEvent event) {
+        scroller.vvalueProperty().removeListener((observable, oldValue, newValue)->{});
         var children = chatPane.getChildren();
         for(var child: children){
             child.setVisible(false);
@@ -251,6 +257,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
 
     @FXML
     public void handleNotificationButton(ActionEvent event) {
+        scroller.vvalueProperty().removeListener((observable, oldValue, newValue)->{});
         var childen = chatPane.getChildren();
         for(var child: childen){
             child.setVisible(true);
@@ -268,12 +275,41 @@ public class MainWindowController extends Controller implements Observer<FriendE
 
     @FXML
     public void handleFriendsButton(ActionEvent event) {
+        System.out.println(scroller.vvalueProperty().getValue());
+        scroller.addEventFilter(ScrollEvent.SCROLL,e->{
+            if(e.getDeltaY()<0)
+                currentElements++;
+            else if(e.getDeltaY()>0&&currentElements>0)
+                currentElements--;
+            friendsOfUser = manager.getFriendsOfUser(new Pageable(currentElements, 9), user.getId());
+        });
+//        scroller.vvalueProperty().addListener((observable, oldValue, newValue) -> {
+////            double scrollPosition = scroller.getVvalue();
+////            double visibleHeight = scroller.getViewportBounds().getHeight();
+////            double contentHeight = scroller.getContent().getBoundsInLocal().getHeight();
+////
+////            double offsetY = scrollPosition * (contentHeight - visibleHeight);
+////            int passedElements = (int) Math.floor(offsetY / 70.9);
+////
+////            System.out.println("Passed Elements: " + passedElements);
+//
+//            if(newValue.doubleValue()==1.0) {
+//                currentElements++;
+//                friendsOfUser = manager.getFriendsOfUser(new Pageable(currentElements, 9), user.getId());
+//            }
+//            if(newValue.doubleValue()==0.0&&currentElements>0){
+//                currentElements--;
+//                friendsOfUser = manager.getFriendsOfUser(new Pageable(currentElements, 9), user.getId());
+//            }
+//
+//        });
         var childen = chatPane.getChildren();
         for(var child: childen){
             child.setVisible(true);
         }
         listFriendsSuggestionFriendsAnchorPane.getChildren().clear();
-        updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
+        updateContainer(friendsOfUser, friendsScrollPane, 20, "friend-delete.fxml", ControllerType.FRIENDLIST);
+        System.out.println(((VBox)scroller.getContent()).getChildren().size());
         if(chatOnTop) {
             changePriorityOrderForContainerAnchorPane();
             chatOnTop=false;
@@ -282,6 +318,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
 
     @FXML
     public void handleHomeButton(ActionEvent event) {
+        scroller.vvalueProperty().removeListener((observable, oldValue, newValue)->{});
         var childen = chatPane.getChildren();
         for(var child: childen){
             child.setVisible(true);
@@ -319,15 +356,15 @@ public class MainWindowController extends Controller implements Observer<FriendE
                 }
             }
         }
+        if(event.getType().equals(ChangeEventType.SCROLLED))
+            updateContainer(friendsOfUser, friendsScrollPane, 20, "friend-delete.fxml", ControllerType.FRIENDLIST);
         if(event.getType().equals(ChangeEventType.DECLINE))
             if(Objects.equals(event.getFriend().second(), user.getId()))
                 updateContainer(notificationsOfUser, friendsScrollPane, 9, "notifications.fxml", ControllerType.NOTIFICATION);
 
-        if(event.getType().equals(ChangeEventType.ADD))
-            updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
         if(event.getType().equals(ChangeEventType.DELETE)) {
             updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
-            updateContainer(friendsOfUser, friendsScrollPane, 9, "friend-delete.fxml", ControllerType.FRIENDLIST);
+            updateContainer(friendsOfUser, friendsScrollPane, 20, "friend-delete.fxml", ControllerType.FRIENDLIST);
         }
     }
 }

@@ -1,11 +1,11 @@
 package map.repository.db;
 
 import map.domain.User;
+import map.paging.Page;
+import map.paging.Pageable;
 
 import java.sql.*;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
 
@@ -164,6 +164,37 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
                 }
             }
             return entities;
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Page<User> findAllUsersThatAreFriends(Pageable pageable, Long userId){
+        List<User> entities = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(url, user, password)){
+            PreparedStatement pstmt = conn.prepareStatement("SELECT U.id,U.last_name,U.first_name,U.password,U.username,U.admin, U.number_notifications\n" +
+                    "    FROM \"User\" U\n" +
+                    "    INNER JOIN public.\"Friendship\" F on U.id = F.friend_id OR U.id = F.user_id\n" +
+                    "    WHERE (F.user_id = ? or F.friend_id = ?) AND U.id!=? AND F.request=false" +
+                    " LIMIT ? OFFSET ? "
+            );
+            {
+                pstmt.setLong(1, userId);
+                pstmt.setLong(2, userId);
+                pstmt.setLong(3, userId);
+                pstmt.setInt(4, pageable.getPageSize());
+                pstmt.setInt(5,pageable.getPageNumber()*pageable.getPageSize());
+                ResultSet rs = pstmt.executeQuery();
+                {
+                    while (rs.next()) {
+                        User u= queryToEntity(rs);
+                        entities.add(u);
+                    }
+                }
+            }
+            return new Page<>(entities, 10);
         }
         catch (SQLException e) {
             e.printStackTrace();

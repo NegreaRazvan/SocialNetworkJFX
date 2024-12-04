@@ -8,6 +8,8 @@ import map.events.ChangeEventType;
 import map.events.FriendEntityChangeEvent;
 import map.observer.Observable;
 import map.observer.Observer;
+import map.paging.Page;
+import map.paging.Pageable;
 import map.repository.Repository;
 import map.repository.db.AbstractDBRepository;
 import map.repository.db.FriendRepositoryDB;
@@ -152,6 +154,12 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         return ((UserRepositoryDB)userRepository).findAllUsersThatAreFriends(idUser);
     }
 
+    public Page<User> findAllFriendsOfTheUser(Pageable pageable, Long idUser) {
+        Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
+notifyObservers(new FriendEntityChangeEvent(ChangeEventType.SCROLLED, (Friend) null,null));
+        return ((UserRepositoryDB)userRepository).findAllUsersThatAreFriends(pageable,idUser);
+    }
+
     public Iterable<User> findAllFriendRequestsOfTheUser(Long idUser) {
         Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
         return ((UserRepositoryDB)userRepository).findAllFriendRequests(idUser);
@@ -180,18 +188,10 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new ValidationException("First User not found"));
         Optional.ofNullable(userRepository.findOne(friendId)).orElseThrow(() -> new ValidationException("Second User not found"));
         Friend entity = new Friend(userId, friendId, request);
-        entity.setId(null);
-        if(isFriendLinkAlreadyInRepo(entity))
-            throw new ValidationException("Friend link already exists");
-        Optional<Friend> oldEntity = friendRepository.findOne(entity.getId());
-        if (oldEntity.isPresent()) {
-            return oldEntity;
-        } else {
             friendRepository.save(entity);
             notifyObservers(new FriendEntityChangeEvent(ChangeEventType.REQUEST, entity));
-//            calculateId();
             return Optional.empty();
-        }
+
     }
 
     @Override

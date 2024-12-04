@@ -12,6 +12,7 @@ import map.domain.User;
 import map.domain.validators.UserValidator;
 import map.domain.validators.Validator;
 import map.events.ChangeEventType;
+import map.paging.Pageable;
 import map.repository.Repository;
 import map.repository.db.FriendRepositoryDB;
 import map.repository.db.MessageRepositoryDB;
@@ -30,7 +31,7 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://192.168.1.57:3580/Users";
+        String url = "jdbc:postgresql://localhost:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
@@ -142,7 +143,7 @@ public class ApplicationManager {
 
 
 
-    ///The 3 main lists
+    ///The 4 main lists
 
     public ArrayList<User> getNonFriendsOfUser(Long userId){
         return StreamSupport.stream(service.findAllFriendsOfAUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
@@ -150,6 +151,10 @@ public class ApplicationManager {
 
     public ArrayList<User> getFriendsOfUser(Long userId){
         return StreamSupport.stream(service.findAllFriendsOfTheUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    public ArrayList<User> getFriendsOfUser(Pageable pageable, Long userId){
+        return StreamSupport.stream(service.findAllFriendsOfTheUser(pageable,userId).getElementsOnPage().spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public ArrayList<User> getFriendRequestsOfUser(Long userId){
