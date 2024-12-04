@@ -20,6 +20,7 @@ import map.repository.db.UserRepositoryDB;
 import map.service.Service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://localhost:3580/Users";
+        String url = "jdbc:postgresql://192.168.1.65:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
@@ -138,6 +139,10 @@ public class ApplicationManager {
 
     public User getUser(String username){
         return service.findOneUser(username).get();
+    }
+
+    public int getCountFriends(Long userId) {
+        return service.countFriends(userId);
     }
 
 

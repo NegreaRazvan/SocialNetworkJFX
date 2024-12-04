@@ -16,6 +16,7 @@ import map.repository.db.FriendRepositoryDB;
 import map.repository.db.MessageRepositoryDB;
 import map.repository.db.UserRepositoryDB;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.StreamSupport;
@@ -154,9 +155,13 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         return ((UserRepositoryDB)userRepository).findAllUsersThatAreFriends(idUser);
     }
 
+    public int countFriends(Long idUser) {
+        Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
+        return ((UserRepositoryDB)userRepository).countFriends(idUser);
+    }
+
     public Page<User> findAllFriendsOfTheUser(Pageable pageable, Long idUser) {
         Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
-notifyObservers(new FriendEntityChangeEvent(ChangeEventType.SCROLLED, (Friend) null,null));
         return ((UserRepositoryDB)userRepository).findAllUsersThatAreFriends(pageable,idUser);
     }
 

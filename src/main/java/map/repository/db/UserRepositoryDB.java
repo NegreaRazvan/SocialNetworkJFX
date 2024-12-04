@@ -171,6 +171,30 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
         return null;
     }
 
+    public int countFriends(Long userId) {
+        String  query = "SELECT Count(*) as count" +
+                "    FROM \"User\" U\n" +
+                "    INNER JOIN public.\"Friendship\" F on U.id = F.friend_id OR U.id = F.user_id\n" +
+                "    WHERE (F.user_id = ? or F.friend_id = ?) AND U.id!=? AND F.request=false";
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            pstmt.setLong(1, userId);
+            pstmt.setLong(2, userId);
+            pstmt.setLong(3, userId);
+            ResultSet result = pstmt.executeQuery();
+            int totalNumberOfMovies = 0;
+            if (result.next()) {
+                totalNumberOfMovies = result.getInt("count");
+            }
+            return totalNumberOfMovies;
+        }
+        catch (SQLException e){
+                e.printStackTrace();
+        }
+        return 0;
+    }
+
     public Page<User> findAllUsersThatAreFriends(Pageable pageable, Long userId){
         List<User> entities = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, user, password)){
