@@ -279,8 +279,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
         scroller.addEventFilter(ScrollEvent.SCROLL,e->{
             if(e.getDeltaY()<0)
                 currentElements++;
-            else if(e.getDeltaY()>0&&currentElements>0)
-                currentElements--;
+            else if(e.getDeltaY()>0&&currentElements>0) currentElements--;
             friendsOfUser = manager.getFriendsOfUser(new Pageable(currentElements, 9), user.getId());
         });
 //        scroller.vvalueProperty().addListener((observable, oldValue, newValue) -> {
