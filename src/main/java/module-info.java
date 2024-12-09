@@ -1,4 +1,4 @@
-module com.beginsecure.socialnetworkjfx {
+module Ui.socialnetworkjfx {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -13,8 +13,8 @@ module com.beginsecure.socialnetworkjfx {
     requires java.sql;
     requires java.desktop;
 
-    opens com.beginsecure.socialnetworkjfx to javafx.fxml;
-    opens controller to javafx.fxml;
-    exports controller;
-    exports com.beginsecure.socialnetworkjfx;
+    opens Ui.socialnetworkjfx to javafx.fxml;
+    opens Ui.controller to javafx.fxml;
+    exports Ui.controller;
+    exports Ui.socialnetworkjfx;
 }
