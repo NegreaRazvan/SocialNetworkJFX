@@ -60,7 +60,7 @@ public interface ServiceInterface{
      * @throws ValidationException
      *             if the entity is not valid.
      */
-    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications);
+    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications,String profile_picture);
 
     /**
      * @param userId   - the id of the user

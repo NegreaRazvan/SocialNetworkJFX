@@ -88,7 +88,7 @@
                            </ImageView>
                         </graphic>
                      </Button>
-                     <Button fx:id="profileButton" alignment="BOTTOM_LEFT" layoutX="10.0" layoutY="198.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Profile" textFill="WHITE">
+                     <Button fx:id="profileButton" alignment="BOTTOM_LEFT" layoutX="10.0" onAction="#handleProfile" layoutY="198.0" mnemonicParsing="false" prefHeight="47.0" prefWidth="224.0" style="-fx-background-color: black;" text="Profile" textFill="WHITE">
                         <font>
                            <Font size="18.0" />
                         </font>

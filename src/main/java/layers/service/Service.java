@@ -63,11 +63,11 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
         Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
-        User entity = new User(firstName, lastName,password, username, false, 0);
+        User entity = new User(firstName, lastName,password, username, false, 0, null);
         try{
             userValidator.validate(entity);
         }catch (UsernameUpperCaseException e){
-            entity= new User(firstName, lastName, password, e.getMessage(), false, 0);
+            entity= new User(firstName, lastName, password, e.getMessage(), false, 0, null);
 
         }
         entity.setId(null);
@@ -113,16 +113,16 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     }
 
     @Override
-    public User updateUser(Long id, String firstName, String lastName, String password, String username, Boolean isAdmin, Integer numberOfNotifications) throws ValidationException {
+    public User updateUser(Long id, String firstName, String lastName, String password, String username, Boolean isAdmin, Integer numberOfNotifications, String profile_picture) throws ValidationException {
         Optional.ofNullable(firstName).orElseThrow(() -> new IllegalArgumentException("firstName must be not null"));
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
         Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
-        User entity = new User(firstName, lastName, password,username, isAdmin, numberOfNotifications);
+        User entity = new User(firstName, lastName, password,username, isAdmin, numberOfNotifications, profile_picture);
         try{
             userValidator.validate(entity);
         }catch (UsernameUpperCaseException e){
-            entity= new User(firstName, lastName, password, e.getMessage(), isAdmin, numberOfNotifications );
+            entity= new User(firstName, lastName, password, e.getMessage(), isAdmin, numberOfNotifications, profile_picture);
         }
         entity.setId(id);
 

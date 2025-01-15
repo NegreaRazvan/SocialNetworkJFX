@@ -158,6 +158,23 @@ public class MainWindowController extends Controller implements Observer<FriendE
         }
     }
 
+    void initializeProfileController(){
+        switchInterfaceAnchor.getChildren().clear();
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("profile.fxml"));
+        AnchorPane node = null;
+        try {
+            node = fxmlLoader.load();
+            node.prefWidthProperty().bind(switchInterfaceAnchor.widthProperty());
+
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        manager.initController(fxmlLoader, user, null, ControllerType.PROFILE);
+        switchInterfaceAnchor.getChildren().add(node);
+        AnchorPane.setLeftAnchor(node, 0.0);
+        mainPageController=null;
+    }
+
 
     void initializeMainPageController(){
         switchInterfaceAnchor.getChildren().clear();
@@ -173,7 +190,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
         manager.initController(fxmlLoader, user, null, ControllerType.MAINPAGE);
         switchInterfaceAnchor.getChildren().add(node);
         AnchorPane.setLeftAnchor(node, 0.0);
-        mainPageController=null;
+        mainPageController=fxmlLoader.getController();
     }
 
     void initializeChatPageController(){
@@ -197,6 +214,9 @@ public class MainWindowController extends Controller implements Observer<FriendE
     void handleMessages(ActionEvent event) {
         initializeChatPageController();
     }
+
+    @FXML
+    void handleProfile(ActionEvent event) { initializeProfileController();}
 
     @FXML
     public void handleSignout(ActionEvent event) {

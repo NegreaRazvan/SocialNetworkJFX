@@ -9,14 +9,16 @@ public class User extends Entity<Long>{
     private String username;
     private Boolean isAdmin;
     private Integer numberOfNotifications;
+    private String profilePicture;
 
-    public User(String firstName, String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications) {
+    public User(String firstName, String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications, String profilePicture) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
         this.username = username;
         this.isAdmin = isAdmin;
         this.numberOfNotifications = numberOfNotifications;
+        this.profilePicture = profilePicture;
     }
 
     /**
@@ -66,6 +68,8 @@ public class User extends Entity<Long>{
     public void setIsAdmin(Boolean isAdmin) { this.isAdmin = isAdmin; }
     public Integer getNumberOfNotifications() { return numberOfNotifications; }
     public void setNumberOfNotifications(Integer numberOfNotifications) { this.numberOfNotifications = numberOfNotifications; }
+    public String getProfilePicture() { return profilePicture; }
+    public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
 
     @Override
     public String toString() {

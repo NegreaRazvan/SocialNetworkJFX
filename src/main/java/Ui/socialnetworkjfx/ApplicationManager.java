@@ -29,10 +29,10 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://192.168.1.15:3580/Users";
+        String url = "jdbc:postgresql://localhost:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
-        String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
+        String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications,profile_picture FROM public.\"User\"";
         String queryLoadF="SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\"";
         String queryLoadM="SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\", \"idOfReplyMessage\" FROM public.\"Message\"";
 
@@ -85,6 +85,7 @@ public class ApplicationManager {
             case FRIENDSHOWCHATLIST -> {if(controller instanceof FriendShowOnChatListController friendShowOnChatListController) friendShowOnChatListController.initializeWindow(friend);}
             case FRIENDSHOWCHAT -> {if (controller instanceof FriendShowOnChatController friendShowOnChatController) friendShowOnChatController.initializeWindow(friend);}
             case MAINPAGE -> {if (controller instanceof MainPageController mainPageController) mainPageController.initializeWindow(user);}
+            case PROFILE -> {if (controller instanceof ProfileController profileController) profileController.initializeWindow(user); }
         }
     }
 
@@ -130,9 +131,9 @@ public class ApplicationManager {
     public void updateUser(String username, String password){
         Optional<User> user = service.findOneUser(username);
         if(user.isPresent())
-            service.updateUser(user.get().getId(), user.get().getFirstName(),user.get().getLastName(),password,username,false, 0);
+            service.updateUser(user.get().getId(), user.get().getFirstName(),user.get().getLastName(),password,username,false, 0,null);
         else
-            service.updateUser(null,null,null,password,username,false, 0);
+            service.updateUser(null,null,null,password,username,false, 0,null);
     }
 
     public User getUser(String username){
@@ -184,7 +185,7 @@ public class ApplicationManager {
     }
 
     public void updateNotifications(User user,Integer numberOfNotifications){
-        service.updateUser(user.getId(),user.getFirstName(),user.getLastName(),user.getPassword(),user.getUsername(),false,numberOfNotifications);
+        service.updateUser(user.getId(),user.getFirstName(),user.getLastName(),user.getPassword(),user.getUsername(),false,numberOfNotifications, null);
     }
 
     public Friend getFriendRequest(Long userId, Long friendId){

@@ -22,20 +22,22 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
         Boolean isAdmin = rs.getBoolean("admin");
         String username= rs.getString("username");
         Integer numberNotifications = rs.getInt("number_notifications");
-        User user=new User(firstName, lastName, password, username, isAdmin, numberNotifications);
+        String profile_picture= rs.getString("profile_picture");
+        User user=new User(firstName, lastName, password, username, isAdmin, numberNotifications, profile_picture);
         user.setId(id);
         return user;
     }
 
     @Override
     public PreparedStatement entityToSaveStatement(Connection con, User entity) throws SQLException {
-        String query = "INSERT INTO public.\"User\" (first_name, last_name, password, username, admin, number_notifications) VALUES (?, ?, ?,?,?, 0)";
+        String query = "INSERT INTO public.\"User\" (first_name, last_name, password, username, admin, number_notifications,profile_picture) VALUES (?, ?, ?,?,?, 0,?)";
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
             ps.setString(3, entity.getPassword());
             ps.setString(4, entity.getUsername());
             ps.setBoolean(5, entity.getIsAdmin());
+            ps.setString(6, entity.getProfilePicture());
         }
         return ps;
     }
@@ -51,7 +53,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
 
     @Override
     public ResultSet entityToFindStatement(Connection con, Long id) throws SQLException {
-        String query = "SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\" WHERE id = ?";
+        String query = "SELECT id, first_name, last_name, password, username, admin, number_notifications,profile_picture FROM public.\"User\" WHERE id = ?";
         ResultSet rs;
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setLong(1, id);
@@ -61,7 +63,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
     }
 
     public ResultSet entityToFindStatement(Connection con,  String username) throws SQLException {
-        String query = "SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\" WHERE username = ?";
+        String query = "SELECT id, first_name, last_name, password, username, admin, number_notifications,profile_picture FROM public.\"User\" WHERE username = ?";
         ResultSet rs;
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setString(1, username);
@@ -71,7 +73,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
     }
 
     public ResultSet entityToFindStatement(Connection con,  String username, String password) throws SQLException {
-        String query = "SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\" WHERE username = ? AND password = ?";
+        String query = "SELECT id, first_name, last_name, password, username, admin, number_notifications,profile_picture FROM public.\"User\" WHERE username = ? AND password = ?";
         ResultSet rs;
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setString(1, username);
@@ -146,7 +148,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
     public Iterable<User> findAllUsersThatAreFriends(Long userId){
         Set<User> entities = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(url, user, password)){
-            PreparedStatement pstmt = conn.prepareStatement("SELECT U.id,U.last_name,U.first_name,U.password,U.username,U.admin, U.number_notifications\n" +
+            PreparedStatement pstmt = conn.prepareStatement("SELECT U.id,U.last_name,U.first_name,U.password,U.username,U.admin, U.number_notifications, U.profile_picture\n" +
                     "    FROM \"User\" U\n" +
                     "    INNER JOIN public.\"Friendship\" F on U.id = F.friend_id OR U.id = F.user_id\n" +
                     "    WHERE (F.user_id = ? or F.friend_id = ?) AND U.id!=? AND F.request=false"
@@ -198,7 +200,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
     public Page<User> findAllUsersThatAreFriends(Pageable pageable, Long userId){
         List<User> entities = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, user, password)){
-            PreparedStatement pstmt = conn.prepareStatement("SELECT U.id,U.last_name,U.first_name,U.password,U.username,U.admin, U.number_notifications\n" +
+            PreparedStatement pstmt = conn.prepareStatement("SELECT U.id,U.last_name,U.first_name,U.password,U.username,U.admin, U.number_notifications,U.profile_picture\n" +
                     "    FROM \"User\" U\n" +
                     "    INNER JOIN public.\"Friendship\" F on U.id = F.friend_id OR U.id = F.user_id\n" +
                     "    WHERE (F.user_id = ? or F.friend_id = ?) AND U.id!=? AND F.request=false" +
@@ -229,7 +231,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
     public Iterable<User> findAllFriendRequests(Long userId){
         Set<User> entities = new HashSet<>();
         try (Connection conn = DriverManager.getConnection(url, user, password)){
-            PreparedStatement pstmt = conn.prepareStatement("SELECT U.id,U.last_name,U.first_name,U.password,U.username,U.admin,U.number_notifications\n" +
+            PreparedStatement pstmt = conn.prepareStatement("SELECT U.id,U.last_name,U.first_name,U.password,U.username,U.admin,U.number_notifications,U.profile_picture\n" +
                     "    FROM \"User\" U\n" +
                     "    INNER JOIN public.\"Friendship\" F on U.id = F.friend_id or U.id = F.user_id\n" +
                     "    WHERE F.friend_id = ? AND U.id!=? AND F.request=true"
@@ -255,7 +257,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
 
     @Override
     public PreparedStatement entityToUpdateStatement(Connection con, User entity) throws SQLException {
-        String query = "UPDATE public.\"User\" SET first_name = ?, last_name = ?, password = ?, username = ?, admin = ?, number_notifications = ? WHERE id = ?";
+        String query = "UPDATE public.\"User\" SET first_name = ?, last_name = ?, password = ?, username = ?, admin = ?, number_notifications = ?, profile_picture=? WHERE id = ?";
         PreparedStatement ps = con.prepareStatement(query);{
             ps.setString(1, entity.getFirstName());
             ps.setString(2, entity.getLastName());
@@ -264,6 +266,7 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
             ps.setBoolean(5, entity.getIsAdmin());
             ps.setInt(6, entity.getNumberOfNotifications());
             ps.setLong(7, entity.getId());
+            ps.setString(8, entity.getProfilePicture());
         }
         return ps;
     }
