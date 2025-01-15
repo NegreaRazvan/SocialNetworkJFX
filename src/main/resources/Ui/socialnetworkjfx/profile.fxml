@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="chatPane" layoutX="233.0" layoutY="6.0" prefHeight="1538.0" prefWidth="800.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Ui.controller.MainPageController">
+    <children>
+        <HBox prefHeight="47.0" prefWidth="475.0">
+            <children>
+                <Label alignment="CENTER" prefHeight="49.0" prefWidth="475.0" text="Profile" textFill="WHITE">
+               <font>
+                  <Font size="22.0" />
+               </font></Label>
+            </children>
+        </HBox>
+        <Line endX="197.5" layoutX="282.0" layoutY="54.0" startX="-290.5" stroke="#313131" />
+        <Line endX="-100.0" endY="1268.0" layoutX="580.0" layoutY="272.0" startX="-100.0" startY="-488.0" stroke="#313131" />
+        <AnchorPane layoutX="14.0" layoutY="67.0" prefHeight="92.0" prefWidth="461.0">
+            <ImageView fitHeight="77.0" fitWidth="91.0" layoutX="26.0" layoutY="8.0">
+            <image>
+               <Image url="@images/Customer.png" />
+            </image></ImageView>
+            <Label layoutX="257.0" layoutY="17.0" prefHeight="17.0" prefWidth="101.0" text="Name" textFill="WHITE" />
+            <Label layoutX="257.0" layoutY="38.0" prefHeight="17.0" prefWidth="101.0" text="Number of friends" textFill="WHITE" />
+        </AnchorPane>
+    </children>
+
+</AnchorPane>
