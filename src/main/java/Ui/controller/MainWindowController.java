@@ -189,7 +189,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
             e.printStackTrace();
         }
         manager.initController(fxmlLoader, user, null, ControllerType.CHAT);
-        mainPageController=fxmlLoader.getController();
+        mainPageController=null;
         switchInterfaceAnchor.getChildren().add(node);
     }
 
