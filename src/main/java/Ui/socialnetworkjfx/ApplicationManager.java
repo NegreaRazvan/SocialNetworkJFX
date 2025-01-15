@@ -29,7 +29,7 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://192.168.1.71:3580/Users";
+        String url = "jdbc:postgresql://192.168.1.15:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
@@ -84,6 +84,7 @@ public class ApplicationManager {
             case CHAT -> {if( controller instanceof ChatController chatController) chatController.initializeWindow(user, friend, primaryStage);}
             case FRIENDSHOWCHATLIST -> {if(controller instanceof FriendShowOnChatListController friendShowOnChatListController) friendShowOnChatListController.initializeWindow(friend);}
             case FRIENDSHOWCHAT -> {if (controller instanceof FriendShowOnChatController friendShowOnChatController) friendShowOnChatController.initializeWindow(friend);}
+            case MAINPAGE -> {if (controller instanceof MainPageController mainPageController) mainPageController.initializeWindow(user);}
         }
     }
 
@@ -193,6 +194,7 @@ public class ApplicationManager {
     public void addObserverMainWindow(MainWindowController controller){
         service.addObserver(controller);
     }
+
 
     public void addObserverChatWindow(ChatController controller){
         service.addObserver(controller);

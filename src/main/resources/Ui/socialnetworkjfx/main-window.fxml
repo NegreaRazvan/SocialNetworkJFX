@@ -142,54 +142,7 @@
                <Label fx:id="NotifCountLabel" layoutX="40.0" layoutY="182.0" prefHeight="17.0" prefWidth="8.0" text="0" textFill="WHITE" />
             </children>
          </AnchorPane>
-         <AnchorPane fx:id="chatPane" layoutX="243.0" layoutY="6.0" prefHeight="1452.0" prefWidth="793.0">
-            <children>
-               <Pane layoutX="502.0" layoutY="24.0" style="-fx-border-radius: 4em; -fx-background-color: black;">
-                  <children>
-                     <TextField fx:id="searchField" layoutX="20.0" layoutY="14.0" prefHeight="32.0" prefWidth="208.0" promptText="Search" style="-fx-background-color: #3f3f3f; -fx-border-radius: 2em;">
-                        <font>
-                           <Font size="15.0" />
-                        </font>
-                     </TextField>
-                     <ImageView fitHeight="32.0" fitWidth="32.0" layoutX="195.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true" style="-fx-image: true;">
-                        <image>
-                           <Image url="@images/Search4.png" />
-                        </image>
-                     </ImageView>
-                     <Label layoutX="10.0" layoutY="94.0" prefHeight="170.0" prefWidth="224.0" style="-fx-border-color: #313131; -fx-border-radius: 15px;" />
-                     <VBox fx:id="friendsVBox" layoutX="20.0" layoutY="102.0" prefHeight="154.0" prefWidth="208.0">
-                        <children>
-                           <AnchorPane prefHeight="51.3333" prefWidth="208.0" style="-fx-background-color: white;" />
-                           <AnchorPane layoutX="10.0" layoutY="10.0" prefHeight="51.3333" prefWidth="208.0" style="-fx-background-color: white;" />
-                           <AnchorPane layoutX="10.0" layoutY="49.0" prefHeight="51.3333" prefWidth="208.0" style="-fx-background-color: white;" />
-                        </children>
-                     </VBox>
-                  </children>
-               </Pane>
-               <HBox>
-                  <children>
-                     <Button mnemonicParsing="false" prefHeight="47.0" prefWidth="235.0" style="-fx-background-color: black;" text="Posts" textFill="WHITE">
-                        <font>
-                           <Font size="17.0" />
-                        </font>
-                     </Button>
-                     <Button mnemonicParsing="false" prefHeight="47.0" prefWidth="235.0" style="-fx-background-color: black;" text="For you" textFill="WHITE">
-                        <font>
-                           <Font size="17.0" />
-                        </font>
-                     </Button>
-                  </children>
-               </HBox>
-               <Line endX="197.5" layoutX="282.0" layoutY="54.0" startX="-290.5" stroke="#313131" />
-               <Line endX="-100.0" endY="1268.0" layoutX="580.0" layoutY="272.0" startX="-100.0" startY="-488.0" stroke="#313131" />
-               <ScrollPane fx:id="scroller" layoutX="2.0" layoutY="61.0" prefHeight="514.0" prefWidth="466.0" style="-fx-background-color: black; -fx-border-color: black; -fx-background: black;">
-                  <content>
-                     <VBox fx:id="friendsScrollPane" prefHeight="510.0" prefWidth="462.0" />
-                  </content>
-               </ScrollPane>
-            </children>
-         </AnchorPane>
-         <AnchorPane fx:id="listFriendsSuggestionFriendsAnchorPane" layoutX="233.0" prefHeight="1552.0" prefWidth="803.0" />
+         <AnchorPane fx:id="switchInterfaceAnchor" layoutX="232.0" prefHeight="1541.0" prefWidth="803.0" />
       </children>
    </AnchorPane>
 </AnchorPane>
