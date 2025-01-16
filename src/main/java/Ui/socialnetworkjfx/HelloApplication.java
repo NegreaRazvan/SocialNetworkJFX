@@ -5,6 +5,8 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public class HelloApplication extends Application {
 

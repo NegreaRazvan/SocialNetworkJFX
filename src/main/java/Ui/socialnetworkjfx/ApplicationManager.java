@@ -18,7 +18,19 @@ import layers.repository.db.MessageRepositoryDB;
 import layers.repository.db.UserRepositoryDB;
 import layers.service.Service;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,7 +41,7 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://localhost:3580/Users";
+        String url = "jdbc:postgresql://192.168.1.15:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
         String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications,profile_picture FROM public.\"User\"";
