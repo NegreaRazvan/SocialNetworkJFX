@@ -7,7 +7,7 @@
 
 <AnchorPane prefHeight="136.0" prefWidth="461.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Ui.controller.FriendShowOnChatController">
    <children>
-      <ImageView fitHeight="45.0" fitWidth="57.0" layoutX="208.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="friendImage" fitHeight="45.0" fitWidth="57.0" layoutX="208.0" layoutY="14.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@images/Male%20User.png" />
          </image></ImageView>

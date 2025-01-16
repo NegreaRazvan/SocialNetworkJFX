@@ -8,7 +8,7 @@
 <AnchorPane prefHeight="54.0" prefWidth="308.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Ui.controller.FriendShowOnChatListController">
    <children>
       <ToggleButton fx:id="friendToggleButton" mnemonicParsing="false" prefHeight="54.0" prefWidth="308.0" style="-fx-background-color: black;" />
-      <ImageView fx:id="friendImage" fitHeight="39.0" fitWidth="43.0" layoutX="22.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="friendImage"  fitHeight="39.0" fitWidth="43.0" layoutX="22.0" layoutY="12.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@images/Male%20User.png" />
          </image></ImageView>
