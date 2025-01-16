@@ -1,5 +1,6 @@
 package layers.service;
 
+import Utils.PasswordHashing;
 import layers.domain.*;
 import layers.domain.validators.UsernameUpperCaseException;
 import layers.domain.validators.ValidationException;
@@ -16,6 +17,7 @@ import layers.repository.db.FriendRepositoryDB;
 import layers.repository.db.MessageRepositoryDB;
 import layers.repository.db.UserRepositoryDB;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -58,7 +60,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     }
 
     @Override
-    public Optional<User> saveUser(String firstName, String lastName, String password, String username) throws ValidationException {
+    public Optional<User> saveUser(String firstName, String lastName, String password, String username) throws ValidationException, NoSuchAlgorithmException {
         Optional.ofNullable(firstName).orElseThrow(() -> new IllegalArgumentException("firstName must be not null"));
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
@@ -70,17 +72,12 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
             entity= new User(firstName, lastName, password, e.getMessage(), false, 0, null);
 
         }
-        entity.setId(null);
-        Optional<User> oldEntity = userRepository.findOne(entity.getId());
 
-        if (oldEntity.isPresent()) {
-            return oldEntity;
-        } else {
-            userRepository.save(entity);
-
-            return Optional.empty();
-        }
+        entity.setPassword(PasswordHashing.hashPassword(entity.getPassword()));
+        userRepository.save(entity);
+        return Optional.empty();
     }
+
 
     public void acceptFriend(Long userId, Long friendId) {
         Friend friendship=((FriendRepositoryDB)friendRepository).findOne(userId,friendId).get();

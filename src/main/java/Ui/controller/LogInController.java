@@ -1,5 +1,6 @@
 package Ui.controller;
 
+import Utils.PasswordHashing;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -15,26 +16,13 @@ public class LogInController extends Controller {
     @FXML
     private TextField password;
 
-    private static String hashPassword(String password) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        md.update(password.getBytes());
-        byte[] result = md.digest();
-
-        StringBuilder sb= new StringBuilder();
-        for(byte b:result) {
-            sb.append(String.format("%02x", b));
-        }
-
-        return sb.toString();
-    }
-
     @FXML
     private void handleLogInButton(ActionEvent event) throws IOException, NoSuchAlgorithmException {
         String username=this.username.getText();
         String password=this.password.getText();
         System.out.println("username: "+username +" password: "+password);
 
-        String hashedPassword = hashPassword(password);
+        String hashedPassword = PasswordHashing.hashPassword(password);
 
         if(manager.isUserInDatabase(username, hashedPassword)) {;
             manager.switchPage("main-window.fxml", "SocialNetwork", manager.getUser(username), null, ControllerType.MAINWINDOW);

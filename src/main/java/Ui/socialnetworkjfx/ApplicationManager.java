@@ -136,7 +136,7 @@ public class ApplicationManager {
         return service.findOneUser(username, password).isPresent();
     }
 
-    public void addValidUser(String username, String password, String firstName, String lastName){
+    public void addValidUser(String username, String password, String firstName, String lastName) throws NoSuchAlgorithmException {
         service.saveUser(firstName,lastName,password,username);
     }
 

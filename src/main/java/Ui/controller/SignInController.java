@@ -8,6 +8,9 @@ import javafx.scene.control.TextField;
 import layers.domain.validators.ValidationException;
 import Ui.messageAlert.MessageAlert;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class SignInController extends Controller {
 
     @FXML
@@ -38,7 +41,7 @@ public class SignInController extends Controller {
                 MessageAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success", "You were successfully registered");
                 manager.switchPage("login.fxml", "Log In", null,null,null);
 
-            }catch (ValidationException e) {
+            }catch (ValidationException | NoSuchAlgorithmException e) {
                 MessageAlert.showErrorMessage(null, e.getMessage());
             }
         }
