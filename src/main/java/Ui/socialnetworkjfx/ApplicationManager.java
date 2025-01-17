@@ -18,19 +18,8 @@ import layers.repository.db.MessageRepositoryDB;
 import layers.repository.db.UserRepositoryDB;
 import layers.service.Service;
 
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import java.io.IOException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -162,7 +151,7 @@ public class ApplicationManager {
     ///The 4 main lists
 
     public ArrayList<User> getNonFriendsOfUser(Long userId){
-        return StreamSupport.stream(service.findAllFriendsOfAUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
+        return StreamSupport.stream(service.findAllNonFriendsOfUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public ArrayList<User> getFriendsOfUser(Long userId){

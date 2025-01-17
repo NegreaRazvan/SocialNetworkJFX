@@ -12,7 +12,6 @@ import Utils.observer.Observer;
 import Utils.paging.Page;
 import Utils.paging.Pageable;
 import layers.repository.Repository;
-import layers.repository.db.AbstractDBRepository;
 import layers.repository.db.FriendRepositoryDB;
 import layers.repository.db.MessageRepositoryDB;
 import layers.repository.db.UserRepositoryDB;
@@ -74,6 +73,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         }
 
         entity.setPassword(PasswordHashing.hashPassword(entity.getPassword()));
+
         userRepository.save(entity);
         return Optional.empty();
     }
@@ -86,26 +86,9 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         notifyObservers(new FriendEntityChangeEvent(ChangeEventType.ADD, friendship));
     }
 
-    private void updateRepoFriends(Long id){
-        Iterable<Friend> friends = friendRepository.findAll();
-        ArrayList<Friend> friend1 = new ArrayList<>();
-        friends.forEach(x -> {
-            Friend f=new Friend(x.first(), x.second(),x.request());
-            f.setId(x.getId());
-            friend1.add(f);
-        });
-        friend1.forEach(f-> {
-            if (id.equals(f.first()) || id.equals(f.second()))
-                friendRepository.delete(f.getId());
-        });
-    }
-
     @Override
     public Optional<User> deleteUser(Long id) {
         Optional.ofNullable(id).orElseThrow(() -> new IllegalArgumentException("id must be not null"));
-        if(!(userRepository instanceof AbstractDBRepository<Long, User>))
-            updateRepoFriends(id);
-
         return userRepository.delete(id);
     }
 
@@ -131,8 +114,6 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         if(((UserRepositoryDB)userRepository).findOne(username).isEmpty())
             throw new ValidationException("User not found");
 
-
-
         if (userRepository.findOne(entity.getId()).isPresent()) {
             userRepository.update(entity);
             return null;
@@ -141,7 +122,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     }
 
     ///TO DO: CHANGE THE NAME
-    public Iterable<User> findAllFriendsOfAUser(Long idUser) {
+    public Iterable<User> findAllNonFriendsOfUser(Long idUser) {
         Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
         return ((UserRepositoryDB)userRepository).findAll(idUser);
     }
@@ -195,16 +176,15 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new ValidationException("First User not found"));
         Optional.ofNullable(userRepository.findOne(friendId)).orElseThrow(() -> new ValidationException("Second User not found"));
         Friend entity = new Friend(userId, friendId, request);
-            friendRepository.save(entity);
-            notifyObservers(new FriendEntityChangeEvent(ChangeEventType.REQUEST, entity));
-            return Optional.empty();
+        friendRepository.save(entity);
+        notifyObservers(new FriendEntityChangeEvent(ChangeEventType.REQUEST, entity));
+        return Optional.empty();
 
     }
 
     @Override
     public Optional<Friend> deleteFriend(Long id, ChangeEventType event) {
         Optional.ofNullable(id).orElseThrow(() -> new ValidationException("id must be not null"));
-//        calculateId();
         Optional<Friend> friend=friendRepository.delete(id);
         notifyObservers(new FriendEntityChangeEvent(event, friend.get()));
         return friend;
@@ -215,6 +195,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         return friendRepository.findAll();
     }
 
+    ///from a previous version which used these
     private Graph graphSetup(){
         var users=userRepository.findAll();
         int c=0;
@@ -242,6 +223,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         path.forEach(x->users.add((userRepository.findOne(Integer.toUnsignedLong(x)))));
         return users;
     }
+    ///
 
     @Override
     public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage,Long idOfTheReplyMessage) {

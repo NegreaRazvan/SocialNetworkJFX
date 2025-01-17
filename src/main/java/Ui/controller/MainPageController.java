@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 public class MainPageController extends Controller {
+    Boolean isListenerActive;
     int maxPage;
     Integer currentElements=0;
     User user;
@@ -74,12 +75,15 @@ public class MainPageController extends Controller {
     }
 
     public void initializeWindow(User user) {
+        isListenerActive=false;
         scroller.addEventFilter(ScrollEvent.SCROLL, e->{
-            if(e.getDeltaY()<0&&currentElements<Math.floor((double) maxPage /9))
-                currentElements++;
-            else if(e.getDeltaY()>0&&currentElements>0) currentElements--;
-            friendsOfUser = manager.getFriendsOfUser(new Pageable(currentElements, 9), user.getId());
-            updateContainer(friendsOfUser, friendsScrollPane, 20, "friend-delete.fxml", ControllerType.FRIENDLIST);
+            if(isListenerActive){
+                if (e.getDeltaY() < 0 && currentElements < Math.floor((double) maxPage / 9))
+                    currentElements++;
+                else if (e.getDeltaY() > 0 && currentElements > 0) currentElements--;
+                friendsOfUser = manager.getFriendsOfUser(new Pageable(currentElements, 9), user.getId());
+                updateContainer(friendsOfUser, friendsScrollPane, 20, "friend-delete.fxml", ControllerType.FRIENDLIST);
+            }
         });
         maxPage=manager.getCountFriends(user.getId());
         setUser(user);
@@ -97,14 +101,17 @@ public class MainPageController extends Controller {
     }
 
     public void handleNotificationButton() {
+        isListenerActive=false;
         updateContainer(notificationsOfUser, friendsScrollPane, 9, "notifications.fxml", ControllerType.NOTIFICATION);
     }
 
     public void handleFriendsButton() {
+        isListenerActive=true;
         updateContainer(friendsOfUser, friendsScrollPane, 20, "friend-delete.fxml", ControllerType.FRIENDLIST);
     }
 
     public void handleHomeButton( ) {
+        isListenerActive=false;
         friendsScrollPane.getChildren().clear();
     }
 
