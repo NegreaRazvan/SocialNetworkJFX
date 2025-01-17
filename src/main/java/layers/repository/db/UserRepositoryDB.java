@@ -265,8 +265,8 @@ public class UserRepositoryDB extends AbstractDBRepository<Long, User> {
             ps.setString(4, entity.getUsername());
             ps.setBoolean(5, entity.getIsAdmin());
             ps.setInt(6, entity.getNumberOfNotifications());
-            ps.setLong(7, entity.getId());
-            ps.setString(8, entity.getProfilePicture());
+            ps.setString(7, entity.getProfilePicture());
+            ps.setLong(8, entity.getId());
         }
         return ps;
     }

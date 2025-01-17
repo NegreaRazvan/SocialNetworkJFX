@@ -369,6 +369,7 @@ public class ChatController extends Controller implements Observer<FriendEntityC
         setUser(user);
         searchFriend.textProperty().addListener(o -> handleFilter());
         updateContainer(manager.getFriendsOfUser(user.getId()), friendListChat, 20, "friend-show-chat-list.fxml", ControllerType.FRIENDSHOWCHATLIST);
+
     }
 
     public void handleFilter(){

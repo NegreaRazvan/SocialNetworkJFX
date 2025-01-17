@@ -20,6 +20,7 @@ import Utils.observer.Observer;
 import Utils.paging.Pageable;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -156,6 +157,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
             NotifCountLabel.setVisible(true);
             NotifCountLabel.setText(numberOfNotifications + "");
         }
+        manager.addObserverMainWindow(this);
     }
 
     void initializeProfileController(){
@@ -219,7 +221,7 @@ public class MainWindowController extends Controller implements Observer<FriendE
     void handleProfile(ActionEvent event) { initializeProfileController();}
 
     @FXML
-    public void handleSignout(ActionEvent event) {
+    public void handleSignout(ActionEvent event) throws NoSuchAlgorithmException {
         manager.updateNotifications(user,numberOfNotifications);
         if(primaryStage==null)
             manager.switchPage("login.fxml", "Log In", null,null,null);

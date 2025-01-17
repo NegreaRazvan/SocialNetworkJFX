@@ -61,7 +61,7 @@ public interface ServiceInterface{
      * @throws ValidationException
      *             if the entity is not valid.
      */
-    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications,String profile_picture);
+    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications,String profilePicture,Boolean passwordReset) throws ValidationException, NoSuchAlgorithmException;
 
     /**
      * @param userId   - the id of the user

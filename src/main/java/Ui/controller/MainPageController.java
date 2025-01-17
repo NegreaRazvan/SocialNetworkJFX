@@ -83,7 +83,6 @@ public class MainPageController extends Controller {
         });
         maxPage=manager.getCountFriends(user.getId());
         setUser(user);
-//        scroller.getScene().getStylesheets().add(HelloApplication.class.getResource("css/style.css").toExternalForm());
 
         ///makes it so when I search it filters the friend suggestion list
         searchField.textProperty().addListener(o -> handleFIlter());
@@ -93,6 +92,8 @@ public class MainPageController extends Controller {
         notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
         ///updates the friend suggestion Window
         updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
+        //scroller.getScene().getStylesheets().add(HelloApplication.class.getResource("css/style.css").toExternalForm());
+
     }
 
     public void handleNotificationButton() {
@@ -118,15 +119,20 @@ public class MainPageController extends Controller {
 
 
     public void update(FriendEntityChangeEvent event) {
-        if(event.getType().equals(ChangeEventType.DECLINE)||event.getType().equals(ChangeEventType.ADD)||event.getType().equals(ChangeEventType.DELETE)||event.getType().equals(ChangeEventType.REQUEST)){
-            maxPage=manager.getCountFriends(user.getId());
+        if(event.getType().equals(ChangeEventType.DECLINE)||event.getType().equals(ChangeEventType.ADD)||event.getType().equals(ChangeEventType.DELETE)||event.getType().equals(ChangeEventType.REQUEST)) {
+            maxPage = manager.getCountFriends(user.getId());
             nonFriendsOfUser = manager.getNonFriendsOfUser(user.getId());
             friendsOfUser = manager.getFriendsOfUser(new Pageable(currentElements, 9), user.getId());
             notificationsOfUser = manager.getFriendRequestsOfUser(user.getId());
         }
-        if(event.getType().equals(ChangeEventType.DECLINE))
-            if(Objects.equals(event.getFriend().second(), user.getId()))
+        if (event.getType().equals(ChangeEventType.REQUEST)) {
+            updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
+        }
+        if(event.getType().equals(ChangeEventType.DECLINE)||event.getType().equals(ChangeEventType.ADD))
+            if(Objects.equals(event.getFriend().second(), user.getId())) {
                 updateContainer(notificationsOfUser, friendsScrollPane, 9, "notifications.fxml", ControllerType.NOTIFICATION);
+                updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);
+            }
 
         if(event.getType().equals(ChangeEventType.DELETE)) {
             updateContainer(nonFriendsOfUser, friendsVBox, 3, "friend-suggestion.fxml", ControllerType.FRIENDSUGGESTION);

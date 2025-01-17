@@ -110,21 +110,28 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     }
 
     @Override
-    public User updateUser(Long id, String firstName, String lastName, String password, String username, Boolean isAdmin, Integer numberOfNotifications, String profile_picture) throws ValidationException {
+    public User updateUser(Long id, String firstName, String lastName, String password, String username, Boolean isAdmin, Integer numberOfNotifications, String profilePicture,Boolean passwordReset) throws ValidationException, NoSuchAlgorithmException {
         Optional.ofNullable(firstName).orElseThrow(() -> new IllegalArgumentException("firstName must be not null"));
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
         Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
-        User entity = new User(firstName, lastName, password,username, isAdmin, numberOfNotifications, profile_picture);
-        try{
-            userValidator.validate(entity);
-        }catch (UsernameUpperCaseException e){
-            entity= new User(firstName, lastName, password, e.getMessage(), isAdmin, numberOfNotifications, profile_picture);
-        }
+
+        User entity = new User(firstName, lastName, password,username, isAdmin, numberOfNotifications, profilePicture);
+
+        if(!passwordReset)
+            try{
+                userValidator.validate(entity);
+            }catch (UsernameUpperCaseException e){
+                entity= new User(firstName, lastName, password, e.getMessage(), isAdmin, numberOfNotifications, profilePicture);}
+
+        else entity.setPassword(PasswordHashing.hashPassword(password));
+
         entity.setId(id);
 
         if(((UserRepositoryDB)userRepository).findOne(username).isEmpty())
             throw new ValidationException("User not found");
+
+
 
         if (userRepository.findOne(entity.getId()).isPresent()) {
             userRepository.update(entity);
