@@ -6,6 +6,7 @@ import layers.domain.User;
 import layers.domain.validators.ValidationException;
 import Utils.events.ChangeEventType;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -35,7 +36,7 @@ public interface ServiceInterface{
      * @throws ValidationException      if the entity is not valid
      * @throws IllegalArgumentException if the given entity is null.     *
      */
-    Optional<User> saveUser(String firstName, String lastName, String password,String username) throws ValidationException;
+    Optional<User> saveUser(String firstName, String lastName, String password,String username) throws ValidationException, NoSuchAlgorithmException;
 
 
     /**
@@ -60,7 +61,7 @@ public interface ServiceInterface{
      * @throws ValidationException
      *             if the entity is not valid.
      */
-    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications);
+    User updateUser(Long id, String firstName,String lastName,String password, String username, Boolean isAdmin, Integer numberOfNotifications,String profilePicture,Boolean passwordReset) throws ValidationException, NoSuchAlgorithmException;
 
     /**
      * @param userId   - the id of the user

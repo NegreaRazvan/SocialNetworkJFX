@@ -5,8 +5,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import layers.domain.Message;
 import layers.domain.validators.ValidationException;
 import Ui.messageAlert.MessageAlert;
+
+import java.security.NoSuchAlgorithmException;
 
 public class ForgotPasswordController extends Controller{
     @FXML
@@ -42,7 +45,7 @@ public class ForgotPasswordController extends Controller{
                 MessageAlert.showMessage(null, Alert.AlertType.CONFIRMATION,"Success", "Successfully updated your password");
                 manager.switchPage("login.fxml", "Log In", null, null, null);
 
-            }catch (ValidationException e) {
+            }catch (ValidationException | NoSuchAlgorithmException e) {
                 MessageAlert.showErrorMessage(null, e.getMessage());
             }catch (IllegalArgumentException e) {
                 MessageAlert.showErrorMessage(null, "Type the username and the password");

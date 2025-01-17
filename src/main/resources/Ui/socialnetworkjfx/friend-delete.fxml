@@ -9,7 +9,7 @@
        <Label fx:id="friendName" layoutX="109.0" layoutY="16.0" prefHeight="17.0" prefWidth="122.0" text="FirstName LastName" textFill="WHITE" />
        <Label fx:id="friendUsername" layoutX="109.0" layoutY="37.0" prefHeight="17.0" prefWidth="122.0" text="Username" textFill="#9a9a9a" />
       <Button fx:id="deleteButton" layoutX="354.0" layoutY="16.0" mnemonicParsing="false" onAction="#handleDeleteButtonAction" prefHeight="33.0" prefWidth="76.0" style="-fx-background-color: #5a9e96;" text="Delete" textFill="WHITE" />
-      <ImageView fitHeight="33.0" fitWidth="51.0" layoutX="52.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="friendImage" fitHeight="33.0" fitWidth="51.0" layoutX="52.0" layoutY="17.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@images/Male%20User.png" />
          </image>

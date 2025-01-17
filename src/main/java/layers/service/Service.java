@@ -1,5 +1,6 @@
 package layers.service;
 
+import Utils.PasswordHashing;
 import layers.domain.*;
 import layers.domain.validators.UsernameUpperCaseException;
 import layers.domain.validators.ValidationException;
@@ -11,11 +12,11 @@ import Utils.observer.Observer;
 import Utils.paging.Page;
 import Utils.paging.Pageable;
 import layers.repository.Repository;
-import layers.repository.db.AbstractDBRepository;
 import layers.repository.db.FriendRepositoryDB;
 import layers.repository.db.MessageRepositoryDB;
 import layers.repository.db.UserRepositoryDB;
 
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -58,29 +59,25 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     }
 
     @Override
-    public Optional<User> saveUser(String firstName, String lastName, String password, String username) throws ValidationException {
+    public Optional<User> saveUser(String firstName, String lastName, String password, String username) throws ValidationException, NoSuchAlgorithmException {
         Optional.ofNullable(firstName).orElseThrow(() -> new IllegalArgumentException("firstName must be not null"));
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
         Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
-        User entity = new User(firstName, lastName,password, username, false, 0);
+        User entity = new User(firstName, lastName,password, username, false, 0, null);
         try{
             userValidator.validate(entity);
         }catch (UsernameUpperCaseException e){
-            entity= new User(firstName, lastName, password, e.getMessage(), false, 0);
+            entity= new User(firstName, lastName, password, e.getMessage(), false, 0, null);
 
         }
-        entity.setId(null);
-        Optional<User> oldEntity = userRepository.findOne(entity.getId());
 
-        if (oldEntity.isPresent()) {
-            return oldEntity;
-        } else {
-            userRepository.save(entity);
+        entity.setPassword(PasswordHashing.hashPassword(entity.getPassword()));
 
-            return Optional.empty();
-        }
+        userRepository.save(entity);
+        return Optional.empty();
     }
+
 
     public void acceptFriend(Long userId, Long friendId) {
         Friend friendship=((FriendRepositoryDB)friendRepository).findOne(userId,friendId).get();
@@ -89,41 +86,29 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         notifyObservers(new FriendEntityChangeEvent(ChangeEventType.ADD, friendship));
     }
 
-    private void updateRepoFriends(Long id){
-        Iterable<Friend> friends = friendRepository.findAll();
-        ArrayList<Friend> friend1 = new ArrayList<>();
-        friends.forEach(x -> {
-            Friend f=new Friend(x.first(), x.second(),x.request());
-            f.setId(x.getId());
-            friend1.add(f);
-        });
-        friend1.forEach(f-> {
-            if (id.equals(f.first()) || id.equals(f.second()))
-                friendRepository.delete(f.getId());
-        });
-    }
-
     @Override
     public Optional<User> deleteUser(Long id) {
         Optional.ofNullable(id).orElseThrow(() -> new IllegalArgumentException("id must be not null"));
-        if(!(userRepository instanceof AbstractDBRepository<Long, User>))
-            updateRepoFriends(id);
-
         return userRepository.delete(id);
     }
 
     @Override
-    public User updateUser(Long id, String firstName, String lastName, String password, String username, Boolean isAdmin, Integer numberOfNotifications) throws ValidationException {
+    public User updateUser(Long id, String firstName, String lastName, String password, String username, Boolean isAdmin, Integer numberOfNotifications, String profilePicture,Boolean passwordReset) throws ValidationException, NoSuchAlgorithmException {
         Optional.ofNullable(firstName).orElseThrow(() -> new IllegalArgumentException("firstName must be not null"));
         Optional.ofNullable(lastName).orElseThrow(() -> new IllegalArgumentException("lastName must be not null"));
         Optional.ofNullable(password).orElseThrow(() -> new IllegalArgumentException("Password must be not null"));
         Optional.ofNullable(username).orElseThrow(() -> new IllegalArgumentException("Username must be not null"));
-        User entity = new User(firstName, lastName, password,username, isAdmin, numberOfNotifications);
-        try{
-            userValidator.validate(entity);
-        }catch (UsernameUpperCaseException e){
-            entity= new User(firstName, lastName, password, e.getMessage(), isAdmin, numberOfNotifications );
-        }
+
+        User entity = new User(firstName, lastName, password,username, isAdmin, numberOfNotifications, profilePicture);
+
+        if(!passwordReset)
+            try{
+                userValidator.validate(entity);
+            }catch (UsernameUpperCaseException e){
+                entity= new User(firstName, lastName, password, e.getMessage(), isAdmin, numberOfNotifications, profilePicture);}
+
+        else entity.setPassword(PasswordHashing.hashPassword(password));
+
         entity.setId(id);
 
         if(((UserRepositoryDB)userRepository).findOne(username).isEmpty())
@@ -137,7 +122,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
     }
 
     ///TO DO: CHANGE THE NAME
-    public Iterable<User> findAllFriendsOfAUser(Long idUser) {
+    public Iterable<User> findAllNonFriendsOfUser(Long idUser) {
         Optional.ofNullable(idUser).orElseThrow(() -> new IllegalArgumentException("idUser must be not null"));
         return ((UserRepositoryDB)userRepository).findAll(idUser);
     }
@@ -191,16 +176,15 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         Optional.ofNullable(userRepository.findOne(userId)).orElseThrow(() -> new ValidationException("First User not found"));
         Optional.ofNullable(userRepository.findOne(friendId)).orElseThrow(() -> new ValidationException("Second User not found"));
         Friend entity = new Friend(userId, friendId, request);
-            friendRepository.save(entity);
-            notifyObservers(new FriendEntityChangeEvent(ChangeEventType.REQUEST, entity));
-            return Optional.empty();
+        friendRepository.save(entity);
+        notifyObservers(new FriendEntityChangeEvent(ChangeEventType.REQUEST, entity));
+        return Optional.empty();
 
     }
 
     @Override
     public Optional<Friend> deleteFriend(Long id, ChangeEventType event) {
         Optional.ofNullable(id).orElseThrow(() -> new ValidationException("id must be not null"));
-//        calculateId();
         Optional<Friend> friend=friendRepository.delete(id);
         notifyObservers(new FriendEntityChangeEvent(event, friend.get()));
         return friend;
@@ -211,6 +195,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         return friendRepository.findAll();
     }
 
+    ///from a previous version which used these
     private Graph graphSetup(){
         var users=userRepository.findAll();
         int c=0;
@@ -238,6 +223,7 @@ public class Service implements ServiceInterface, Observable<FriendEntityChangeE
         path.forEach(x->users.add((userRepository.findOne(Integer.toUnsignedLong(x)))));
         return users;
     }
+    ///
 
     @Override
     public Optional<MessageDTO> saveMessage(Long to, Long from, String message, String idReplyMessage,Long idOfTheReplyMessage) {

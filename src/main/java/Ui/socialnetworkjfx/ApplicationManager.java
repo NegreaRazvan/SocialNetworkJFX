@@ -19,6 +19,7 @@ import layers.repository.db.UserRepositoryDB;
 import layers.service.Service;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,10 +30,10 @@ public class ApplicationManager {
     private Service service;
 
     private void initService(){
-        String url = "jdbc:postgresql://192.168.1.71:3580/Users";
+        String url = "jdbc:postgresql://localhost:3580/Users";
         String user = "postgres";
         String password = "PGADMINPASSWORD";
-        String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications FROM public.\"User\"";
+        String queryLoad="SELECT id, first_name, last_name, password, username, admin, number_notifications,profile_picture FROM public.\"User\"";
         String queryLoadF="SELECT id, user_id, friend_id, request, date FROM public.\"Friendship\"";
         String queryLoadM="SELECT id, \"to\", \"from\", message, date, \"idReplyMessage\", \"idOfReplyMessage\" FROM public.\"Message\"";
 
@@ -84,6 +85,8 @@ public class ApplicationManager {
             case CHAT -> {if( controller instanceof ChatController chatController) chatController.initializeWindow(user, friend, primaryStage);}
             case FRIENDSHOWCHATLIST -> {if(controller instanceof FriendShowOnChatListController friendShowOnChatListController) friendShowOnChatListController.initializeWindow(friend);}
             case FRIENDSHOWCHAT -> {if (controller instanceof FriendShowOnChatController friendShowOnChatController) friendShowOnChatController.initializeWindow(friend);}
+            case MAINPAGE -> {if (controller instanceof MainPageController mainPageController) mainPageController.initializeWindow(user);}
+            case PROFILE -> {if (controller instanceof ProfileController profileController) profileController.initializeWindow(user); }
         }
     }
 
@@ -122,16 +125,16 @@ public class ApplicationManager {
         return service.findOneUser(username, password).isPresent();
     }
 
-    public void addValidUser(String username, String password, String firstName, String lastName){
+    public void addValidUser(String username, String password, String firstName, String lastName) throws NoSuchAlgorithmException {
         service.saveUser(firstName,lastName,password,username);
     }
 
-    public void updateUser(String username, String password){
+    public void updateUser(String username, String password) throws NoSuchAlgorithmException {
         Optional<User> user = service.findOneUser(username);
         if(user.isPresent())
-            service.updateUser(user.get().getId(), user.get().getFirstName(),user.get().getLastName(),password,username,false, 0);
+            service.updateUser(user.get().getId(), user.get().getFirstName(),user.get().getLastName(),password,username,false, 0,null,true);
         else
-            service.updateUser(null,null,null,password,username,false, 0);
+            service.updateUser(null,null,null,password,username,false, 0,null,true);
     }
 
     public User getUser(String username){
@@ -148,7 +151,7 @@ public class ApplicationManager {
     ///The 4 main lists
 
     public ArrayList<User> getNonFriendsOfUser(Long userId){
-        return StreamSupport.stream(service.findAllFriendsOfAUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
+        return StreamSupport.stream(service.findAllNonFriendsOfUser(userId).spliterator(),false).collect(Collectors.toCollection(ArrayList::new));
     }
 
     public ArrayList<User> getFriendsOfUser(Long userId){
@@ -182,8 +185,8 @@ public class ApplicationManager {
         service.acceptFriend(userId,friendId);
     }
 
-    public void updateNotifications(User user,Integer numberOfNotifications){
-        service.updateUser(user.getId(),user.getFirstName(),user.getLastName(),user.getPassword(),user.getUsername(),false,numberOfNotifications);
+    public void updateNotifications(User user,Integer numberOfNotifications) throws NoSuchAlgorithmException {
+        service.updateUser(user.getId(),user.getFirstName(),user.getLastName(),user.getPassword(),user.getUsername(),false,numberOfNotifications, null,false);
     }
 
     public Friend getFriendRequest(Long userId, Long friendId){
@@ -193,6 +196,7 @@ public class ApplicationManager {
     public void addObserverMainWindow(MainWindowController controller){
         service.addObserver(controller);
     }
+
 
     public void addObserverChatWindow(ChatController controller){
         service.addObserver(controller);
